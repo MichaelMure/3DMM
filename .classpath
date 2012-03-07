@@ -2,8 +2,20 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="/usr/share/java/j3dcore.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/j3dutils.jar"/>
-	<classpathentry kind="lib" path="/usr/share/java/vecmath.jar"/>
+	<classpathentry kind="lib" path="/usr/share/java/j3dcore.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/share/doc/libjava3d-java-doc/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/usr/share/java/j3dutils.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/share/doc/libjava3d-java-doc/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/usr/share/java/vecmath.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/usr/share/doc/libvecmath-java-doc/api"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
