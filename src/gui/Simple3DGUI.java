@@ -52,33 +52,40 @@ public class Simple3DGUI extends JFrame {
         pack();
 	}
 	
+	/** Replace the scene with a static cube */
+	@SuppressWarnings("unused")
 	private void cubeScene() {
 		scene = new BranchGroup();
 		scene.addChild(new ColorCube(0.4));
 		universe.addBranchGraph(scene);
 	}
 	
+	
+	/** Replace the scene with a rotating cube */
 	private void rotatingCubeScene() {
 		scene = new BranchGroup();
 		
+		/* Small rotation on the root */
 		Transform3D rotate = new Transform3D();
-		//rotate.rotX(Math.PI/4.0d);
+		rotate.rotX(Math.PI/16.0d);
 		TransformGroup objRotate = new TransformGroup(rotate);
 		scene.addChild(objRotate);
 		
+		/* Spinning group */
 		TransformGroup objSpin = new TransformGroup();
 		objSpin.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 		objRotate.addChild(objSpin);
 		
+		/* Cube */
 		objSpin.addChild(new ColorCube(0.4));
 		
+		/* Interpolator for spinning */
 		RotationInterpolator rotator = new RotationInterpolator(new Alpha(-1, 4000), objSpin, new Transform3D(),
 						     0.0f, (float) Math.PI*2.0f);
 		BoundingSphere bounds = new BoundingSphere();
 		rotator.setSchedulingBounds(bounds);
 		objSpin.addChild(rotator);
 		
-
 		universe.addBranchGraph(scene);
 	}
 	
