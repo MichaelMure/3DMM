@@ -3,8 +3,7 @@ package gui;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Canvas3D;
+import javax.media.j3d.*;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
@@ -26,6 +25,7 @@ public class Simple3DGUI extends JFrame {
 	
 	public Simple3DGUI(int width, int height) {
 		initComponents(width, height);
+		rotatingCubeScene();
 	}
 	
 	private void initComponents(int width, int height) {
@@ -51,5 +51,36 @@ public class Simple3DGUI extends JFrame {
         this.add(canvas);
         pack();
 	}
+	
+	private void cubeScene() {
+		scene = new BranchGroup();
+		scene.addChild(new ColorCube(0.4));
+		universe.addBranchGraph(scene);
+	}
+	
+	private void rotatingCubeScene() {
+		scene = new BranchGroup();
+		
+		Transform3D rotate = new Transform3D();
+		//rotate.rotX(Math.PI/4.0d);
+		TransformGroup objRotate = new TransformGroup(rotate);
+		scene.addChild(objRotate);
+		
+		TransformGroup objSpin = new TransformGroup();
+		objSpin.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		objRotate.addChild(objSpin);
+		
+		objSpin.addChild(new ColorCube(0.4));
+		
+		RotationInterpolator rotator = new RotationInterpolator(new Alpha(-1, 4000), objSpin, new Transform3D(),
+						     0.0f, (float) Math.PI*2.0f);
+		BoundingSphere bounds = new BoundingSphere();
+		rotator.setSchedulingBounds(bounds);
+		objSpin.addChild(rotator);
+		
+
+		universe.addBranchGraph(scene);
+	}
+	
 	
 }
