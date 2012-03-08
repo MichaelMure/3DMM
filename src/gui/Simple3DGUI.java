@@ -32,6 +32,7 @@ public class Simple3DGUI extends JFrame {
 
 	public Simple3DGUI(int width, int height) {
 		initComponents(width, height);
+		Log.print(LogType.GUI, LogLevel.DEBUG, "Simple 3D GUI initialized");
 	}
 
 	public void displayStaticNode(Node obj) {
@@ -102,6 +103,7 @@ public class Simple3DGUI extends JFrame {
 		pack();
 	}
 
+	/** Compute the size of the object, and if needed, add a scaling transform node to fit on display. */
 	private Node autoScale(Node obj) {
 		BoundingSphere bounds = (BoundingSphere)obj.getBounds();
 
@@ -120,7 +122,7 @@ public class Simple3DGUI extends JFrame {
 			return objScale;
 		}
 
-		System.out.println("Not auto-scaling");
+		Log.print(LogType.GUI, LogLevel.INFO, "Not auto-scaling");
 		return obj;			
 	}
 
