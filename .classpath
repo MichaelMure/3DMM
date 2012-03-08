@@ -17,5 +17,15 @@
 			<attribute name="javadoc_location" value="file:/usr/share/doc/libvecmath-java-doc/api"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/ejml-0.18.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/ejml-0.18-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jply-0.2.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jply-0.2.0-doc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
