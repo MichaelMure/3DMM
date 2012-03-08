@@ -13,6 +13,7 @@ public class HUDCanvas3D extends Canvas3D {
 	private static final int FPSSmoothingPeriod = 10;
 	
 	private long[] frametime = new long[FPSSmoothingPeriod];
+	private boolean HUDEnabled = true;
 
 	public HUDCanvas3D(GraphicsConfiguration graphicsConfiguration) {
 		super(graphicsConfiguration);
@@ -23,6 +24,9 @@ public class HUDCanvas3D extends Canvas3D {
 	}
 	
 	public void postRender() {
+		if(!HUDEnabled)
+			return;
+		
 		/* compute a moving average of the frame per second */
 		int frameindex = (int) getView().getFrameNumber() % FPSSmoothingPeriod;
 		long lastMillis = frametime[frameindex];
@@ -34,4 +38,12 @@ public class HUDCanvas3D extends Canvas3D {
 		g2d.drawString("FPS: " + frameRate + " ",0,12);
 		g2d.flush(false);
     }
+	
+	public boolean isHUDEnabled() {
+		return HUDEnabled;
+	}
+
+	public void setHUDEnabled(boolean hUDEnabled) {
+		HUDEnabled = hUDEnabled;
+	}
 }
