@@ -80,7 +80,7 @@ public class Simple3DGUI extends JFrame {
 
 		/* Canvas3D stuff */
 		config = SimpleUniverse.getPreferredConfiguration();
-		canvas = new Canvas3D(config);
+		canvas = new HUDCanvas3D(config);		
 		universe = new SimpleUniverse(canvas);
 		scene = new BranchGroup();
 
