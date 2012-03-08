@@ -9,6 +9,10 @@ import javax.swing.WindowConstants;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
+import util.Log;
+import util.Log.LogLevel;
+import util.Log.LogType;
+
 import com.sun.j3d.utils.geometry.ColorCube;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -104,7 +108,7 @@ public class Simple3DGUI extends JFrame {
 		if(bounds.getRadius() > 0.0) {
 			double screenRadius = EYE_DISTANCE * Math.tan(universe.getViewer().getView().getFieldOfView() / 2.0);
 			double scale = 0.6 * screenRadius / bounds.getRadius();
-			System.out.println("Auto-scaling: "+ scale);
+			Log.print(LogType.GUI, LogLevel.INFO, "Auto-scaling: "+ scale);
 
 			// Scale the content branch to display at the correct size on the screen.
 			Transform3D transform = new Transform3D();
