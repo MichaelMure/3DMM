@@ -85,13 +85,12 @@ public class Simple3DGUI extends JFrame {
 		universe = new SimpleUniverse(canvas);
 		scene = new BranchGroup();
 
-		BoundingSphere worldBounds = new BoundingSphere(new Point3d(0.0, 0.0,0.0), // Center
-				1000.0); // Extent
-
-		// Set the background color and its application bounds
+		/* Set the background color and its application bounds */
 		Background background = new Background();
 		background.setColor(new Color3f(0.5f,0.5f,0.5f));
 		background.setCapability(Background.ALLOW_COLOR_WRITE);
+		BoundingSphere worldBounds = new BoundingSphere(new Point3d(0.0, 0.0,0.0), // Center
+				1000.0); // Extent
 		background.setApplicationBounds(worldBounds);
 		scene.addChild(background);
 
