@@ -108,7 +108,7 @@ public class Simple3DGUI extends JFrame {
 
 		if(bounds.getRadius() > 0.0) {
 			double screenRadius = EYE_DISTANCE * Math.tan(universe.getViewer().getView().getFieldOfView() / 2.0);
-			double scale = 0.6 * screenRadius / bounds.getRadius();
+			double scale = 0.4 * screenRadius / bounds.getRadius();
 			Log.print(LogType.GUI, LogLevel.INFO, "Auto-scaling: "+ scale);
 
 			// Scale the content branch to display at the correct size on the screen.
