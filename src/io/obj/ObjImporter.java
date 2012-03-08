@@ -13,9 +13,7 @@ public class ObjImporter implements Importer {
 
 	@Override
 	public BranchGroup LoadObject(String file) throws FileNotFoundException, IncorrectFormatException, ParsingErrorException {
-	   	ObjectFile f = new ObjectFile ();
-	    f.setFlags (ObjectFile.RESIZE);
-	    
+	   	ObjectFile f = new ObjectFile ();	    
 	    return f.load (file).getSceneGroup();
 	}
 
