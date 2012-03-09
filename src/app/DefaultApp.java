@@ -15,7 +15,7 @@ public class DefaultApp {
 		Node face;
 		try {
 			//face = importer.LoadObject("data/00001_20061015_00418_neutral_face05.obj");
-			face = importer.LoadObject("data/face_blender.obj");
+			face = importer.loadObject("data/face_blender.obj");
 			gui.displayRotatingNode(face);
 		} catch (Exception e) {
 			e.printStackTrace();

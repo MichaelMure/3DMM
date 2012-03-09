@@ -9,10 +9,10 @@ import com.sun.j3d.loaders.objectfile.ObjectFile;
 
 import io.Importer;
 
-public class ObjImporter implements Importer {
+public class ObjImporter extends Importer {
 
 	@Override
-	public BranchGroup LoadObject(String file) throws FileNotFoundException, IncorrectFormatException, ParsingErrorException {
+	public BranchGroup doLoadObject(String file) throws FileNotFoundException, IncorrectFormatException, ParsingErrorException {
 	   	ObjectFile f = new ObjectFile ();	    
 	    return f.load (file).getSceneGroup();
 	}
