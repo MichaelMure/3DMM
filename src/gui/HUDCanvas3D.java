@@ -10,7 +10,7 @@ import javax.media.j3d.J3DGraphics2D;
 public class HUDCanvas3D extends Canvas3D {
 	
 	private static final long serialVersionUID = -6935789848946912717L;
-	private static final int FPSSmoothingPeriod = 10;
+	private static final int FPSSmoothingPeriod = 100;
 	
 	private long[] frametime = new long[FPSSmoothingPeriod];
 	private boolean HUDEnabled = true;
