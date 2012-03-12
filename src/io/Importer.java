@@ -1,6 +1,6 @@
 package io;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.GeometryArray;
@@ -15,9 +15,11 @@ import com.sun.j3d.loaders.ParsingErrorException;
 
 public abstract class Importer {
 
-	public BranchGroup loadObject(String file) throws FileNotFoundException, IncorrectFormatException, ParsingErrorException {
+	public BranchGroup loadObject(String file) throws IncorrectFormatException, ParsingErrorException, IOException {
+		/* Actual loading */
 		BranchGroup obj = doLoadObject(file);
 
+		/* Debug information */
 		Shape3D shape = (Shape3D) obj.getChild(0);
 		if(shape == null)
 			return obj;
@@ -30,5 +32,5 @@ public abstract class Importer {
 		return obj;
 	}
 	
-	protected abstract BranchGroup doLoadObject(String file) throws FileNotFoundException, IncorrectFormatException, ParsingErrorException;
+	protected abstract BranchGroup doLoadObject(String file) throws IncorrectFormatException, ParsingErrorException, IOException;
 }
