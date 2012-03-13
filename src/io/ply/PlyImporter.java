@@ -2,7 +2,6 @@ package io.ply;
 
 import java.io.IOException;
 
-import javax.media.j3d.BranchGroup;
 import javax.media.j3d.GeometryArray;
 import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.Shape3D;
@@ -25,7 +24,7 @@ import io.Importer;
 public class PlyImporter extends Importer {
 
 	@Override
-	protected BranchGroup doLoadObject(String file)	throws IncorrectFormatException, ParsingErrorException, IOException {
+	protected Shape3D doLoadObject(String file)	throws IncorrectFormatException, ParsingErrorException, IOException {
 		PlyReader ply = new PlyReaderFile(file);
 
 		int vertexCount = ply.getElementCount("vertex");
@@ -86,10 +85,7 @@ public class PlyImporter extends Importer {
 		plane.setColors(0,colors);
 		plane.setColorIndices(0, faces);
 		
-		BranchGroup b = new BranchGroup();
-		b.addChild(new Shape3D(plane));
-		
-		return b;
+		return new Shape3D(plane);
 	}
 
 }

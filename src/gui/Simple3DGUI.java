@@ -35,13 +35,13 @@ public class Simple3DGUI extends JFrame {
 		Log.print(LogType.GUI, LogLevel.DEBUG, "Simple 3D GUI initialized");
 	}
 
-	public void displayStaticNode(Node obj) {
+	public void displayStaticShape(Shape3D shape) {
 		scene = new BranchGroup();
-		scene.addChild(autoScale(obj));
+		scene.addChild(autoScale(shape));
 		universe.addBranchGraph(scene);
 	}
 
-	public void displayRotatingNode(Node obj) {
+	public void displayRotatingShape(Shape3D shape) {
 		scene = new BranchGroup();
 
 		/* Small rotation on the root */
@@ -56,7 +56,7 @@ public class Simple3DGUI extends JFrame {
 		objRotate.addChild(objSpin);
 
 		/* Object */
-		objSpin.addChild(autoScale(obj));
+		objSpin.addChild(autoScale(shape));
 
 		/* Interpolator for spinning */
 		RotationInterpolator rotator = new RotationInterpolator(new Alpha(-1, 4000), objSpin, new Transform3D(),
@@ -103,12 +103,16 @@ public class Simple3DGUI extends JFrame {
 	}
 
 	/** Compute the size of the object, and if needed, add a scaling transform node to fit on display. */
-	private Node autoScale(Node obj) {
-		BoundingSphere bounds = (BoundingSphere)obj.getBounds();
+	private Node autoScale(Shape3D shape) {
+		BoundingBox bounds = (BoundingBox) shape.getBounds();
+		Point3d lower = new Point3d();
+		Point3d upper = new Point3d();
+		bounds.getLower(lower);
+		bounds.getUpper(upper);
 
-		if(bounds.getRadius() > 0.0) {
+		if(lower.distance(upper) > 0.0) {
 			double screenRadius = EYE_DISTANCE * Math.tan(universe.getViewer().getView().getFieldOfView() / 2.0);
-			double scale = 0.4 * screenRadius / bounds.getRadius();
+			double scale = 0.8 * screenRadius / lower.distance(upper);
 			Log.print(LogType.GUI, LogLevel.INFO, "Auto-scaling: "+ scale);
 
 			// Scale the content branch to display at the correct size on the screen.
@@ -117,24 +121,24 @@ public class Simple3DGUI extends JFrame {
 
 			TransformGroup objScale = new TransformGroup();
 			objScale.setTransform(transform);
-			objScale.addChild(obj);
+			objScale.addChild(shape);
 			return objScale;
 		}
 
 		Log.print(LogType.GUI, LogLevel.INFO, "Not auto-scaling");
-		return obj;			
+		return shape;
 	}
 
 	/** Replace the scene with a static cube */
 	@SuppressWarnings("unused")
 	private void cubeScene() {
-		displayStaticNode(new ColorCube(0.4));
+		displayStaticShape(new ColorCube(0.4));
 	}
 
 
 	/** Replace the scene with a rotating cube */
 	@SuppressWarnings("unused")
 	private void rotatingCubeScene() {
-		displayRotatingNode(new ColorCube(0.4));
+		displayRotatingShape(new ColorCube(0.4));
 	}	
 }
