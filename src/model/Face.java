@@ -15,6 +15,28 @@ public class Face {
 	private int[] faceIndices;
 	private int vertexCount;
 	
+	public Face(Shape3D shape3d) {
+		IndexedTriangleArray array = (IndexedTriangleArray) shape3d.getGeometry();
+
+		vertexCount = array.getVertexCount();
+		shape.reshape(vertexCount, 3, false);
+		texture.reshape(vertexCount, 3, false);
+		
+		double[] shape3dCoords = array.getCoordRefDouble();
+		byte[] shape3dColors = array.getColorRefByte();
+		
+		for(int x = 0; x < vertexCount; x++) {
+			shape.set(x, 0, shape3dCoords[3*x+0]);
+			shape.set(x, 1, shape3dCoords[3*x+1]);
+			shape.set(x, 2, shape3dCoords[3*x+2]);
+			texture.set(x, 0, shape3dColors[3*x+0]);
+			texture.set(x, 1, shape3dColors[3*x+1]);
+			texture.set(x, 2, shape3dColors[3*x+2]);
+		}
+		
+		faceIndices = array.getCoordIndicesRef();
+	}
+	
 	public Face(DenseMatrix64F shape, DenseMatrix64F texture, int[] faceIndices) {
 		if(shape.getNumCols() != 3)
 			throw new IllegalArgumentException("Number of columns for shape should be 3 (X,Y,Z).");
