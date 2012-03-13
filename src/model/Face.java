@@ -65,7 +65,7 @@ public class Face {
 		return face;
 	}
 	
-	public Shape3D getShape() {
+	public Shape3D getShape3D() {
 		return new Shape3D(this.getGeometry());
 	}
 	

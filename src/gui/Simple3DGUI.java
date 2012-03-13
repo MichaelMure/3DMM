@@ -38,6 +38,7 @@ public class Simple3DGUI extends JFrame {
 	public void displayStaticShape(Shape3D shape) {
 		scene = new BranchGroup();
 		scene.addChild(autoScale(shape));
+		scene.compile();
 		universe.addBranchGraph(scene);
 	}
 
@@ -65,6 +66,7 @@ public class Simple3DGUI extends JFrame {
 		rotator.setSchedulingBounds(bounds);
 		objSpin.addChild(rotator);
 
+		scene.compile();
 		universe.addBranchGraph(scene);
 	}
 
