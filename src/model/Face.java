@@ -11,7 +11,7 @@ import org.ejml.data.DenseMatrix64F;
 public class Face {
 
 	private DenseMatrix64F shape;
-	private DenseMatrix64F texture;
+	private DenseMatrix64F color;
 	private int[] faceIndices;
 	private int vertexCount;
 	
@@ -20,7 +20,7 @@ public class Face {
 
 		vertexCount = array.getVertexCount();
 		shape.reshape(vertexCount, 3, false);
-		texture.reshape(vertexCount, 3, false);
+		color.reshape(vertexCount, 3, false);
 		
 		double[] shape3dCoords = array.getCoordRefDouble();
 		byte[] shape3dColors = array.getColorRefByte();
@@ -29,9 +29,9 @@ public class Face {
 			shape.set(x, 0, shape3dCoords[3*x+0]);
 			shape.set(x, 1, shape3dCoords[3*x+1]);
 			shape.set(x, 2, shape3dCoords[3*x+2]);
-			texture.set(x, 0, shape3dColors[3*x+0]);
-			texture.set(x, 1, shape3dColors[3*x+1]);
-			texture.set(x, 2, shape3dColors[3*x+2]);
+			color.set(x, 0, shape3dColors[3*x+0]);
+			color.set(x, 1, shape3dColors[3*x+1]);
+			color.set(x, 2, shape3dColors[3*x+2]);
 		}
 		
 		faceIndices = array.getCoordIndicesRef();
@@ -48,7 +48,7 @@ public class Face {
 			throw new IllegalArgumentException("Size of shape and texture inconsistent.");
 		
 		this.shape = shape;
-		this.texture = texture;
+		this.color = texture;
 		this.faceIndices = faceIndices;
 		this.vertexCount = shape.numRows;
 	}
@@ -61,12 +61,16 @@ public class Face {
 		this.shape = shape;
 	}
 
-	public DenseMatrix64F getTextureMatrix() {
-		return texture;
+	public DenseMatrix64F getColorMatrix() {
+		return color;
 	}
 
-	public void setTextureMatrix(DenseMatrix64F texture) {
-		this.texture = texture;
+	public void setColorMatrix(DenseMatrix64F texture) {
+		this.color = texture;
+	}
+	
+	public int[] getFaceIndices() {
+		return faceIndices;
 	}
 	
 	public IndexedTriangleArray getGeometry() {
@@ -75,7 +79,7 @@ public class Face {
 		
 		for(int x = 0; x < vertexCount; x++) {
 			points[x] = new Point3d(shape.get(x, 0), shape.get(x, 1), shape.get(x, 2));
-			colors[x] = new Color3b((byte) texture.get(x, 0), (byte) texture.get(x, 1), (byte) texture.get(x, 2));
+			colors[x] = new Color3b((byte) color.get(x, 0), (byte) color.get(x, 1), (byte) color.get(x, 2));
 		}
 		
 		IndexedTriangleArray face = new IndexedTriangleArray(vertexCount,GeometryArray.COORDINATES | GeometryArray.COLOR_3, faceIndices.length);
