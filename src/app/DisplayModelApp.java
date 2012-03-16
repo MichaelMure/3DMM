@@ -6,7 +6,7 @@ import io.Importer;
 import io.ply.PlyImporter;
 import gui.Simple3DGUI;
 
-public class DefaultApp {
+public class DisplayModelApp {
 
 	public static void main(String[] args) {
 		Simple3DGUI gui = new Simple3DGUI();
