@@ -66,5 +66,13 @@ public class MorphableModel {
 		averageFace = new Face(averageShape, averageTexture, faces.get(0).getFaceIndices());
 	}
 	
+	public Face getAverage() {
+		if(averageFace == null)
+			computeAverage();
+		return averageFace;
+	}
 	
+	public String toString() {
+		return "Morphable Model: " + faces.size() + " faces.";
+	}
 }
