@@ -19,8 +19,8 @@ public class Face {
 		IndexedTriangleArray array = (IndexedTriangleArray) shape3d.getGeometry();
 
 		vertexCount = array.getVertexCount();
-		shape.reshape(vertexCount, 3, false);
-		color.reshape(vertexCount, 3, false);
+		shape = new DenseMatrix64F(vertexCount, 3);
+		color = new DenseMatrix64F(vertexCount, 3);
 		
 		double[] shape3dCoords = array.getCoordRefDouble();
 		byte[] shape3dColors = array.getColorRefByte();
