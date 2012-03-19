@@ -15,7 +15,6 @@ import org.smurn.jply.PlyReader;
 import org.smurn.jply.PlyReaderFile;
 
 import util.Log;
-import util.Log.LogLevel;
 import util.Log.LogType;
 
 public class PlyImporter extends Importer {
@@ -59,8 +58,7 @@ public class PlyImporter extends Importer {
 					colors[3 * x + 2] = (byte) element.getInt("blue");
 					x++;
 				}
-				Log.print(LogType.IO, LogLevel.DEBUG, "PLY importer: " + x
-						+ " vertices read.");
+				Log.debug(LogType.IO, "PLY importer: " + x + " vertices read.");
 
 			} else if (elementType.equals("face")) {
 				/* if some faces were already read, abort. */
@@ -96,8 +94,7 @@ public class PlyImporter extends Importer {
 					faces[3 * x + 2] = vertex_index[2];
 					x++;
 				}
-				Log.print(LogType.IO, LogLevel.DEBUG, "PLY importer: " + x
-						+ " faces read.");
+				Log.debug(LogType.IO, "PLY importer: " + x + " faces read.");
 			}
 
 			reader.close();

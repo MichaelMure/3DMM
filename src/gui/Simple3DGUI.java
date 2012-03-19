@@ -10,7 +10,6 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
 import util.Log;
-import util.Log.LogLevel;
 import util.Log.LogType;
 
 import com.sun.j3d.utils.geometry.ColorCube;
@@ -32,7 +31,7 @@ public class Simple3DGUI extends JFrame {
 
 	public Simple3DGUI(int width, int height) {
 		initComponents(width, height);
-		Log.print(LogType.GUI, LogLevel.DEBUG, "Simple 3D GUI initialized");
+		Log.debug(LogType.GUI, "Simple 3D GUI initialized");
 	}
 
 	public void displayStaticShape(Shape3D shape) {
@@ -115,7 +114,7 @@ public class Simple3DGUI extends JFrame {
 		if(lower.distance(upper) > 0.0) {
 			double screenRadius = EYE_DISTANCE * Math.tan(universe.getViewer().getView().getFieldOfView() / 2.0);
 			double scale = 0.8 * screenRadius / lower.distance(upper);
-			Log.print(LogType.GUI, LogLevel.INFO, "Auto-scaling: "+ scale);
+			Log.info(LogType.GUI, "Auto-scaling: "+ scale);
 
 			// Scale the content branch to display at the correct size on the screen.
 			Transform3D transform = new Transform3D();
@@ -127,7 +126,7 @@ public class Simple3DGUI extends JFrame {
 			return objScale;
 		}
 
-		Log.print(LogType.GUI, LogLevel.INFO, "Not auto-scaling");
+		Log.info(LogType.GUI, "Not auto-scaling");
 		return shape;
 	}
 
@@ -142,5 +141,5 @@ public class Simple3DGUI extends JFrame {
 	@SuppressWarnings("unused")
 	private void rotatingCubeScene() {
 		displayRotatingShape(new ColorCube(0.4));
-	}	
+	}
 }

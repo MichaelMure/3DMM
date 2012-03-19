@@ -10,7 +10,6 @@ import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Shape3D;
 
 import util.Log;
-import util.Log.LogLevel;
 import util.Log.LogType;
 
 public abstract class Importer {
@@ -48,13 +47,13 @@ public abstract class Importer {
 	}
 
 	public Shape3D loadObject(File file) {
-		Log.print(LogType.IO, LogLevel.DEBUG, "Loading: " + file.getName());
-		
+		Log.debug(LogType.IO, "Loading: " + file.getName());
+
 		Shape3D shape = null;
 		try {
 			shape = doLoadObject(file);
 		} catch (IOException e) {
-			Log.print(LogType.IO, LogLevel.ERROR, "Importer IO error for " + file + ": " + e.getMessage());
+			Log.error(LogType.IO, "Importer IO error for " + file + ": " + e.getMessage());
 		}
 
 		/* Debug information */
@@ -62,7 +61,7 @@ public abstract class Importer {
 		if (geometry == null)
 			return shape;
 
-		Log.print(LogType.IO, LogLevel.DEBUG, "Loaded mesh: " + geometry.getVertexCount() + " vertices.");
+		Log.debug(LogType.IO, "Loaded mesh: " + geometry.getVertexCount() + " vertices.");
 		return shape;
 	}
 
