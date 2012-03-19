@@ -3,96 +3,112 @@ package model;
 import javax.media.j3d.GeometryArray;
 import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.Shape3D;
-import javax.vecmath.Color3b;
-import javax.vecmath.Point3d;
 
 import org.ejml.data.DenseMatrix64F;
 
+import util.TwoComplement;
+
 public class Face {
 
-	private DenseMatrix64F shape;
-	private DenseMatrix64F color;
+	private DenseMatrix64F vertices;
+	private DenseMatrix64F colors;
 	private int[] faceIndices;
 	private int vertexCount;
-	
+
 	public Face(Shape3D shape3d) {
 		IndexedTriangleArray array = (IndexedTriangleArray) shape3d.getGeometry();
-
 		vertexCount = array.getVertexCount();
-		shape = new DenseMatrix64F(vertexCount, 3);
-		color = new DenseMatrix64F(vertexCount, 3);
-		
-		double[] shape3dCoords = array.getCoordRefDouble();
+
+		/* We do not copy the vertex data here; data is shared between Shape3d and the matrix */
+		vertices = DenseMatrix64F.wrap(vertexCount, 3, array.getCoordRefDouble());
+
+		/* We cannot do the same for the color, since we don't have a integer matrix */
+		colors = new DenseMatrix64F(vertexCount, 3);
+
 		byte[] shape3dColors = array.getColorRefByte();
-		
-		for(int x = 0; x < vertexCount; x++) {
-			shape.set(x, 0, shape3dCoords[3*x+0]);
-			shape.set(x, 1, shape3dCoords[3*x+1]);
-			shape.set(x, 2, shape3dCoords[3*x+2]);
-			color.set(x, 0, shape3dColors[3*x+0]);
-			color.set(x, 1, shape3dColors[3*x+1]);
-			color.set(x, 2, shape3dColors[3*x+2]);
+		double[] colorsData = colors.getData();
+
+		for(int x = 0; x < vertexCount * 3; x++) {
+			colorsData[x] = TwoComplement.to2complement(shape3dColors[x]);
 		}
-		
+
 		faceIndices = array.getCoordIndicesRef();
 	}
-	
-	public Face(DenseMatrix64F shape, DenseMatrix64F texture, int[] faceIndices) {
-		if(shape.getNumCols() != 3)
+
+	public Face(DenseMatrix64F vertices, DenseMatrix64F colors, int[] faceIndices) {
+		if(vertices.getNumCols() != 3)
 			throw new IllegalArgumentException("Number of columns for shape should be 3 (X,Y,Z).");
-		if(texture.getNumCols() != 3)
+		if(colors.getNumCols() != 3)
 			throw new IllegalArgumentException("Number of columns for texture should be 3 (R,G,B)");
-		if(shape.getNumRows() <= 0 || texture.getNumRows() <= 0 || faceIndices.length <= 0)
+		if(vertices.getNumRows() <= 0 || colors.getNumRows() <= 0 || faceIndices.length <= 0)
 			throw new IllegalArgumentException("At least one argument is empty.");
-		if(shape.getNumRows() != texture.getNumRows())
+		if(vertices.getNumRows() != colors.getNumRows())
 			throw new IllegalArgumentException("Size of shape and texture inconsistent.");
-		
-		this.shape = shape;
-		this.color = texture;
+
+		this.vertices = vertices;
+		this.colors = colors;
 		this.faceIndices = faceIndices;
-		this.vertexCount = shape.numRows;
+		this.vertexCount = vertices.numRows;
 	}
 
-	public DenseMatrix64F getShapeMatrix() {
-		return shape;
+	/** @return the vertex matrix */
+	public DenseMatrix64F getVerticesMatrix() {
+		return vertices;
 	}
 
-	public void setShapeMatrix(DenseMatrix64F shape) {
-		this.shape = shape;
+	public void setVerticesMatrix(DenseMatrix64F shape) {
+		this.vertices = shape;
 	}
 
+	/** @return the color matrix. */
 	public DenseMatrix64F getColorMatrix() {
-		return color;
+		return colors;
 	}
 
+	/** Update the color matrix */
 	public void setColorMatrix(DenseMatrix64F texture) {
-		this.color = texture;
+		this.colors = texture;
 	}
-	
+
+	/** @return a reference to the face indices array. This array should be the same for each Face.
+	 * TODO: make this static.
+	 */
 	public int[] getFaceIndices() {
 		return faceIndices;
 	}
-	
+
+	/** @return a newly allocated IndexedTriangleArray for this face. */
 	public IndexedTriangleArray getGeometry() {
-		Point3d[] points = new Point3d[vertexCount];
-		Color3b[] colors = new Color3b[vertexCount];
-		
-		for(int x = 0; x < vertexCount; x++) {
-			points[x] = new Point3d(shape.get(x, 0), shape.get(x, 1), shape.get(x, 2));
-			colors[x] = new Color3b((byte) color.get(x, 0), (byte) color.get(x, 1), (byte) color.get(x, 2));
+
+		double[] colorsData = colors.getData();
+		byte[] colorsCopy = new byte[3 * vertexCount];
+
+		for(int x = 0; x < vertexCount * 3; x++) {
+			colorsCopy[x] = TwoComplement.from2complement(colorsData[x]);
 		}
-		
-		IndexedTriangleArray face = new IndexedTriangleArray(vertexCount,GeometryArray.COORDINATES | GeometryArray.COLOR_3, faceIndices.length);
-		
-		face.setCoordinateIndices(0, faceIndices);
-		face.setCoordinates(0, points);
-		face.setColors(0,colors);
-		face.setColorIndices(0, faceIndices);
+
+		IndexedTriangleArray face = new IndexedTriangleArray(vertexCount,
+				GeometryArray.COORDINATES | GeometryArray.COLOR_3
+						| GeometryArray.BY_REFERENCE
+						| GeometryArray.BY_REFERENCE_INDICES
+						| GeometryArray.USE_COORD_INDEX_ONLY, faceIndices.length);
+
+		face.setCoordIndicesRef(faceIndices);
+		face.setCoordRefDouble(vertices.getData().clone());
+		face.setColorRefByte(colorsCopy);
+
 		return face;
 	}
-	
+
+	/** @return a newly allocated Shape3D for this face. */
 	public Shape3D getShape3D() {
 		return new Shape3D(this.getGeometry());
 	}
-	
+
+	/** Update the vertex and color of a face Shape3D. */
+	public void updateShape3D(Shape3D shape) {
+		IndexedTriangleArray array = (IndexedTriangleArray) shape.getGeometry();
+
+
+	}
 }

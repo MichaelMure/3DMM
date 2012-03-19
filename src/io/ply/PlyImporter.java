@@ -1,11 +1,14 @@
 package io.ply;
 
+import io.Importer;
+
 import java.io.File;
 import java.io.IOException;
 
 import javax.media.j3d.GeometryArray;
 import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.Shape3D;
+
 import org.smurn.jply.Element;
 import org.smurn.jply.ElementReader;
 import org.smurn.jply.PlyReader;
@@ -14,8 +17,6 @@ import org.smurn.jply.PlyReaderFile;
 import util.Log;
 import util.Log.LogLevel;
 import util.Log.LogType;
-
-import io.Importer;
 
 public class PlyImporter extends Importer {
 
@@ -70,7 +71,26 @@ public class PlyImporter extends Importer {
 				Element element;
 				int x = 0;
 				while ((element = reader.readElement()) != null) {
-					int[] vertex_index = element.getIntList("vertex_indices");
+					int[] vertex_index = null;
+
+					try {
+						vertex_index = element.getIntList("vertex_indices");
+					}
+					/* Property may have a different name, do nothing. */
+					catch (Exception e) {}
+
+					if(vertex_index == null) {
+						try {
+							vertex_index = element.getIntList("vertex_index");
+						}
+						/* Property may have a different name, do nothing. */
+						catch (Exception e) {}
+					}
+
+					if(vertex_index == null) {
+						throw new IOException("Failed to read vertices");
+					}
+
 					faces[3 * x + 0] = vertex_index[0];
 					faces[3 * x + 1] = vertex_index[1];
 					faces[3 * x + 2] = vertex_index[2];
@@ -78,7 +98,6 @@ public class PlyImporter extends Importer {
 				}
 				Log.print(LogType.IO, LogLevel.DEBUG, "PLY importer: " + x
 						+ " faces read.");
-
 			}
 
 			reader.close();

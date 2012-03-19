@@ -12,6 +12,7 @@ public class BuildMMApp {
 		System.out.println(mm);
 		
 		Simple3DGUI gui = new Simple3DGUI();
-		gui.displayRotatingShape(mm.getAverage().getShape3D());
+		gui.displayStaticShape(mm.getAverage().getShape3D());
+		//gui.displayRotatingShape(mm.getAverage().getShape3D());
 	}
 }
