@@ -48,9 +48,9 @@ public abstract class Importer {
 	}
 
 	public Shape3D loadObject(File file) {
-		/* Actual loading */
+		Log.print(LogType.IO, LogLevel.DEBUG, "Loading: " + file.getName());
+		
 		Shape3D shape = null;
-
 		try {
 			shape = doLoadObject(file);
 		} catch (IOException e) {
