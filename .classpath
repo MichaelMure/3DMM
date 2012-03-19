@@ -27,5 +27,6 @@
 			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jply-0.2.0-doc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
