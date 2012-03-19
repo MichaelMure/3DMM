@@ -24,6 +24,31 @@ public class MorphableModel {
 		return faces.get(index);
 	}
 
+	public Face getFace(FaceParameter param) {
+		if(getSize() == 0)
+			throw null;
+		if(param.getModelCount() != faces.size())
+			throw new IllegalArgumentException("Wrong number of parameter: "
+									+ param.getModelCount() + " instead of " + faces.size());
+
+		int vertexCount = faces.get(0).getVertexCount();
+
+		DenseMatrix64F vertices = new DenseMatrix64F(vertexCount, 3);
+		DenseMatrix64F colors = new DenseMatrix64F(vertexCount, 3);
+
+		vertices.zero();
+		colors.zero();
+
+		int x = 0;
+		for(Face f : faces) {
+			CommonOps.addEquals(vertices, param.getVerticesWeight()[x], f.getVerticesMatrix());
+			CommonOps.addEquals(colors, param.getColorWeight()[x] ,f.getColorMatrix());
+			x++;
+		}
+
+		return new Face(vertices, colors, faces.get(0).getFaceIndices());
+	}
+
 	private void computeAverage() {
 		if(getSize() == 0)
 			return;
