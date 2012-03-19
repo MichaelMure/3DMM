@@ -28,7 +28,7 @@ public class MorphableModel {
 		if(faces.size() == 0)
 			return;
 
-		int vertexCount = faces.get(0).getGeometry().getVertexCount();
+		int vertexCount = faces.get(0).getVertexCount();
 
 		DenseMatrix64F averageVertices = new DenseMatrix64F(vertexCount, 3);
 		DenseMatrix64F averageColors = new DenseMatrix64F(vertexCount, 3);

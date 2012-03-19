@@ -13,7 +13,7 @@ public class Face {
 	private DenseMatrix64F vertices;
 	private DenseMatrix64F colors;
 	private int[] faceIndices;
-	private int vertexCount;
+	private final int vertexCount;
 
 	public Face(Shape3D shape3d) {
 		IndexedTriangleArray array = (IndexedTriangleArray) shape3d.getGeometry();
@@ -49,6 +49,11 @@ public class Face {
 		this.colors = colors;
 		this.faceIndices = faceIndices;
 		this.vertexCount = vertices.numRows;
+	}
+
+	/** @return the vertex count. */
+	public int getVertexCount() {
+		return vertexCount;
 	}
 
 	/** @return the vertex matrix */
