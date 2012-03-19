@@ -25,7 +25,7 @@ public class MorphableModel {
 	}
 
 	private void computeAverage() {
-		if(faces.size() == 0)
+		if(getSize() == 0)
 			return;
 
 		int vertexCount = faces.get(0).getVertexCount();
@@ -51,6 +51,10 @@ public class MorphableModel {
 		if(averageFace == null)
 			computeAverage();
 		return averageFace;
+	}
+
+	public int getSize() {
+		return faces.size();
 	}
 
 	@Override
