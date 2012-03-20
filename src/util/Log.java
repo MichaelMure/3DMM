@@ -6,6 +6,7 @@ import java.util.EnumSet;
 
 public class Log {
 	public enum LogType {
+		APP, /* Application */
 		IO, /* Import/Export */
 		GUI, /* User interface */
 		MODEL /* 3D Morphable Model */
