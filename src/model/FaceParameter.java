@@ -10,7 +10,21 @@ public class FaceParameter {
 	private final double[] colorWeight;
 	private final int modelCount;
 
-	/** @return a random FaceParameter
+
+	public static FaceParameter getRandomFaceParameter(int modelCount) {
+		FaceParameter param = new FaceParameter(modelCount);
+
+		for(int x = 0; x < modelCount; x++) {
+			param.verticesWeight[x] = Math.random();
+			param.colorWeight[x] = Math.random();
+		}
+
+		param.normalize();
+
+		return param;
+	}
+
+	/** @return a new FaceParameter with the first coef set to 1, and all the others to 0.
 	 *  @param modelCount the number of face in the morphable model
 	 */
 	public FaceParameter(int modelCount) {
@@ -18,12 +32,13 @@ public class FaceParameter {
 		this.colorWeight = new double[modelCount];
 		this.modelCount = modelCount;
 
-		for(int x = 0; x < modelCount; x++) {
-			verticesWeight[x] = Math.random();
-			colorWeight[x] = Math.random();
-		}
+		verticesWeight[0] = 1.0;
+		colorWeight[0] = 1.0;
 
-		normalize();
+		for(int x = 1; x < modelCount; x++) {
+			verticesWeight[x] = 0.0;
+			colorWeight[x] = 0.0;
+		}
 	}
 
 	/** @return the number of parameter stored. */
