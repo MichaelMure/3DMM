@@ -109,11 +109,4 @@ public class Face {
 	public Shape3D getShape3D() {
 		return new Shape3D(this.getGeometry());
 	}
-
-	/** Update the vertex and color of a face Shape3D. */
-	public void updateShape3D(Shape3D shape) {
-		IndexedTriangleArray array = (IndexedTriangleArray) shape.getGeometry();
-
-
-	}
 }
