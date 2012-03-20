@@ -3,7 +3,17 @@ package gui;
 import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 
-import javax.media.j3d.*;
+import javax.media.j3d.Alpha;
+import javax.media.j3d.Background;
+import javax.media.j3d.BoundingBox;
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Canvas3D;
+import javax.media.j3d.Node;
+import javax.media.j3d.RotationInterpolator;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import javax.vecmath.Color3f;
@@ -82,7 +92,7 @@ public class Simple3DGUI extends JFrame {
 
 		/* Canvas3D stuff */
 		config = SimpleUniverse.getPreferredConfiguration();
-		canvas = new HUDCanvas3D(config);		
+		canvas = new HUDCanvas3D(config);
 		universe = new SimpleUniverse(canvas);
 		scene = new BranchGroup();
 
