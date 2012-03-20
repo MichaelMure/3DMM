@@ -56,6 +56,20 @@ public class FaceParameter {
 		return colorWeight;
 	}
 
+	public FaceParameter linearApplication(FaceParameter targetParam, double alpha) {
+		if(this.modelCount != targetParam.modelCount)
+			throw new IllegalArgumentException("Incoherent number of model count.");
+
+		FaceParameter result = new FaceParameter(modelCount);
+
+		for(int x = 0; x < modelCount; x++) {
+			result.colorWeight[x] = (1.0 - alpha) * colorWeight[x] + alpha * targetParam.colorWeight[x];
+			result.verticesWeight[x] = (1.0 - alpha) * verticesWeight[x] + alpha * targetParam.verticesWeight[x];
+		}
+
+		return result;
+	}
+
 	/** Make sure that the total of each weight array equal 1.0 */
 	private void normalize() {
 		double totalVertices = 0.0;
