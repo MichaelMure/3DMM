@@ -101,6 +101,8 @@ public class Face {
 		face.setCoordIndicesRef(faceIndices);
 		face.setCoordRefDouble(vertices.getData().clone());
 		face.setColorRefByte(colorsCopy);
+		face.setCapability(GeometryArray.ALLOW_REF_DATA_WRITE);
+		face.setCapability(GeometryArray.ALLOW_REF_DATA_READ);
 
 		return face;
 	}
