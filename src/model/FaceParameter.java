@@ -15,8 +15,8 @@ public class FaceParameter {
 		FaceParameter param = new FaceParameter(modelCount);
 
 		for(int x = 0; x < modelCount; x++) {
-			param.verticesWeight[x] = Math.random();
-			param.colorWeight[x] = Math.random();
+			param.verticesWeight[x] = Math.pow(Math.random(), 3.0);
+			param.colorWeight[x] = Math.pow(Math.random(), 3.0);
 		}
 
 		param.normalize();
