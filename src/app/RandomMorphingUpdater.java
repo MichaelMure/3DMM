@@ -42,6 +42,8 @@ public class RandomMorphingUpdater implements GeometryUpdater {
 		array.setCoordRefDouble(targetArray.getCoordRefDouble());
 		array.setColorRefByte(targetArray.getColorRefByte());
 		alpha += 0.05;
+
+		/* If morphing is ended, create a new random target. */
 		if(alpha >= 1.0) {
 			origin = target;
 			target = FaceParameter.getRandomFaceParameter(model.getSize());

@@ -5,11 +5,11 @@ import java.awt.GraphicsConfiguration;
 
 import javax.media.j3d.Alpha;
 import javax.media.j3d.Background;
+import javax.media.j3d.Behavior;
 import javax.media.j3d.BoundingBox;
 import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
-import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.Node;
 import javax.media.j3d.RotationInterpolator;
 import javax.media.j3d.Shape3D;
@@ -20,10 +20,8 @@ import javax.swing.WindowConstants;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 
-import model.MorphableModel;
 import util.Log;
 import util.Log.LogType;
-import app.RandomMorphingUpdater;
 
 import com.sun.j3d.utils.geometry.ColorCube;
 import com.sun.j3d.utils.universe.SimpleUniverse;
@@ -50,17 +48,6 @@ public class Simple3DGUI extends JFrame {
 	public void displayStaticShape(Shape3D shape) {
 		scene = new BranchGroup();
 		scene.addChild(autoScale(shape));
-		scene.compile();
-		universe.addBranchGraph(scene);
-	}
-
-	public void displayHACK(Shape3D shape, MorphableModel mm) {
-		scene = new BranchGroup();
-		scene.addChild(autoScale(shape));
-		RandomMorphingUpdater updater = new RandomMorphingUpdater(mm, (IndexedTriangleArray) shape.getGeometry());
-		scene.addChild(updater.getUpdateBehavior());
-		scene.compile();
-		universe.addBranchGraph(scene);
 	}
 
 	public void displayRotatingShape(Shape3D shape) {
@@ -86,7 +73,14 @@ public class Simple3DGUI extends JFrame {
 		BoundingSphere bounds = new BoundingSphere();
 		rotator.setSchedulingBounds(bounds);
 		objSpin.addChild(rotator);
+	}
 
+	/** Add a custom updater to the scene. */
+	public void addBehavior(Behavior behavior) {
+		scene.addChild(behavior);
+	}
+
+	public void run() {
 		scene.compile();
 		universe.addBranchGraph(scene);
 	}
