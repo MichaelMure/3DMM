@@ -70,6 +70,15 @@ public class FaceParameter {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		String result = "FaceParameter: ";
+		for(int x = 0; x < modelCount; x++) {
+			result += "(" + verticesWeight[x] + "," + colorWeight[x] + ")";
+		}
+		return result;
+	}
+
 	/** Make sure that the total of each weight array equal 1.0 */
 	private void normalize() {
 		double totalVertices = 0.0;
