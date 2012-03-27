@@ -6,7 +6,7 @@ import io.Importer.FileType;
 import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.Shape3D;
 
-import model.FaceParameter;
+import model.ModelParameter;
 import model.MorphableModel;
 import model.MorphableModelBuilder;
 import util.Log;
@@ -19,7 +19,7 @@ public class RandomMorphingApp {
 		Log.info(LogType.APP, mm.toString());
 
 		SimpleFaceGUI gui = new SimpleFaceGUI();
-		Shape3D shape = mm.getFace(FaceParameter.getRandomFaceParameter(mm.getSize())).getShape3D();
+		Shape3D shape = mm.getModel(ModelParameter.getRandom(mm.getSize())).getShape3D();
 
 		RandomMorphingUpdater updater = new RandomMorphingUpdater(mm, (IndexedTriangleArray) shape.getGeometry());
 

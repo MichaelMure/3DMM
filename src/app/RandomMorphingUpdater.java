@@ -10,15 +10,15 @@ import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.WakeupOnElapsedFrames;
 import javax.vecmath.Point3d;
 
-import model.FaceParameter;
+import model.ModelParameter;
 import model.MorphableModel;
 
 public class RandomMorphingUpdater implements GeometryUpdater {
 
 	private final MorphableModel model;
 	private final IndexedTriangleArray faceArray;
-	private FaceParameter origin;
-	private FaceParameter target;
+	private ModelParameter origin;
+	private ModelParameter target;
 	private double alpha;
 
 
@@ -26,8 +26,8 @@ public class RandomMorphingUpdater implements GeometryUpdater {
 			                   			 IndexedTriangleArray faceArray) {
 		this.model = model;
 		this.faceArray = faceArray;
-		this.origin = FaceParameter.getRandomFaceParameter(model.getSize());
-		this.target = FaceParameter.getRandomFaceParameter(model.getSize());
+		this.origin = ModelParameter.getRandom(model.getSize());
+		this.target = ModelParameter.getRandom(model.getSize());
 		this.alpha = 0.0;
 	}
 
@@ -38,7 +38,7 @@ public class RandomMorphingUpdater implements GeometryUpdater {
 	@Override
 	public void updateData(Geometry geometry) {
 		IndexedTriangleArray array = (IndexedTriangleArray) geometry;
-		IndexedTriangleArray targetArray = model.getFace(origin.linearApplication(target, alpha)).getGeometry();
+		IndexedTriangleArray targetArray = model.getModel(origin.linearApplication(target, alpha)).getGeometry();
 		array.setCoordRefDouble(targetArray.getCoordRefDouble());
 		array.setColorRefByte(targetArray.getColorRefByte());
 		alpha += 0.05;
@@ -46,7 +46,7 @@ public class RandomMorphingUpdater implements GeometryUpdater {
 		/* If morphing is ended, create a new random target. */
 		if(alpha >= 1.0) {
 			origin = target;
-			target = FaceParameter.getRandomFaceParameter(model.getSize());
+			target = ModelParameter.getRandom(model.getSize());
 			alpha = 0.0;
 		}
 	}

@@ -36,7 +36,7 @@ public class MorphableModelBuilder {
 				Shape3D shape3d = importer.loadObject(file);
 
 				if(shape3d != null)
-					mm.addFace(new Face(shape3d));
+					mm.addModel(new Model(shape3d));
 			}
 		}
 

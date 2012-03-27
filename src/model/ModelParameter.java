@@ -4,18 +4,18 @@ import util.Log;
 import util.Log.LogType;
 
 
-public class FaceParameter {
+public class ModelParameter {
 
 	private final double[] verticesWeight;
 	private final double[] colorWeight;
 	private final int modelCount;
 
-	/** @return a new random FaceParameter with random values.
+	/** @return a new random ModelParameter with random values.
 	 *  Both vertices weights and colors weights are normalized
 	 *  (both sums are equal to one).
 	 */
-	public static FaceParameter getRandomFaceParameter(int modelCount) {
-		FaceParameter param = new FaceParameter(modelCount);
+	public static ModelParameter getRandom(int modelCount) {
+		ModelParameter param = new ModelParameter(modelCount);
 
 		for(int x = 0; x < modelCount; x++) {
 			param.verticesWeight[x] = Math.pow(Math.random(), 3.0);
@@ -27,10 +27,10 @@ public class FaceParameter {
 		return param;
 	}
 
-	/** Construct a new FaceParameter with the first coef set to 1, and all the others to 0.
-	 *  @param modelCount the number of face in the morphable model
+	/** Construct a new ModelParameter with the first coef set to 1, and all the others to 0.
+	 *  @param modelCount the number of model in the morphable model
 	 */
-	public FaceParameter(int modelCount) {
+	public ModelParameter(int modelCount) {
 		this.verticesWeight = new double[modelCount];
 		this.colorWeight = new double[modelCount];
 		this.modelCount = modelCount;
@@ -59,14 +59,14 @@ public class FaceParameter {
 		return colorWeight;
 	}
 
-	/** @return a linear application of this and another FaceParameter.
+	/** @return a linear application of this and another ModelParameter.
 	 * return value = (1.0 - alpha) * this + alpha * targetParam
 	 */
-	public FaceParameter linearApplication(FaceParameter targetParam, double alpha) {
+	public ModelParameter linearApplication(ModelParameter targetParam, double alpha) {
 		if(this.modelCount != targetParam.modelCount)
 			throw new IllegalArgumentException("Incoherent number of model count.");
 
-		FaceParameter result = new FaceParameter(modelCount);
+		ModelParameter result = new ModelParameter(modelCount);
 
 		for(int x = 0; x < modelCount; x++) {
 			result.colorWeight[x] = (1.0 - alpha) * colorWeight[x] + alpha * targetParam.colorWeight[x];
@@ -78,7 +78,7 @@ public class FaceParameter {
 
 	@Override
 	public String toString() {
-		String result = "FaceParameter: ";
+		String result = "ModelParameter: ";
 		for(int x = 0; x < modelCount; x++) {
 			result += "(" + verticesWeight[x] + "," + colorWeight[x] + ")";
 		}

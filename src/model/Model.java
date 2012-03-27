@@ -8,15 +8,15 @@ import org.ejml.data.DenseMatrix64F;
 
 import util.TwoComplement;
 
-public class Face {
+public class Model {
 
 	private DenseMatrix64F vertices;
 	private DenseMatrix64F colors;
 	private int[] faceIndices;
 	private final int vertexCount;
 
-	/** Create a Face from a Java3D Shape3D. */
-	public Face(Shape3D shape3d) {
+	/** Create a Model from a Java3D Shape3D. */
+	public Model(Shape3D shape3d) {
 		IndexedTriangleArray array = (IndexedTriangleArray) shape3d.getGeometry();
 		vertexCount = array.getVertexCount();
 
@@ -36,8 +36,8 @@ public class Face {
 		faceIndices = array.getCoordIndicesRef();
 	}
 
-	/** Construct a Face from two matrix for vertices and colors, and indices for faces. */
-	public Face(DenseMatrix64F vertices, DenseMatrix64F colors, int[] faceIndices) {
+	/** Construct a Model from two matrix for vertices and colors, and indices for faces. */
+	public Model(DenseMatrix64F vertices, DenseMatrix64F colors, int[] faceIndices) {
 		if(vertices.getNumCols() != 3)
 			throw new IllegalArgumentException("Number of columns for shape should be 3 (X,Y,Z).");
 		if(colors.getNumCols() != 3)
