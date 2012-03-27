@@ -10,8 +10,13 @@ import javax.media.j3d.Shape3D;
 import util.Log;
 import util.Log.LogType;
 
+/** This class is a helper to create a MorphableModel and load it with 3D scan from a directory. */
 public class MorphableModelBuilder {
 
+	/** @return a new MorphableModel, loaded with all the files from a directory.
+	 *  @param directory the path of the directory to load
+	 *  @param the FileType to load (the importer is automatically choosen).
+	 */
 	public static MorphableModel LoadDirectory(String directory, FileType filetype) {
 		File dir = new File(directory);
 		if(!dir.exists()) {
