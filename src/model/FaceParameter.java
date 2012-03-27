@@ -10,7 +10,10 @@ public class FaceParameter {
 	private final double[] colorWeight;
 	private final int modelCount;
 
-
+	/** @return a new random FaceParameter with random values.
+	 *  Both vertices weights and colors weights are normalized
+	 *  (both sums are equal to one).
+	 */
 	public static FaceParameter getRandomFaceParameter(int modelCount) {
 		FaceParameter param = new FaceParameter(modelCount);
 
@@ -24,7 +27,7 @@ public class FaceParameter {
 		return param;
 	}
 
-	/** @return a new FaceParameter with the first coef set to 1, and all the others to 0.
+	/** Construct a new FaceParameter with the first coef set to 1, and all the others to 0.
 	 *  @param modelCount the number of face in the morphable model
 	 */
 	public FaceParameter(int modelCount) {
@@ -56,6 +59,9 @@ public class FaceParameter {
 		return colorWeight;
 	}
 
+	/** @return a linear application of this and another FaceParameter.
+	 * return value = (1.0 - alpha) * this + alpha * targetParam
+	 */
 	public FaceParameter linearApplication(FaceParameter targetParam, double alpha) {
 		if(this.modelCount != targetParam.modelCount)
 			throw new IllegalArgumentException("Incoherent number of model count.");
@@ -79,7 +85,7 @@ public class FaceParameter {
 		return result;
 	}
 
-	/** Make sure that the total of each weight array equal 1.0 */
+	/** Make sure that the sum of each weight array equal 1.0 */
 	private void normalize() {
 		double totalVertices = 0.0;
 		double totalColor = 0.0;
