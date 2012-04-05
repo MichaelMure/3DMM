@@ -12,6 +12,8 @@ public class Model {
 
 	private DenseMatrix64F vertices;
 	private DenseMatrix64F colors;
+	private byte[] java3dColors;
+	private boolean java3dColorsDirty;
 	private int[] faceIndices;
 	private final int vertexCount;
 
@@ -26,11 +28,12 @@ public class Model {
 		/* We cannot do the same for the color, since we don't have a integer matrix */
 		colors = new DenseMatrix64F(vertexCount * 3, 1);
 
-		byte[] shape3dColors = array.getColorRefByte();
+		java3dColors = array.getColorRefByte();
+		java3dColorsDirty = false;
 		double[] colorsData = colors.getData();
 
 		for(int x = 0; x < vertexCount * 3; x++) {
-			colorsData[x] = TwoComplement.to2complement(shape3dColors[x]);
+			colorsData[x] = TwoComplement.to2complement(java3dColors[x]);
 		}
 
 		faceIndices = array.getCoordIndicesRef();
@@ -53,6 +56,8 @@ public class Model {
 		this.colors = colors;
 		this.faceIndices = faceIndices;
 		this.vertexCount = vertices.numRows / 3;
+		this.java3dColorsDirty = true;
+		this.java3dColors = null;
 	}
 
 	/** @return the vertex count. */
@@ -78,6 +83,7 @@ public class Model {
 	/** Update the color matrix */
 	public void setColorMatrix(DenseMatrix64F texture) {
 		this.colors = texture;
+		this.java3dColorsDirty = true;
 	}
 
 	/** @return a reference to the face indices array. This array should be the same for each Face.
@@ -90,13 +96,6 @@ public class Model {
 	/** @return a newly allocated IndexedTriangleArray for this face. */
 	public IndexedTriangleArray getGeometry() {
 
-		double[] colorsData = colors.getData();
-		byte[] colorsCopy = new byte[3 * vertexCount];
-
-		for(int x = 0; x < vertexCount * 3; x++) {
-			colorsCopy[x] = TwoComplement.from2complement(colorsData[x]);
-		}
-
 		IndexedTriangleArray face = new IndexedTriangleArray(vertexCount,
 				GeometryArray.COORDINATES | GeometryArray.COLOR_3
 						| GeometryArray.BY_REFERENCE
@@ -105,7 +104,7 @@ public class Model {
 
 		face.setCoordIndicesRef(faceIndices);
 		face.setCoordRefDouble(vertices.getData().clone());
-		face.setColorRefByte(colorsCopy);
+		face.setColorRefByte(getJava3DColors());
 		face.setCapability(GeometryArray.ALLOW_REF_DATA_WRITE);
 		face.setCapability(GeometryArray.ALLOW_REF_DATA_READ);
 
@@ -115,5 +114,21 @@ public class Model {
 	/** @return a newly allocated Shape3D for this face. */
 	public Shape3D getShape3D() {
 		return new Shape3D(this.getGeometry());
+	}
+
+	/** Update the cache of color for Java3D if necessary, and return it. */
+	private byte[] getJava3DColors() {
+		if(java3dColorsDirty) {
+			if(java3dColors == null)
+				java3dColors = new byte[vertexCount * 3];
+
+			double[] colorsData = colors.getData();
+
+			for(int x = 0; x < vertexCount * 3; x++) {
+				java3dColors[x] = TwoComplement.from2complement(colorsData[x]);
+			}
+		}
+
+		return java3dColors;
 	}
 }
