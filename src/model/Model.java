@@ -21,10 +21,10 @@ public class Model {
 		vertexCount = array.getVertexCount();
 
 		/* We do not copy the vertex data here; data is shared between Shape3d and the matrix */
-		vertices = DenseMatrix64F.wrap(vertexCount, 3, array.getCoordRefDouble());
+		vertices = DenseMatrix64F.wrap(vertexCount * 3, 1, array.getCoordRefDouble());
 
 		/* We cannot do the same for the color, since we don't have a integer matrix */
-		colors = new DenseMatrix64F(vertexCount, 3);
+		colors = new DenseMatrix64F(vertexCount * 3, 1);
 
 		byte[] shape3dColors = array.getColorRefByte();
 		double[] colorsData = colors.getData();
@@ -38,19 +38,21 @@ public class Model {
 
 	/** Construct a Model from two matrix for vertices and colors, and indices for faces. */
 	public Model(DenseMatrix64F vertices, DenseMatrix64F colors, int[] faceIndices) {
-		if(vertices.getNumCols() != 3)
-			throw new IllegalArgumentException("Number of columns for shape should be 3 (X,Y,Z).");
-		if(colors.getNumCols() != 3)
-			throw new IllegalArgumentException("Number of columns for texture should be 3 (R,G,B)");
+		if(vertices.getNumCols() != 1)
+			throw new IllegalArgumentException("Shape should be a vector like (x1,y1,y1,x2,y2,z2 ...).");
+		if(colors.getNumCols() != 1)
+			throw new IllegalArgumentException("Texture should be a vector like (r1,b1,g1,r2,g2,b2 ...)");
 		if(vertices.getNumRows() <= 0 || colors.getNumRows() <= 0 || faceIndices.length <= 0)
 			throw new IllegalArgumentException("At least one argument is empty.");
 		if(vertices.getNumRows() != colors.getNumRows())
 			throw new IllegalArgumentException("Size of shape and texture inconsistent.");
+		if(vertices.getNumRows() % 3 != 0)
+			throw new IllegalArgumentException("Number of row not a 3 multiple.");
 
 		this.vertices = vertices;
 		this.colors = colors;
 		this.faceIndices = faceIndices;
-		this.vertexCount = vertices.numRows;
+		this.vertexCount = vertices.numRows / 3;
 	}
 
 	/** @return the vertex count. */

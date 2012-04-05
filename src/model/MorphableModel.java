@@ -33,11 +33,8 @@ public class MorphableModel {
 
 		int vertexCount = models.get(0).getVertexCount();
 
-		DenseMatrix64F vertices = new DenseMatrix64F(vertexCount, 3);
-		DenseMatrix64F colors = new DenseMatrix64F(vertexCount, 3);
-
-		vertices.zero();
-		colors.zero();
+		DenseMatrix64F vertices = new DenseMatrix64F(vertexCount * 3, 1);
+		DenseMatrix64F colors = new DenseMatrix64F(vertexCount * 3, 1);
 
 		int x = 0;
 		for(Model f : models) {
@@ -55,11 +52,8 @@ public class MorphableModel {
 
 		int vertexCount = models.get(0).getVertexCount();
 
-		DenseMatrix64F averageVertices = new DenseMatrix64F(vertexCount, 3);
-		DenseMatrix64F averageColors = new DenseMatrix64F(vertexCount, 3);
-
-		averageVertices.zero();
-		averageColors.zero();
+		DenseMatrix64F averageVertices = new DenseMatrix64F(vertexCount * 3, 1);
+		DenseMatrix64F averageColors = new DenseMatrix64F(vertexCount * 3, 1);
 
 		for(Model f : models) {
 			CommonOps.addEquals(averageVertices, f.getVerticesMatrix());
