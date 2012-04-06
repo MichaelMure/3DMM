@@ -5,10 +5,10 @@ import org.ejml.ops.CommonOps;
 
 public abstract class PCA {
 
-	private final DenseMatrix64F data;
+	protected final DenseMatrix64F data;
 	private final DenseMatrix64F mean;
-	private int numComponents;
-	private DenseMatrix64F basis = null;
+	protected int numComponents;
+	protected DenseMatrix64F basis = null;
 
 	/** Create a new PCA with the provided data, with one row = one sample. */
 	public PCA(DenseMatrix64F data) {
