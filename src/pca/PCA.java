@@ -189,7 +189,7 @@ public abstract class PCA {
 		if(index < 0 || index >= matrix.numRows)
 			throw new IllegalArgumentException("Unexpected index.");
 
-		return CommonOps.extract(matrix, 0, matrix.numCols, index, index +1);
+		return CommonOps.extract(matrix, index, index +1, 0, matrix.numCols);
 	}
 
 	/** @return a column of the matrix. */
@@ -197,7 +197,7 @@ public abstract class PCA {
 		if(index < 0 || index >= matrix.numCols)
 			throw new IllegalArgumentException("Unexpected index.");
 
-		return CommonOps.extract(matrix, index, index + 1, 0, matrix.numRows);
+		return CommonOps.extract(matrix, 0, matrix.numRows, index, index + 1);
 	}
 
 	/** If no explicit computeBasis call have been made with a numComponents,
