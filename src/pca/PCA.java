@@ -71,6 +71,18 @@ public abstract class PCA {
 		return getCols(basis, index).data;
 	}
 
+	/** @return the number of component of the feature space. */
+	public int getNumComponents() {
+		ensureBasis();
+		return numComponents;
+	}
+
+	public int getSampleSize() {
+		if(data == null)
+			return 0;
+		return data.numCols;
+	}
+
 	/** @return a sample from the original data expressed in the feature space.
 	 *  @param index the index of the sample in the original data.
 	 */
