@@ -15,7 +15,7 @@ public class MorphableModelBuilder {
 
 	/** @return a new MorphableModel, loaded with all the files from a directory.
 	 *  @param directory the path of the directory to load
-	 *  @param the FileType to load (the importer is automatically choosen).
+	 *  @param the FileType to load (the importer is automatically chosen).
 	 */
 	public static MorphableModel LoadDirectory(String directory, FileType filetype) {
 		File dir = new File(directory);
