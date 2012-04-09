@@ -12,7 +12,8 @@ public class Log {
 		APP, /* Application */
 		IO, /* Import/Export */
 		GUI, /* User interface */
-		MODEL /* 3D Morphable Model */
+		MODEL, /* 3D Morphable Model */
+		TIME /* Time counter */
 	}
 
 	public enum LogLevel {
