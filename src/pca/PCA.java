@@ -24,7 +24,7 @@ public abstract class PCA {
 	/** Create a new PCA with the provided data, with one row = one sample. */
 	public PCA(DenseMatrix64F data) {
 		this.data = data;
-		this.mean = new DenseMatrix64F(1, data.numCols);
+		this.mean = null;
 		this.dataLock = false;
 	}
 
@@ -148,24 +148,28 @@ public abstract class PCA {
 
 	/** Update the mean sample of the original data. */
 	private void computeMean() {
-		mean.zero();
+		Log.debug(LogType.MODEL, "PCA: compute mean sample.");
+
+		if(mean == null)
+			mean = new DenseMatrix64F(1, data.numCols);
+		else
+			mean.zero();
 
 		for(int i = 0; i < data.numRows; i++)
 			CommonOps.add(mean, getRow(data,i), mean);
 
 		CommonOps.divide(data.numRows, mean);
 		meanDirty = false;
-		Log.debug(LogType.MODEL, "PCA: compute mean sample.");
 	}
 
 	/** Subtract the mean from all samples. */
 	private void centerData() {
+		Log.debug(LogType.MODEL, "PCA: lock data.");
 		ensureMean();
 		for(int i = 0; i < data.numRows; i++)
 			for(int j = 0; j < data.numCols; j++)
 				data.set(i, j, data.get(i, j) - mean.get(i));
 		this.dataLock = true;
-		Log.debug(LogType.MODEL, "PCA: lock data.");
 	}
 
 	/** @return a row of the matrix. */
