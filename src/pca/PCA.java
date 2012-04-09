@@ -185,7 +185,7 @@ public abstract class PCA {
 	}
 
 	/** @return a row of the matrix. */
-	private DenseMatrix64F getRow(DenseMatrix64F matrix, int index) {
+	protected DenseMatrix64F getRow(DenseMatrix64F matrix, int index) {
 		if(index < 0 || index >= matrix.numRows)
 			throw new IllegalArgumentException("Unexpected index.");
 
@@ -193,7 +193,7 @@ public abstract class PCA {
 	}
 
 	/** @return a column of the matrix. */
-	private DenseMatrix64F getCols(DenseMatrix64F matrix, int index) {
+	protected DenseMatrix64F getCols(DenseMatrix64F matrix, int index) {
 		if(index < 0 || index >= matrix.numCols)
 			throw new IllegalArgumentException("Unexpected index.");
 
