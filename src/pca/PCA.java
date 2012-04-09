@@ -3,6 +3,9 @@ package pca;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
 
+import util.Log;
+import util.Log.LogType;
+
 public abstract class PCA {
 
 	protected DenseMatrix64F data;
@@ -25,6 +28,9 @@ public abstract class PCA {
 		this.dataLock = false;
 	}
 
+	/** Add a new sample in the PCA. The first sample added decide the sample's size.
+	 * If further add is done with a different size, an exception is throw.
+	 */
 	public void addSample(DenseMatrix64F sample) {
 		if(dataLock)
 			throw new RuntimeException("Data already locked.");
@@ -149,6 +155,7 @@ public abstract class PCA {
 
 		CommonOps.divide(data.numRows, mean);
 		meanDirty = false;
+		Log.debug(LogType.MODEL, "PCA: compute mean sample.");
 	}
 
 	/** Subtract the mean from all samples. */
@@ -158,6 +165,7 @@ public abstract class PCA {
 			for(int j = 0; j < data.numCols; j++)
 				data.set(i, j, data.get(i, j) - mean.get(i));
 		this.dataLock = true;
+		Log.debug(LogType.MODEL, "PCA: lock data.");
 	}
 
 	/** @return a row of the matrix. */
