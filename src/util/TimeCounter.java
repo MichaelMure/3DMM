@@ -10,6 +10,7 @@ public class TimeCounter {
 	public TimeCounter(String message) {
 		this.message = message;
 		this.startTime = System.currentTimeMillis();
+		Log.info(LogType.TIME, message + ": Starting now.");
 	}
 
 	public void stop() {
