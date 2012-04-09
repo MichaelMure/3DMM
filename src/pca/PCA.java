@@ -15,11 +15,17 @@ public abstract class PCA {
 	public PCA(DenseMatrix64F data) {
 		this.data = data;
 		this.mean = new DenseMatrix64F(1, data.numCols);
-		centerData();
 	}
 
-	/** This method should compute the basis vector and set numComponents. */
-	public abstract void computeBasis(int numComponents);
+	/** Compute the basis matrix. */
+	public void computeBasis(int numComponents) {
+		this.numComponents = numComponents;
+		centerData();
+		doComputeBasis();
+	}
+
+	/** This method should compute the basis matrix. */
+	protected abstract void doComputeBasis();
 
 	/** @return the basis vector. */
 	public DenseMatrix64F getBasis() {

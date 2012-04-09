@@ -12,23 +12,21 @@ public class PCA_SVD extends PCA {
 	}
 
 	@Override
-	public void computeBasis(int numComponents) {
-		this.numComponents = numComponents;
-
+	protected void doComputeBasis() {
 		/* Compute SVD and save time by not computing U */
-    SingularValueDecomposition<DenseMatrix64F> svd =
-            DecompositionFactory.svd(data.numRows, data.numCols, false, true, false);
-    if(!svd.decompose(data))
-        throw new RuntimeException("SVD failed");
+		SingularValueDecomposition<DenseMatrix64F> svd = DecompositionFactory.svd(
+				data.numRows, data.numCols, false, true, false);
+		if (!svd.decompose(data))
+			throw new RuntimeException("SVD failed");
 
-    basis = svd.getV(true);
-    DenseMatrix64F W = svd.getW(null);
+		basis = svd.getV(true);
+		DenseMatrix64F W = svd.getW(null);
 
-    /* Singular values are in an arbitrary order initially. */
-    SingularOps.descendingOrder(null, false, W, basis, true);
+		/* Singular values are in an arbitrary order initially. */
+		SingularOps.descendingOrder(null, false, W, basis, true);
 
-    /* strip off unneeded components and find the basis. */
-    basis.reshape(numComponents, data.numCols, true);
+		/* strip off unneeded components and find the basis. */
+		basis.reshape(numComponents, data.numCols, true);
 	}
 
 }
