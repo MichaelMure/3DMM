@@ -7,6 +7,10 @@ import org.ejml.ops.SingularOps;
 
 public class PCA_SVD extends PCA {
 
+	public PCA_SVD() {
+		super();
+	}
+
 	public PCA_SVD(DenseMatrix64F data) {
 		super(data);
 	}
