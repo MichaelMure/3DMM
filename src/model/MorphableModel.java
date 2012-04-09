@@ -1,83 +1,70 @@
 package model;
 
-import java.util.Vector;
-
 import org.ejml.data.DenseMatrix64F;
-import org.ejml.ops.CommonOps;
+
+import pca.PCA;
+import pca.PCA_SVD;
 
 public class MorphableModel {
 
-	private Model averageModel;
-	private Vector<Model> models;
+	private PCA vertices;
+	private PCA colors;
+	private int[] faceIndices;
 
 	public MorphableModel() {
-		models = new Vector<Model>();
-		averageModel = null;
+		faceIndices = null;
+		vertices = new PCA_SVD();
+		colors = new PCA_SVD();
 	}
 
 	public void addModel(Model model) {
-		models.add(model);
-		averageModel = null;
+		if(faceIndices == null)
+			faceIndices = model.getFaceIndices();
+
+		if(vertices == null)
+			vertices = new PCA_SVD(model.getVerticesMatrix());
+		else
+			vertices.addSample(model.getVerticesMatrix());
+
+		if(colors == null)
+			colors = new PCA_SVD(model.getColorMatrix());
+		else
+			colors.addSample(model.getColorMatrix());
 	}
 
-	public Model getModel(int index) {
-		return models.get(index);
-	}
+	/*public Model getModel(int index) {
+		return null;
+	}*/
 
 	public Model getModel(ModelParameter param) {
-		if(getSize() == 0)
-			throw null;
-		if(param.getModelCount() != models.size())
-			throw new IllegalArgumentException("Wrong number of parameter: "
-									+ param.getModelCount() + " instead of " + models.size());
-
-		int vertexCount = models.get(0).getVertexCount();
-
-		DenseMatrix64F vertices = new DenseMatrix64F(vertexCount * 3, 1);
-		DenseMatrix64F colors = new DenseMatrix64F(vertexCount * 3, 1);
-
-		int x = 0;
-		for(Model f : models) {
-			CommonOps.addEquals(vertices, param.getVerticesWeight()[x], f.getVerticesMatrix());
-			CommonOps.addEquals(colors, param.getColorWeight()[x] ,f.getColorMatrix());
-			x++;
-		}
-
-		return new Model(vertices, colors, models.get(0).getFaceIndices());
-	}
-
-	private void computeAverage() {
-		if(getSize() == 0)
-			return;
-
-		int vertexCount = models.get(0).getVertexCount();
-
-		DenseMatrix64F averageVertices = new DenseMatrix64F(vertexCount * 3, 1);
-		DenseMatrix64F averageColors = new DenseMatrix64F(vertexCount * 3, 1);
-
-		for(Model f : models) {
-			CommonOps.addEquals(averageVertices, f.getVerticesMatrix());
-			CommonOps.addEquals(averageColors, f.getColorMatrix());
-		}
-
-		CommonOps.divide(models.size(), averageVertices);
-		CommonOps.divide(models.size(), averageColors);
-
-		averageModel = new Model(averageVertices, averageColors, models.get(0).getFaceIndices());
-	}
-
-	public Model getAverage() {
-		if(averageModel == null)
-			computeAverage();
-		return averageModel;
+		DenseMatrix64F v = new DenseMatrix64F(1, vertices.getSampleSize(),
+				true, vertices.sampleToSampleSpace(param.getVerticesWeight()));
+		DenseMatrix64F c = new DenseMatrix64F(1, colors.getSampleSize(),
+				true, colors.sampleToSampleSpace(param.getColorWeight()));
+		return new Model(v, c, faceIndices);
 	}
 
 	public int getSize() {
-		return models.size();
+		assert(vertices.getNumComponents() == colors.getNumComponents());
+		return vertices.getNumComponents();
 	}
 
-	@Override
+	public Model getAverage() {
+		ensurePCA();
+		return new Model(vertices.getMean(), colors.getMean(), faceIndices);
+	}
+
+	/*@Override
 	public String toString() {
 		return "Morphable Model: " + models.size() + " faces.";
+	}*/
+
+	private void ensurePCA() {
+		if(vertices != null && colors != null)
+			return;
+
+		/* Ensure computation of the basis, kinda hacky. */
+		vertices.getBasis();
+		colors.getBasis();
 	}
 }
