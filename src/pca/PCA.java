@@ -5,16 +5,42 @@ import org.ejml.ops.CommonOps;
 
 public abstract class PCA {
 
-	protected final DenseMatrix64F data;
-	private final DenseMatrix64F mean;
+	protected DenseMatrix64F data;
+	private DenseMatrix64F mean;
+	private boolean dataLock; /* If the data already has been centered. */
 	private boolean meanDirty = true;
 	protected int numComponents;
 	protected DenseMatrix64F basis = null;
+
+	public PCA() {
+		this.data = null;
+		this.mean = null;
+		this.dataLock = false;
+	}
 
 	/** Create a new PCA with the provided data, with one row = one sample. */
 	public PCA(DenseMatrix64F data) {
 		this.data = data;
 		this.mean = new DenseMatrix64F(1, data.numCols);
+		this.dataLock = false;
+	}
+
+	public void addSample(DenseMatrix64F sample) {
+		if(dataLock)
+			throw new RuntimeException("Data already locked.");
+
+		if(data == null) {
+			data = sample;
+		}
+		else {
+			if(data.numCols != sample.numCols)
+				throw new RuntimeException("Unexpected sample length.");
+			data.reshape(data.numRows + 1, data.numCols, true);
+
+			for(int i = 0; i < data.numCols; i++) {
+				data.set(data.numRows - 1, i, sample.get(i));
+			}
+		}
 	}
 
 	/** Compute the basis matrix. */
@@ -54,7 +80,7 @@ public abstract class PCA {
 
 		DenseMatrix64F sampleMatrix = DenseMatrix64F.wrap(1, data.numCols, sample);
 
-		/* Substract the mean from the sample. */
+		/* Subtract the mean from the sample. */
 		CommonOps.sub(sampleMatrix, mean, sampleMatrix);
 
 		return sampleToFeatureSpaceNoMean(sampleMatrix);
@@ -131,6 +157,7 @@ public abstract class PCA {
 		for(int i = 0; i < data.numRows; i++)
 			for(int j = 0; j < data.numCols; j++)
 				data.set(i, j, data.get(i, j) - mean.get(i));
+		this.dataLock = true;
 	}
 
 	/** @return a row of the matrix. */
