@@ -9,6 +9,7 @@ import javax.media.j3d.Shape3D;
 
 import util.Log;
 import util.Log.LogType;
+import util.TimeCounter;
 
 /** This class is a helper to create a MorphableModel and load it with 3D scan from a directory. */
 public class MorphableModelBuilder {
@@ -31,6 +32,7 @@ public class MorphableModelBuilder {
 		MorphableModel mm = new MorphableModel();
 		Importer importer = filetype.getImporter();
 
+		TimeCounter t = new TimeCounter("Loading files for the morphable model");
 		for(File file : dir.listFiles()) {
 			if(file.getName().endsWith(filetype.getExtension())) {
 				Shape3D shape3d = importer.loadObject(file);
@@ -39,6 +41,7 @@ public class MorphableModelBuilder {
 					mm.addModel(new Model(shape3d));
 			}
 		}
+		t.stop();
 
 		return mm;
 	}
