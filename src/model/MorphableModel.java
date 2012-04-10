@@ -57,10 +57,13 @@ public class MorphableModel {
 		return new Model(vertices.getMean(), colors.getMean(), faceIndices);
 	}
 
-	/*@Override
+	@Override
 	public String toString() {
-		return "Morphable Model: " + models.size() + " faces.";
-	}*/
+		if(!vertices.computationDone())
+			return "Morphable Model (unlocked)";
+		else
+			return "Morphable Model (locked): " + vertices.getNumComponents() + " dimensions.";
+	}
 
 	private void ensurePCA() {
 		if(!vertices.computationDone())
