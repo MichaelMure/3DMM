@@ -52,8 +52,13 @@ public abstract class PCA {
 	/** Compute the basis matrix. */
 	public void computeBasis(int numComponents) {
 		this.numComponents = numComponents;
+		Log.info(LogType.MODEL, "PCA computation with " + numComponents + " dimensions.");
 		centerData();
 		doComputeBasis();
+	}
+
+	public boolean computationDone() {
+		return dataLock;
 	}
 
 	/** This method should compute the basis matrix. */
@@ -204,7 +209,7 @@ public abstract class PCA {
 	 *  we compute the PCA with the same dimension as the original data. */
 	private void ensureBasis() {
 		if(basis == null)
-			computeBasis(data.numRows);
+			computeBasis(data.numCols);
 	}
 
 	/** Ensure that the mean is properly computed. */

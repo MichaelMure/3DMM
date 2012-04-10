@@ -7,6 +7,7 @@ import pca.PCA_SVD;
 
 public class MorphableModel {
 
+	public final static int PCA_DIMENSION = 5;
 	private PCA vertices;
 	private PCA colors;
 	private int[] faceIndices;
@@ -37,6 +38,7 @@ public class MorphableModel {
 	}*/
 
 	public Model getModel(ModelParameter param) {
+		ensurePCA();
 		DenseMatrix64F v = new DenseMatrix64F(1, vertices.getSampleSize(),
 				true, vertices.sampleToSampleSpace(param.getVerticesWeight()));
 		DenseMatrix64F c = new DenseMatrix64F(1, colors.getSampleSize(),
@@ -45,6 +47,7 @@ public class MorphableModel {
 	}
 
 	public int getSize() {
+		ensurePCA();
 		assert(vertices.getNumComponents() == colors.getNumComponents());
 		return vertices.getNumComponents();
 	}
@@ -60,11 +63,10 @@ public class MorphableModel {
 	}*/
 
 	private void ensurePCA() {
-		if(vertices != null && colors != null)
-			return;
+		if(!vertices.computationDone())
+			vertices.computeBasis(PCA_DIMENSION);
 
-		/* Ensure computation of the basis, kinda hacky. */
-		vertices.getBasis();
-		colors.getBasis();
+		if(!colors.computationDone())
+			colors.computeBasis(PCA_DIMENSION);
 	}
 }
