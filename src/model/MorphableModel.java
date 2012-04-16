@@ -33,9 +33,9 @@ public class MorphableModel {
 			colors.addSample(model.getColorMatrix());
 	}
 
-	/*public Model getModel(int index) {
-		return null;
-	}*/
+	public Model getModel(int index) {
+		return new Model(vertices.getSample(index), colors.getSample(index), faceIndices);
+	}
 
 	public Model getModel(ModelParameter param) {
 		ensurePCA();
@@ -53,7 +53,6 @@ public class MorphableModel {
 	}
 
 	public Model getAverage() {
-		ensurePCA();
 		return new Model(vertices.getMean(), colors.getMean(), faceIndices);
 	}
 

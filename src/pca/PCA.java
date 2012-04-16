@@ -21,7 +21,7 @@ public abstract class PCA {
 		this.dataLock = false;
 	}
 
-	/** Create a new PCA with the provided data, with one row = one sample. */
+	/** Create a new PCA with the provided data, with one column = one sample. */
 	public PCA(DenseMatrix64F data) {
 		this.data = data;
 		this.mean = null;
@@ -39,12 +39,12 @@ public abstract class PCA {
 			data = sample;
 		}
 		else {
-			if(data.numCols != sample.numCols)
+			if(data.numRows != sample.numRows)
 				throw new RuntimeException("Unexpected sample length.");
-			data.reshape(data.numRows + 1, data.numCols, true);
+			data.reshape(data.numRows, data.numCols + 1, true);
 
-			for(int i = 0; i < data.numCols; i++) {
-				data.set(data.numRows - 1, i, sample.get(i));
+			for(int i = 0; i < data.numRows; i++) {
+				data.set(i, data.numCols - 1, sample.get(i));
 			}
 		}
 	}
@@ -85,14 +85,18 @@ public abstract class PCA {
 	public int getSampleSize() {
 		if(data == null)
 			return 0;
-		return data.numCols;
+		return data.numRows;
+	}
+
+	public DenseMatrix64F getSample(int index) {
+		return getCols(data, index);
 	}
 
 	/** @return a sample from the original data expressed in the feature space.
 	 *  @param index the index of the sample in the original data.
 	 */
 	public double[] sampleToFeatureSpace(int index) {
-		return sampleToFeatureSpaceNoMean(getRow(data, index));
+		return sampleToFeatureSpaceNoMean(getCols(data, index));
 	}
 
 	/** @return an arbitrary sample expressed in the feature space.
@@ -101,7 +105,7 @@ public abstract class PCA {
 	public double[] sampleToFeatureSpace(double[] sample) {
 		ensureMean();
 
-		DenseMatrix64F sampleMatrix = DenseMatrix64F.wrap(1, data.numCols, sample);
+		DenseMatrix64F sampleMatrix = DenseMatrix64F.wrap(data.numRows, 1, sample);
 
 		/* Subtract the mean from the sample. */
 		CommonOps.sub(sampleMatrix, mean, sampleMatrix);
@@ -115,7 +119,7 @@ public abstract class PCA {
 	private double[] sampleToFeatureSpaceNoMean(DenseMatrix64F sample) {
 		ensureBasis();
 
-		if(sample.numCols != data.numCols)
+		if(sample.numRows != data.numRows)
 			throw new IllegalArgumentException("Unexpected sample length.");
 
 		DenseMatrix64F result = new DenseMatrix64F(numComponents, 1);
@@ -135,7 +139,7 @@ public abstract class PCA {
 		ensureMean();
 
 		DenseMatrix64F sampleMatrix = DenseMatrix64F.wrap(numComponents, 1, sample);
-		DenseMatrix64F result = new DenseMatrix64F(1, data.numCols);
+		DenseMatrix64F result = new DenseMatrix64F(data.numRows, 1);
 
 		CommonOps.multTransA(basis, sampleMatrix, result);
 		CommonOps.add(result, mean, result);
@@ -168,25 +172,25 @@ public abstract class PCA {
 		Log.debug(LogType.MODEL, "PCA: compute mean sample.");
 
 		if(mean == null)
-			mean = new DenseMatrix64F(1, data.numCols);
+			mean = new DenseMatrix64F(data.numRows, 1);
 		else
 			mean.zero();
 
-		for(int i = 0; i < data.numRows; i++)
-			CommonOps.add(mean, getRow(data,i), mean);
+		for(int i = 0; i < data.numCols; i++)
+			CommonOps.add(mean, getCols(data,i), mean);
 
-		CommonOps.divide(data.numRows, mean);
+		CommonOps.divide(data.numCols, mean);
 		meanDirty = false;
 	}
 
 	/** Subtract the mean from all samples. */
 	private void centerData() {
 		Log.debug(LogType.MODEL, "PCA: lock data.");
-		ensureMean();
-		for(int i = 0; i < data.numRows; i++)
-			for(int j = 0; j < data.numCols; j++)
-				data.set(i, j, data.get(i, j) - mean.get(i));
 		this.dataLock = true;
+		ensureMean();
+		for(int i = 0; i < data.numCols; i++)
+			for(int j = 0; j < data.numRows; j++)
+				data.set(j, i, data.get(j, i) - mean.get(j));
 	}
 
 	/** @return a row of the matrix. */
@@ -209,7 +213,7 @@ public abstract class PCA {
 	 *  we compute the PCA with the same dimension as the original data. */
 	private void ensureBasis() {
 		if(basis == null)
-			computeBasis(data.numCols);
+			computeBasis(data.numRows);
 	}
 
 	/** Ensure that the mean is properly computed. */

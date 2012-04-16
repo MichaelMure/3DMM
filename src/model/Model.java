@@ -6,6 +6,8 @@ import javax.media.j3d.Shape3D;
 
 import org.ejml.data.DenseMatrix64F;
 
+import util.Log;
+import util.Log.LogType;
 import util.TwoComplement;
 
 public class Model {
@@ -23,10 +25,10 @@ public class Model {
 		vertexCount = array.getVertexCount();
 
 		/* We do not copy the vertex data here; data is shared between Shape3d and the matrix */
-		vertices = DenseMatrix64F.wrap(1, vertexCount * 3, array.getCoordRefDouble());
+		vertices = DenseMatrix64F.wrap(vertexCount * 3, 1, array.getCoordRefDouble());
 
 		/* We cannot do the same for the color, since we don't have a integer matrix */
-		colors = new DenseMatrix64F(1, vertexCount * 3);
+		colors = new DenseMatrix64F(vertexCount * 3, 1);
 
 		java3dColors = array.getColorRefByte();
 		java3dColorsDirty = false;
@@ -41,21 +43,21 @@ public class Model {
 
 	/** Construct a Model from two matrix for vertices and colors, and indices for faces. */
 	public Model(DenseMatrix64F vertices, DenseMatrix64F colors, int[] faceIndices) {
-		if(vertices.numRows != 1)
+		if(vertices.numCols != 1)
 			throw new IllegalArgumentException("Shape should be a vector like (x1,y1,y1,x2,y2,z2 ...).");
-		if(colors.numRows != 1)
+		if(colors.numCols != 1)
 			throw new IllegalArgumentException("Texture should be a vector like (r1,b1,g1,r2,g2,b2 ...)");
-		if(vertices.numCols <= 0 || colors.numCols <= 0 || faceIndices.length <= 0)
+		if(vertices.numRows <= 0 || colors.numRows <= 0 || faceIndices.length <= 0)
 			throw new IllegalArgumentException("At least one argument is empty.");
-		if(vertices.numCols != colors.numCols)
+		if(vertices.numRows != colors.numRows)
 			throw new IllegalArgumentException("Size of shape and texture inconsistent.");
-		if(vertices.numCols % 3 != 0)
+		if(vertices.numRows % 3 != 0)
 			throw new IllegalArgumentException("Number of row not a 3 multiple.");
 
 		this.vertices = vertices;
 		this.colors = colors;
 		this.faceIndices = faceIndices;
-		this.vertexCount = vertices.numCols / 3;
+		this.vertexCount = vertices.numRows / 3;
 		this.java3dColorsDirty = true;
 		this.java3dColors = null;
 	}
@@ -81,8 +83,8 @@ public class Model {
 	}
 
 	/** Update the color matrix */
-	public void setColorMatrix(DenseMatrix64F texture) {
-		this.colors = texture;
+	public void setColorMatrix(DenseMatrix64F color) {
+		this.colors = color;
 		this.java3dColorsDirty = true;
 	}
 
@@ -119,6 +121,7 @@ public class Model {
 	/** Update the cache of color for Java3D if necessary, and return it. */
 	private byte[] getJava3DColors() {
 		if(java3dColorsDirty) {
+			Log.debug(LogType.MODEL, "Model: update java3d colors.");
 			if(java3dColors == null)
 				java3dColors = new byte[vertexCount * 3];
 

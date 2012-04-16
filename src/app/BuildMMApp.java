@@ -15,7 +15,9 @@ public class BuildMMApp {
 
 		SimpleFaceGUI gui = new SimpleFaceGUI();
 		//gui.displayStaticShape(mm.getAverage().getShape3D());
+		//gui.displayRotatingShape(mm.getAverage().getShape3D());
 		gui.displayRotatingShape(mm.getAverage().getShape3D());
+		Log.info(LogType.APP, mm.toString());
 		gui.run();
 	}
 }
