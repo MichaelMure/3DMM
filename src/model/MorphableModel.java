@@ -1,9 +1,7 @@
 package model;
 
-import org.ejml.data.DenseMatrix64F;
-
 import pca.PCA;
-import pca.PCA_SVD;
+import pca.PCA_L1;
 
 public class MorphableModel {
 
@@ -14,8 +12,8 @@ public class MorphableModel {
 
 	public MorphableModel() {
 		faceIndices = null;
-		vertices = new PCA_SVD();
-		colors = new PCA_SVD();
+		vertices = new PCA_L1();
+		colors = new PCA_L1();
 	}
 
 	public void addModel(Model model) {
@@ -23,14 +21,12 @@ public class MorphableModel {
 			faceIndices = model.getFaceIndices();
 
 		if(vertices == null)
-			vertices = new PCA_SVD(model.getVerticesMatrix());
-		else
-			vertices.addSample(model.getVerticesMatrix());
-
+			vertices = new PCA_L1();
 		if(colors == null)
-			colors = new PCA_SVD(model.getColorMatrix());
-		else
-			colors.addSample(model.getColorMatrix());
+			colors = new PCA_L1();
+
+		vertices.addSample(model.getVerticesMatrix());
+		colors.addSample(model.getColorMatrix());
 	}
 
 	public Model getModel(int index) {
@@ -39,11 +35,10 @@ public class MorphableModel {
 
 	public Model getModel(ModelParameter param) {
 		ensurePCA();
-		DenseMatrix64F v = new DenseMatrix64F(1, vertices.getSampleSize(),
-				true, vertices.sampleToSampleSpace(param.getVerticesWeight()));
-		DenseMatrix64F c = new DenseMatrix64F(1, colors.getSampleSize(),
-				true, colors.sampleToSampleSpace(param.getColorWeight()));
-		return new Model(v, c, faceIndices);
+
+		return new Model(vertices.sampleToSampleSpace(param.getVerticesWeight()),
+									   colors.sampleToSampleSpace(param.getColorWeight()),
+										 faceIndices);
 	}
 
 	public int getSize() {
