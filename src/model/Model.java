@@ -4,7 +4,8 @@ import javax.media.j3d.GeometryArray;
 import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.Shape3D;
 
-import org.ejml.data.DenseMatrix64F;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 import util.Log;
 import util.Log.LogType;
@@ -12,10 +13,10 @@ import util.TwoComplement;
 
 public class Model {
 
-	private DenseMatrix64F vertices;
-	private DenseMatrix64F colors;
-	private byte[] java3dColors;
+	private DoubleMatrix1D vertices;
+	private DoubleMatrix1D colors;
 	private boolean java3dColorsDirty;
+	private boolean java3dCoordsDirty;
 	private int[] faceIndices;
 	private final int vertexCount;
 
@@ -24,42 +25,37 @@ public class Model {
 		IndexedTriangleArray array = (IndexedTriangleArray) shape3d.getGeometry();
 		vertexCount = array.getVertexCount();
 
-		/* We do not copy the vertex data here; data is shared between Shape3d and the matrix */
-		vertices = DenseMatrix64F.wrap(vertexCount * 3, 1, array.getCoordRefDouble());
+		vertices = new DenseDoubleMatrix1D(array.getCoordRefDouble());
+		colors = new DenseDoubleMatrix1D(vertexCount * 3);
 
-		/* We cannot do the same for the color, since we don't have a integer matrix */
-		colors = new DenseMatrix64F(vertexCount * 3, 1);
-
-		java3dColors = array.getColorRefByte();
-		java3dColorsDirty = false;
-		double[] colorsData = colors.getData();
-
+		byte[] java3dColors = array.getColorRefByte();
 		for(int x = 0; x < vertexCount * 3; x++) {
-			colorsData[x] = TwoComplement.to2complement(java3dColors[x]);
+			colors.setQuick(x, TwoComplement.to2complement(java3dColors[x]));
 		}
+		java3dColorsDirty = true;
+		java3dCoordsDirty = true;
 
 		faceIndices = array.getCoordIndicesRef();
 	}
 
-	/** Construct a Model from two matrix for vertices and colors, and indices for faces. */
-	public Model(DenseMatrix64F vertices, DenseMatrix64F colors, int[] faceIndices) {
-		if(vertices.numCols != 1)
-			throw new IllegalArgumentException("Shape should be a vector like (x1,y1,y1,x2,y2,z2 ...).");
-		if(colors.numCols != 1)
-			throw new IllegalArgumentException("Texture should be a vector like (r1,b1,g1,r2,g2,b2 ...)");
-		if(vertices.numRows <= 0 || colors.numRows <= 0 || faceIndices.length <= 0)
+	/** Construct a Model from two vectors for vertices and colors, and indices for faces.
+	 *  Shape should be a vector like (x1,y1,y1,x2,y2,z2 ...).
+	 *  Texture should be a vector like (r1,b1,g1,r2,g2,b2 ...).
+	 */
+	public Model(DoubleMatrix1D vertices, DoubleMatrix1D colors, int[] faceIndices) {
+		if(vertices.size() <= 0 || colors.size() <= 0 || faceIndices.length <= 0)
 			throw new IllegalArgumentException("At least one argument is empty.");
-		if(vertices.numRows != colors.numRows)
+		if(vertices.size() != colors.size())
 			throw new IllegalArgumentException("Size of shape and texture inconsistent.");
-		if(vertices.numRows % 3 != 0)
-			throw new IllegalArgumentException("Number of row not a 3 multiple.");
+		if(vertices.size() % 3 != 0)
+			throw new IllegalArgumentException("Size not a 3 multiple.");
 
 		this.vertices = vertices;
 		this.colors = colors;
 		this.faceIndices = faceIndices;
-		this.vertexCount = vertices.numRows / 3;
+		this.vertexCount = vertices.size() / 3;
 		this.java3dColorsDirty = true;
-		this.java3dColors = null;
+		this.java3dCoordsDirty = true;
 	}
 
 	/** @return the vertex count. */
@@ -68,22 +64,23 @@ public class Model {
 	}
 
 	/** @return the vertex matrix */
-	public DenseMatrix64F getVerticesMatrix() {
+	public DoubleMatrix1D getVerticesMatrix() {
 		return vertices;
 	}
 
 	/** Update the vertices matrix. */
-	public void setVerticesMatrix(DenseMatrix64F shape) {
+	public void setVerticesMatrix(DoubleMatrix1D shape) {
 		this.vertices = shape;
+		this.java3dCoordsDirty = true;
 	}
 
 	/** @return the color matrix. */
-	public DenseMatrix64F getColorMatrix() {
+	public DoubleMatrix1D getColorMatrix() {
 		return colors;
 	}
 
 	/** Update the color matrix */
-	public void setColorMatrix(DenseMatrix64F color) {
+	public void setColorMatrix(DoubleMatrix1D color) {
 		this.colors = color;
 		this.java3dColorsDirty = true;
 	}
@@ -105,8 +102,15 @@ public class Model {
 						| GeometryArray.USE_COORD_INDEX_ONLY, faceIndices.length);
 
 		face.setCoordIndicesRef(faceIndices);
-		face.setCoordRefDouble(vertices.getData().clone());
-		face.setColorRefByte(getJava3DColors());
+		if(face.getCoordRefDouble() == null)
+			face.setCoordRefDouble(new double[vertexCount * 3]);
+		if(face.getColorRefByte() == null)
+			face.setColorRefByte(new byte[vertexCount * 3]);
+
+
+		updateJava3dVertices(face.getCoordRefDouble());
+		updateJava3DColors(face.getColorRefByte());
+
 		face.setCapability(GeometryArray.ALLOW_REF_DATA_WRITE);
 		face.setCapability(GeometryArray.ALLOW_REF_DATA_READ);
 
@@ -118,20 +122,23 @@ public class Model {
 		return new Shape3D(this.getGeometry());
 	}
 
-	/** Update the cache of color for Java3D if necessary, and return it. */
-	private byte[] getJava3DColors() {
+	/** Update the Java3D vertices array if necessary. */
+	private void updateJava3dVertices(double[] java3dVertices) {
+		if(java3dCoordsDirty) {
+			Log.debug(LogType.MODEL, "Model: update java3d vertices.");
+			vertices.toArray(java3dVertices);
+		}
+	}
+
+	/** Update the Java3D colors array if necessary. */
+	private void updateJava3DColors(byte[] java3dColors) {
 		if(java3dColorsDirty) {
 			Log.debug(LogType.MODEL, "Model: update java3d colors.");
-			if(java3dColors == null)
-				java3dColors = new byte[vertexCount * 3];
-
-			double[] colorsData = colors.getData();
 
 			for(int x = 0; x < vertexCount * 3; x++) {
-				java3dColors[x] = TwoComplement.from2complement(colorsData[x]);
+				java3dColors[x] = TwoComplement.from2complement(colors.get(x));
 			}
 		}
-
-		return java3dColors;
 	}
+
 }
