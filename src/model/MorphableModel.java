@@ -33,6 +33,11 @@ public class MorphableModel {
 		return new Model(vertices.getSample(index), colors.getSample(index), faceIndices);
 	}
 
+	public Model getReducedModel(int index) {
+		ensurePCA();
+		return new Model(vertices.getFeatureSample(index), colors.getFeatureSample(index), faceIndices);
+	}
+
 	public Model getModel(ModelParameter param) {
 		ensurePCA();
 
