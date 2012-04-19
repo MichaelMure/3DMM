@@ -153,16 +153,11 @@ public abstract class PCA {
 	public double errorMembership(DoubleMatrix1D sample) {
 		DoubleMatrix1D feat = sampleToFeatureSpace(sample);
 		DoubleMatrix1D back = sampleToSampleSpace(feat);
-/*
 
-		double total = 0.0;
-		for(int i = 0; i < back.length; i++) {
-			double error = sample[i] - back[i];
-			total += error * error;
-		}
+		sample.assign(back, Functions.minus);
+		sample.assign(Functions.square);
 
-		return Math.sqrt(total / back.length);*/
-		return 0.0;
+		return Math.sqrt(sample.zSum());
 	}
 
 	/** @return the mean sample. */
