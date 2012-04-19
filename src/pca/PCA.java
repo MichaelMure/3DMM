@@ -3,9 +3,7 @@ package pca;
 import cern.colt.matrix.DoubleFactory2D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
-import cern.colt.matrix.doublealgo.Statistic;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
-import cern.colt.matrix.impl.DenseDoubleMatrix2D;
 import cern.colt.matrix.linalg.Algebra;
 import cern.jet.math.Functions;
 import util.Log;
@@ -52,7 +50,7 @@ public abstract class PCA {
 		}
 	}
 
-	/** Compute the basis matrix. */
+	/** Compute the PCA and reduce the data. */
 	public void computePCA(int numComponents) {
 		TimeCounter t = new TimeCounter("PCA: computation of basis and reduced data.");
 		this.numComponents = numComponents;
@@ -90,16 +88,19 @@ public abstract class PCA {
 		return numComponents;
 	}
 
+	/** @return the size of one sample. */
 	public int getSampleSize() {
 		if(data == null)
 			return 0;
 		return data.rows();
 	}
 
+	/** @return one original sample. */
 	public DoubleMatrix1D getSample(int index) {
 		return data.viewColumn(index);
 	}
 
+	/** @return one of the reduced model. */
 	public DoubleMatrix1D getFeatureSample(int index) {
 		return reducedData.viewColumn(index).assign(mean, Functions.plus);
 	}
