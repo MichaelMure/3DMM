@@ -1,13 +1,18 @@
 package model;
 
+import cern.colt.function.DoubleDoubleFunction;
+import cern.colt.matrix.DoubleFactory1D;
+import cern.colt.matrix.DoubleMatrix1D;
+import cern.colt.matrix.impl.DenseDoubleMatrix1D;
+import cern.jet.math.Functions;
 import util.Log;
 import util.Log.LogType;
 
 
 public class ModelParameter {
 
-	private final double[] verticesWeight;
-	private final double[] colorWeight;
+	private final DoubleMatrix1D verticesWeight;
+	private final DoubleMatrix1D colorWeight;
 	private final int modelCount;
 
 	/** @return a new random ModelParameter with random values.
@@ -15,12 +20,13 @@ public class ModelParameter {
 	 *  (both sums are equal to one).
 	 */
 	public static ModelParameter getRandom(int modelCount) {
-		ModelParameter param = new ModelParameter(modelCount);
+		DoubleMatrix1D vWeight = DoubleFactory1D.dense.random(modelCount);
+		DoubleMatrix1D cWeight = DoubleFactory1D.dense.random(modelCount);
 
-		for(int x = 0; x < modelCount; x++) {
-			param.verticesWeight[x] = Math.pow(Math.random(), 3.0);
-			param.colorWeight[x] = Math.pow(Math.random(), 3.0);
-		}
+		vWeight.assign(Functions.pow(3));
+		cWeight.assign(Functions.pow(3));
+
+		ModelParameter param = new ModelParameter(vWeight, cWeight);
 
 		param.normalize();
 
@@ -31,17 +37,20 @@ public class ModelParameter {
 	 *  @param modelCount the number of model in the morphable model
 	 */
 	public ModelParameter(int modelCount) {
-		this.verticesWeight = new double[modelCount];
-		this.colorWeight = new double[modelCount];
+		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
+		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
 		this.modelCount = modelCount;
 
-		verticesWeight[0] = 1.0;
-		colorWeight[0] = 1.0;
+		verticesWeight.set(0, 1.0);
+		colorWeight.set(0, 1.0);
+	}
 
-		for(int x = 1; x < modelCount; x++) {
-			verticesWeight[x] = 0.0;
-			colorWeight[x] = 0.0;
-		}
+	public ModelParameter(DoubleMatrix1D verticesWeight, DoubleMatrix1D colorWeight) {
+		if(verticesWeight.size() != colorWeight.size())
+			throw new IllegalArgumentException("Different size for color and vertice weights.");
+		this.verticesWeight = verticesWeight;
+		this.colorWeight = colorWeight;
+		this.modelCount = verticesWeight.size();
 	}
 
 	/** @return the number of parameter stored. */
@@ -49,13 +58,13 @@ public class ModelParameter {
 		return modelCount;
 	}
 
-	/** @return the weigth array for the vertices. */
-	public double[] getVerticesWeight() {
+	/** @return the weight vector for the vertices. */
+	public DoubleMatrix1D getVerticesWeight() {
 		return verticesWeight;
 	}
 
-	/** @return the weigth array for the colors. */
-	public double[] getColorWeight() {
+	/** @return the weight vector for the colors. */
+	public DoubleMatrix1D getColorWeight() {
 		return colorWeight;
 	}
 
@@ -66,38 +75,40 @@ public class ModelParameter {
 		if(this.modelCount != targetParam.modelCount)
 			throw new IllegalArgumentException("Incoherent number of model count.");
 
-		ModelParameter result = new ModelParameter(modelCount);
-
-		for(int x = 0; x < modelCount; x++) {
-			result.colorWeight[x] = (1.0 - alpha) * colorWeight[x] + alpha * targetParam.colorWeight[x];
-			result.verticesWeight[x] = (1.0 - alpha) * verticesWeight[x] + alpha * targetParam.verticesWeight[x];
+		class linapp implements DoubleDoubleFunction {
+			private final double alpha;
+			public linapp(double alpha) {
+				this.alpha = alpha;
+			}
+			@Override
+			public double apply(double x, double y) {
+				return (1.0 - alpha) * x + alpha * y;
+			}
 		}
 
-		return result;
+		DoubleMatrix1D v = verticesWeight.copy().assign(targetParam.verticesWeight, new linapp(alpha));
+		DoubleMatrix1D c = colorWeight.copy().assign(targetParam.colorWeight, new linapp(alpha));
+
+		return new ModelParameter(v, c);
 	}
 
 	@Override
 	public String toString() {
 		String result = "ModelParameter: ";
 		for(int x = 0; x < modelCount; x++) {
-			result += "(" + verticesWeight[x] + "," + colorWeight[x] + ")";
+			result += "(" + verticesWeight.get(x) + "," + colorWeight.get(x) + ")";
 		}
 		return result;
 	}
 
 	/** Make sure that the sum of each weight array equal 1.0 */
 	private void normalize() {
-		double totalVertices = 0.0;
-		double totalColor = 0.0;
-		for(int x = 0; x < modelCount; x++) {
-			totalVertices += verticesWeight[x];
-			totalColor += colorWeight[x];
-		}
+		double totalVertices = verticesWeight.zSum();
+		double totalColor = colorWeight.zSum();
 
-		for(int x = 0; x < modelCount; x++) {
-			verticesWeight[x] /= totalVertices;
-			colorWeight[x] /= totalColor;
-		}
+		verticesWeight.assign(Functions.div(totalVertices));
+		colorWeight.assign(Functions.div(totalColor));
+
 		Log.debug(LogType.MODEL, "Normalizing by colors: " + 1/totalColor + " vertices: " + 1/totalVertices);
 	}
 }
