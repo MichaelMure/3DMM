@@ -61,9 +61,9 @@ public class MorphableModel {
 
 	private void ensurePCA() {
 		if(!vertices.computationDone())
-			vertices.computeBasis(PCA_DIMENSION);
+			vertices.computePCA(PCA_DIMENSION);
 
 		if(!colors.computationDone())
-			colors.computeBasis(PCA_DIMENSION);
+			colors.computePCA(PCA_DIMENSION);
 	}
 }

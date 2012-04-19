@@ -50,7 +50,8 @@ public abstract class PCA {
 	}
 
 	/** Compute the basis matrix. */
-	public void computeBasis(int numComponents) {
+	public void computePCA(int numComponents) {
+		TimeCounter t = new TimeCounter("PCA: computation of basis and reduced data.");
 		this.numComponents = numComponents;
 		Log.info(LogType.MODEL, "PCA computation with " + numComponents + " dimensions.");
 		centerData();
