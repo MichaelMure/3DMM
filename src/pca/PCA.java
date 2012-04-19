@@ -102,7 +102,7 @@ public abstract class PCA {
 
 	/** @return one of the reduced model. */
 	public DoubleMatrix1D getFeatureSample(int index) {
-		return reducedData.viewColumn(index).assign(mean, Functions.plus);
+		return reducedData.viewColumn(index).copy().assign(mean, Functions.plus);
 	}
 
 	/** @return a sample from the original data expressed in the feature space.
