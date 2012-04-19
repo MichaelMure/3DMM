@@ -7,8 +7,6 @@ import javax.media.j3d.Shape3D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
-import util.Log;
-import util.Log.LogType;
 import util.TwoComplement;
 
 public class Model {
@@ -125,7 +123,6 @@ public class Model {
 	/** Update the Java3D vertices array if necessary. */
 	private void updateJava3dVertices(double[] java3dVertices) {
 		if(java3dCoordsDirty) {
-			Log.debug(LogType.MODEL, "Model: update java3d vertices.");
 			vertices.toArray(java3dVertices);
 		}
 	}
@@ -133,8 +130,6 @@ public class Model {
 	/** Update the Java3D colors array if necessary. */
 	private void updateJava3DColors(byte[] java3dColors) {
 		if(java3dColorsDirty) {
-			Log.debug(LogType.MODEL, "Model: update java3d colors.");
-
 			for(int x = 0; x < vertexCount * 3; x++) {
 				java3dColors[x] = TwoComplement.from2complement(colors.get(x));
 			}
