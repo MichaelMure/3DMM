@@ -17,9 +17,4 @@ public class TimeCounter {
 		float elapsedTime = (System.currentTimeMillis() - startTime) / 1000F;
 		Log.info(LogType.TIME, message + ": " + elapsedTime + " seconds.");
 	}
-
-	@Override
-	public void finalize() {
-		stop();
-	}
 }
