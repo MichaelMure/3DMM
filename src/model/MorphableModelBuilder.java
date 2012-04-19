@@ -41,7 +41,6 @@ public class MorphableModelBuilder {
 					mm.addModel(new Model(shape3d));
 			}
 		}
-		t.stop();
 
 		return mm;
 	}
