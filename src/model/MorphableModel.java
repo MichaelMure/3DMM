@@ -1,7 +1,7 @@
 package model;
 
 import pca.PCA;
-import pca.PCA_L1;
+import pca.PCA_SVD;
 
 public class MorphableModel {
 
@@ -12,8 +12,8 @@ public class MorphableModel {
 
 	public MorphableModel() {
 		faceIndices = null;
-		vertices = new PCA_L1();
-		colors = new PCA_L1();
+		vertices = new PCA_SVD();
+		colors = new PCA_SVD();
 	}
 
 	public void addModel(Model model) {
@@ -21,9 +21,9 @@ public class MorphableModel {
 			faceIndices = model.getFaceIndices();
 
 		if(vertices == null)
-			vertices = new PCA_L1();
+			vertices = new PCA_SVD();
 		if(colors == null)
-			colors = new PCA_L1();
+			colors = new PCA_SVD();
 
 		vertices.addSample(model.getVerticesMatrix());
 		colors.addSample(model.getColorMatrix());
