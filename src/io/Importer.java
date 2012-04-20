@@ -1,7 +1,5 @@
 package io;
 
-import io.obj.ObjImporter;
-import io.ply.PlyImporter;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,32 +11,6 @@ import util.Log;
 import util.Log.LogType;
 
 public abstract class Importer {
-
-	public enum FileType {
-		PLY, OBJ;
-
-		public String getExtension() {
-			switch (this) {
-			case PLY:
-				return ".ply";
-			case OBJ:
-				return ".obj";
-			}
-			assert false;
-			return null;
-		}
-
-		public Importer getImporter() {
-			switch (this) {
-			case PLY:
-				return new PlyImporter();
-			case OBJ:
-				return new ObjImporter();
-			}
-			assert false;
-			return null;
-		}
-	}
 
 	public Shape3D loadObject(String filename) {
 		File file = new File(filename);

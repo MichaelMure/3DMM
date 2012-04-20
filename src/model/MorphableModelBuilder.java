@@ -1,7 +1,7 @@
 package model;
 
+import io.FileType;
 import io.Importer;
-import io.Importer.FileType;
 
 import java.io.File;
 

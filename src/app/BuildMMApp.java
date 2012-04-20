@@ -1,7 +1,7 @@
 package app;
 
 import gui.SimpleFaceGUI;
-import io.Importer.FileType;
+import io.FileType;
 import model.MorphableModel;
 import model.MorphableModelBuilder;
 import util.Log;

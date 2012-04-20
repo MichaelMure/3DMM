@@ -1,7 +1,7 @@
 package app;
 
 import gui.SimpleFaceGUI;
-import io.Importer.FileType;
+import io.FileType;
 
 import javax.media.j3d.IndexedTriangleArray;
 import javax.media.j3d.Shape3D;
