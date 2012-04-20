@@ -21,9 +21,5 @@ public class TwoComplement {
 			return (byte) s;
 
 		return (byte) (s - 256);
-
-
 	}
 }
-
-// <TITLE>
