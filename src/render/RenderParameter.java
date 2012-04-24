@@ -151,7 +151,7 @@ public class RenderParameter {
 	}
 
 	public void setColorsOffsets(float[] colorsOffsets) {
-		if(colorsOffsets.length != 3 || colorsOffsets.length != 4)
+		if(colorsOffsets.length != 3 && colorsOffsets.length != 4)
 			throw new IllegalArgumentException("Unexpected array length for colors offsets.");
 		matrix.setQuick(COLOR_OFFSET_R, colorsOffsets[0]);
 		matrix.setQuick(COLOR_OFFSET_G, colorsOffsets[1]);
@@ -168,7 +168,7 @@ public class RenderParameter {
 	}
 
 	public void setColorsGains(float[] colorsGains) {
-		if(colorsGains.length != 3 || colorsGains.length != 4)
+		if(colorsGains.length != 3 && colorsGains.length != 4)
 			throw new IllegalArgumentException("Unexpected array length for colors gains.");
 		matrix.setQuick(COLOR_GAIN_R, colorsGains[0]);
 		matrix.setQuick(COLOR_GAIN_G, colorsGains[1]);
