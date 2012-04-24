@@ -1,5 +1,7 @@
 package render;
 
+import java.awt.Color;
+
 import javax.vecmath.Color3b;
 import javax.vecmath.Quat4d;
 import javax.vecmath.Vector3d;
@@ -51,7 +53,27 @@ public class RenderParameter {
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
 	public RenderParameter() {
-		//Insert plausible default value here.
+		setCameraDistance(3.0);
+		setObjectScale(1.0);
+		setObjectPosition(new Vector3d());
+		setObjectRotation(new Quat4d());
+		setAmbientLightColor(new Color3b(Color.WHITE));
+		setDirectedLightColor(new Color3b(Color.WHITE));
+		setDirectedLightDirection(new Quat4d());
+
+		float[] offsets = new float[4];
+		offsets[0] = 1.0f;
+		offsets[1] = 1.0f;
+		offsets[2] = 1.0f;
+		offsets[3] = 1.0f;
+		setColorsOffsets(offsets);
+
+		float[] gains = new float[4];
+		gains[0] = 0.0f;
+		gains[1] = 0.0f;
+		gains[2] = 0.0f;
+		gains[3] = 0.0f;
+		setColorsGains(gains);
 	}
 
 	public DenseDoubleMatrix1D getMatrix() {
