@@ -10,11 +10,11 @@ public class TwoComplement {
 	}
 
 	public static byte from2complement(double d) {
-		if(d > 256.0)
-			d = 256.0;
+		if(d >= 255.0)
+			return -1;
 
 		if(d < 0.0)
-			d = 0.0;
+			return 0;
 
 		short s = (short) Math.round(d);
 		if(s < 128)
