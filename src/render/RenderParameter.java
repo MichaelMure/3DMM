@@ -45,10 +45,10 @@ public class RenderParameter {
 
 	private final static int OBJECT_SHININESS = 24;
 
-	private final static int PARAM_NUMBER = OBJECT_SHININESS +1;
+	private final static int PARAMS_SIZE = OBJECT_SHININESS +1;
 
 
-	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAM_NUMBER);
+	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
 	public RenderParameter() {
 		//Insert plausible default value here.
