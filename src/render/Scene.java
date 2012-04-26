@@ -28,8 +28,6 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 
 public class Scene {
 
-	private static final float EYE_DISTANCE = 5.0f;
-
 	private final BufferedImage target;
 	private final SimpleUniverse universe;
 	private final BranchGroup scene;
@@ -106,7 +104,6 @@ public class Scene {
 		ambientLight.setCapability(AmbientLight.ALLOW_COLOR_WRITE);
 		root.addChild(ambientLight);
 
-		root.compile();
 		return root;
 	}
 
