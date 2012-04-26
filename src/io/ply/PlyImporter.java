@@ -16,6 +16,7 @@ import org.smurn.jply.PlyReaderFile;
 
 import util.Log;
 import util.Log.LogType;
+import util.NormalGenerator;
 
 public class PlyImporter extends Importer {
 
@@ -26,9 +27,9 @@ public class PlyImporter extends Importer {
 		int vertexCount = ply.getElementCount("vertex");
 		int triangleCount = ply.getElementCount("face");
 
-		IndexedTriangleArray plane = new IndexedTriangleArray(vertexCount,
+		IndexedTriangleArray array = new IndexedTriangleArray(vertexCount,
 				GeometryArray.COORDINATES | GeometryArray.COLOR_3
-						| GeometryArray.BY_REFERENCE
+						| GeometryArray.NORMALS | GeometryArray.BY_REFERENCE
 						| GeometryArray.BY_REFERENCE_INDICES
 						| GeometryArray.USE_COORD_INDEX_ONLY, triangleCount * 3);
 
@@ -102,11 +103,12 @@ public class PlyImporter extends Importer {
 
 		ply.close();
 
-		plane.setCoordIndicesRef(faces);
-		plane.setCoordRefDouble(points);
-		plane.setColorRefByte(colors);
+		array.setCoordIndicesRef(faces);
+		array.setCoordRefDouble(points);
+		array.setColorRefByte(colors);
+		NormalGenerator.ComputeNormal(array);
 
-		return new Shape3D(plane);
+		return new Shape3D(array);
 	}
 
 }

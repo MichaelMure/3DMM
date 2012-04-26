@@ -7,6 +7,7 @@ import javax.media.j3d.Shape3D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
+import util.NormalGenerator;
 import util.TwoComplement;
 
 public class Model {
@@ -95,7 +96,7 @@ public class Model {
 
 		IndexedTriangleArray face = new IndexedTriangleArray(vertexCount,
 				GeometryArray.COORDINATES | GeometryArray.COLOR_3
-						| GeometryArray.BY_REFERENCE
+						| GeometryArray.NORMALS | GeometryArray.BY_REFERENCE
 						| GeometryArray.BY_REFERENCE_INDICES
 						| GeometryArray.USE_COORD_INDEX_ONLY, faceIndices.length);
 
@@ -107,6 +108,7 @@ public class Model {
 
 
 		updateJava3dVertices(face.getCoordRefDouble());
+		NormalGenerator.ComputeNormal(face);
 		updateJava3DColors(face.getColorRefByte());
 
 		face.setCapability(GeometryArray.ALLOW_REF_DATA_WRITE);
