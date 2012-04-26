@@ -57,7 +57,7 @@ public class RenderParameter {
 		setObjectRotation(new Quat4d());
 		setAmbientLightColor(new Color3f(Color.WHITE));
 		setDirectedLightColor(new Color3f(Color.WHITE));
-		setDirectedLightDirection(new Vector3f());
+		setDirectedLightDirection(new Vector3f(0,1,0));
 
 		float[] offsets = new float[4];
 		offsets[0] = 1.0f;
@@ -72,6 +72,8 @@ public class RenderParameter {
 		gains[2] = 0.0f;
 		gains[3] = 0.0f;
 		setColorsGains(gains);
+
+		setObjectShininess(1f);
 	}
 
 	public DenseDoubleMatrix1D getMatrix() {
