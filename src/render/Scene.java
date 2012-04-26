@@ -117,6 +117,7 @@ public class Scene {
 													new Vector3d(0.0, 1.0, 0.0));
 		viewTransform.invert();
 		universe.getViewingPlatform().getViewPlatformTransform().setTransform(viewTransform);
+		universe.getViewingPlatform().getViewPlatform().setActivationRadius(10000f);
 
 		/* Place object */
 		translate.setTranslation(params.getObjectPosition());
