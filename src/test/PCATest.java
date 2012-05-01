@@ -9,7 +9,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 import pca.PCA;
-import pca.PCA_L1;
+import pca.PCA_SVD;
 
 
 public class PCATest {
@@ -24,7 +24,7 @@ public class PCATest {
 
 	@Before
 	public void setUp(){
-		pca = new PCA_L1();
+		pca = new PCA_SVD();
 
 		pca.addSample(m1);
 		pca.addSample(m2);
