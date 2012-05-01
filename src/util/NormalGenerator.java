@@ -53,8 +53,14 @@ public class NormalGenerator {
 			normals[3*indiceC+2] += (float) -normal.z;
 		}
 
-		for(int x = 0; x < vertexCount * 3; x++) {
-			normals[x] /= 3.0f;
+		double lenght;
+		for(int x = 0; x < vertexCount; x++) {
+			lenght = Math.sqrt(normals[3 * x + 0] * normals[3 * x + 0]
+					+ normals[3 * x + 1] * normals[3 * x + 1]
+					+ normals[3 * x + 2] * normals[3 * x + 2]);
+			normals[3 * x + 0] = (float) (normals[3 * x + 0] / lenght);
+			normals[3 * x + 1] = (float) (normals[3 * x + 1] / lenght);
+			normals[3 * x + 2] = (float) (normals[3 * x + 2] / lenght);
 		}
 
 		array.setNormalRefFloat(normals);
