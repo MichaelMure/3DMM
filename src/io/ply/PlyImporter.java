@@ -11,12 +11,10 @@ import org.smurn.jply.PlyReader;
 import org.smurn.jply.PlyReaderFile;
 
 import com.jme3.scene.Mesh;
-import com.jme3.scene.Mesh.Mode;
 import com.jme3.scene.VertexBuffer.Type;
 
 import util.Log;
 import util.Log.LogType;
-import util.NormalGenerator;
 
 public class PlyImporter extends Importer {
 
