@@ -5,14 +5,14 @@ import io.Importer;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.j3d.GeometryArray;
-import javax.media.j3d.IndexedTriangleArray;
-import javax.media.j3d.Shape3D;
-
 import org.smurn.jply.Element;
 import org.smurn.jply.ElementReader;
 import org.smurn.jply.PlyReader;
 import org.smurn.jply.PlyReaderFile;
+
+import com.jme3.scene.Mesh;
+import com.jme3.scene.Mesh.Mode;
+import com.jme3.scene.VertexBuffer.Type;
 
 import util.Log;
 import util.Log.LogType;
@@ -21,21 +21,15 @@ import util.NormalGenerator;
 public class PlyImporter extends Importer {
 
 	@Override
-	protected Shape3D doLoadObject(File file) throws IOException {
+	protected Mesh doLoadObject(File file) throws IOException {
 		PlyReader ply = new PlyReaderFile(file);
 
 		int vertexCount = ply.getElementCount("vertex");
 		int triangleCount = ply.getElementCount("face");
 
-		IndexedTriangleArray array = new IndexedTriangleArray(vertexCount,
-				GeometryArray.COORDINATES | GeometryArray.COLOR_3
-						| GeometryArray.NORMALS | GeometryArray.BY_REFERENCE
-						| GeometryArray.BY_REFERENCE_INDICES
-						| GeometryArray.USE_COORD_INDEX_ONLY, triangleCount * 3);
-
 		ElementReader reader;
-		double[] points = null;
-		byte[] colors = null;
+		float[] points = null;
+		float[] colors = null;
 		int[] faces = null;
 
 		/* iterate over ply reader */
@@ -45,18 +39,18 @@ public class PlyImporter extends Importer {
 				/* if some vertex were already read, abort. */
 				if (points != null)
 					continue;
-				points = new double[3 * vertexCount];
-				colors = new byte[3 * vertexCount];
+				points = new float[3 * vertexCount];
+				colors = new float[3 * vertexCount];
 
 				Element element;
 				int x = 0;
 				while ((element = reader.readElement()) != null) {
-					points[3 * x + 0] = element.getDouble("x");
-					points[3 * x + 1] = element.getDouble("y");
-					points[3 * x + 2] = element.getDouble("z");
-					colors[3 * x + 0] = (byte) element.getInt("red");
-					colors[3 * x + 1] = (byte) element.getInt("green");
-					colors[3 * x + 2] = (byte) element.getInt("blue");
+					points[3 * x + 0] = (float) element.getDouble("x");
+					points[3 * x + 1] = (float) element.getDouble("y");
+					points[3 * x + 2] = (float) element.getDouble("z");
+					colors[3 * x + 0] = (float) element.getDouble("red") / 255f;
+					colors[3 * x + 1] = (float) element.getDouble("green") / 255f;
+					colors[3 * x + 2] = (float) element.getDouble("blue") / 255f;
 					x++;
 				}
 				Log.debug(LogType.IO, "PLY importer: " + x + " vertices read.");
@@ -103,12 +97,14 @@ public class PlyImporter extends Importer {
 
 		ply.close();
 
-		array.setCoordIndicesRef(faces);
-		array.setCoordRefDouble(points);
-		array.setColorRefByte(colors);
-		NormalGenerator.ComputeNormal(array);
+		Mesh mesh = new Mesh();
+		mesh.setBuffer(Type.Position, 3, points);
+		mesh.setBuffer(Type.Index, 3, faces);
+		mesh.setBuffer(Type.Color, 3, colors);
 
-		return new Shape3D(array);
+		mesh.updateBound();
+
+		return mesh;
 	}
 
 }
