@@ -1,6 +1,5 @@
 package io;
 
-import io.obj.ObjImporter;
 import io.ply.PlyImporter;
 
 public enum FileType {
@@ -21,8 +20,6 @@ public enum FileType {
 		switch (this) {
 		case PLY:
 			return new PlyImporter();
-		case OBJ:
-			return new ObjImporter();
 		}
 		assert false;
 		return null;
