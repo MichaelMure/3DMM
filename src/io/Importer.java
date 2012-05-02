@@ -4,38 +4,33 @@ package io;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.j3d.GeometryArray;
-import javax.media.j3d.Shape3D;
+import com.jme3.scene.Mesh;
 
 import util.Log;
 import util.Log.LogType;
 
 public abstract class Importer {
 
-	public Shape3D loadObject(String filename) {
+	public Mesh loadObject(String filename) {
 		File file = new File(filename);
 
 		return loadObject(file);
 	}
 
-	public Shape3D loadObject(File file) {
+	public Mesh loadObject(File file) {
 		Log.debug(LogType.IO, "Loading: " + file.getName());
 
-		Shape3D shape = null;
+		Mesh m = null;
 		try {
-			shape = doLoadObject(file);
+			m = doLoadObject(file);
 		} catch (IOException e) {
 			Log.error(LogType.IO, "Importer IO error for " + file + ": " + e.getMessage());
 		}
 
-		/* Debug information */
-		GeometryArray geometry = (GeometryArray) shape.getGeometry();
-		if (geometry == null)
-			return shape;
-
-		Log.debug(LogType.IO, "Loaded mesh: " + geometry.getVertexCount() + " vertices.");
-		return shape;
+		Log.debug(LogType.IO, "Loaded mesh: " + m.getVertexCount() + " vertices, "
+				+ m.getTriangleCount() + " triangles.");
+		return m;
 	}
 
-	protected abstract Shape3D doLoadObject(File file) throws IOException;
+	protected abstract Mesh doLoadObject(File file) throws IOException;
 }

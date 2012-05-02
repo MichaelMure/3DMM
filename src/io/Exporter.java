@@ -3,20 +3,20 @@ package io;
 import java.io.File;
 import java.io.IOException;
 
-import javax.media.j3d.Shape3D;
+import com.jme3.scene.Mesh;
 
 import util.Log;
 import util.Log.LogType;
 
 public abstract class Exporter {
 
-	public void exportObject(Shape3D object, String filename) {
+	public void exportObject(Mesh object, String filename) {
 		File file = new File(filename);
 
 		exportObject(object, file);
 	}
 
-	public void exportObject(Shape3D object, File file) {
+	public void exportObject(Mesh object, File file) {
 		Log.debug(LogType.IO, "Exporting: " + file.getName());
 
 		try {
@@ -26,5 +26,5 @@ public abstract class Exporter {
 		}
 	}
 
-	protected abstract void doExportObject(Shape3D object, File file) throws IOException;
+	protected abstract void doExportObject(Mesh object, File file) throws IOException;
 }
