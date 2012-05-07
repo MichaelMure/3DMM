@@ -5,7 +5,9 @@ import util.Log.LogType;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.bounding.BoundingBox;
+import com.jme3.input.ChaseCamera;
 import com.jme3.material.Material;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
@@ -16,12 +18,24 @@ import com.jme3.scene.shape.Box;
 class DisplayApp extends SimpleApplication {
 
 	private Material unshaded;
+	private ChaseCamera chaseCam;
 
 	@Override
 	public void simpleInitApp() {
-		flyCam.setDragToRotate(true);
 		unshaded = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 		unshaded.setBoolean("VertexColor", true);
+
+		flyCam.setEnabled(false);
+		chaseCam = new ChaseCamera(cam, rootNode, inputManager);
+		chaseCam.setMinVerticalRotation((- FastMath.PI / 2.0f));
+		chaseCam.setDefaultDistance(2.5f);
+		chaseCam.setMinDistance(1.2f);
+		chaseCam.setMaxDistance(10f);
+		chaseCam.setInvertVerticalAxis(true);
+		chaseCam.setDefaultHorizontalRotation((FastMath.PI /2));
+		chaseCam.setDefaultVerticalRotation(0);
+
+		cam.setFrustumPerspective(45, settings.getWidth() / settings.getHeight(), 0.1f, 100f);
 	}
 
 	public void displayStaticObject(Geometry geom) {
