@@ -1,5 +1,7 @@
 package model;
 
+import java.nio.IntBuffer;
+
 import pca.PCA;
 import pca.PCA_SVD;
 
@@ -8,7 +10,7 @@ public class MorphableModel {
 	public final static int PCA_DIMENSION = 5;
 	private PCA vertices;
 	private PCA colors;
-	private int[] faceIndices;
+	private IntBuffer faceIndices;
 
 	public MorphableModel() {
 		faceIndices = null;
