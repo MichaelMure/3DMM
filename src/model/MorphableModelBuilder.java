@@ -5,7 +5,7 @@ import io.Importer;
 
 import java.io.File;
 
-import javax.media.j3d.Shape3D;
+import com.jme3.scene.Mesh;
 
 import util.Log;
 import util.Log.LogType;
@@ -35,10 +35,10 @@ public class MorphableModelBuilder {
 		TimeCounter t = new TimeCounter("Loading files for the morphable model");
 		for(File file : dir.listFiles()) {
 			if(file.getName().endsWith(filetype.getExtension())) {
-				Shape3D shape3d = importer.loadObject(file);
+				Mesh mesh = importer.loadObject(file);
 
-				if(shape3d != null)
-					mm.addModel(new Model(shape3d));
+				if(mesh != null)
+					mm.addModel(new Model(mesh));
 			}
 		}
 		t.stop();
