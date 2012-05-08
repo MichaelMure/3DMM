@@ -1,6 +1,9 @@
 package app;
 
-import gui.SimpleFaceGUI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import gui.Simple3DGUI;
 import io.FileType;
 import model.MorphableModel;
 import model.MorphableModelBuilder;
@@ -10,28 +13,13 @@ import util.Log.LogType;
 public class DisplayEigenFace {
 
 	public static void main(String[] args) {
+		Logger.getLogger("").setLevel(Level.WARNING);
 		MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
 		Log.info(LogType.APP, mm.toString());
 
-		SimpleFaceGUI gui = new SimpleFaceGUI();
-		gui.displayStaticShape(mm.getReducedModel(0).getShape3D());
+		Simple3DGUI gui = new Simple3DGUI();
 		gui.run();
-
-		SimpleFaceGUI gui2 = new SimpleFaceGUI();
-		gui2.displayStaticShape(mm.getReducedModel(1).getShape3D());
-		gui2.run();
-
-		SimpleFaceGUI gui3 = new SimpleFaceGUI();
-		gui3.displayStaticShape(mm.getReducedModel(2).getShape3D());
-		gui3.run();
-
-		SimpleFaceGUI gui4 = new SimpleFaceGUI();
-		gui4.displayStaticShape(mm.getReducedModel(3).getShape3D());
-		gui4.run();
-
-		SimpleFaceGUI gui5 = new SimpleFaceGUI();
-		gui5.displayStaticShape(mm.getReducedModel(4).getShape3D());
-		gui5.run();
+		gui.displayUnshaded(mm.getReducedModel(0));
 
 		Log.info(LogType.APP, mm.toString());
 	}
