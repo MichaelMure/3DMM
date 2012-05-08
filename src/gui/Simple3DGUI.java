@@ -4,8 +4,8 @@ import java.awt.Canvas;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 
-import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
+import model.Model;
+
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
 
@@ -39,6 +39,8 @@ public class Simple3DGUI {
 		AppSettings settings = new AppSettings(true);
     settings.setWidth(640);
     settings.setHeight(480);
+    /* Disable audio */
+    settings.setAudioRenderer(null);
 
     app = new DisplayApp();
     app.setPauseOnLostFocus(false);
@@ -60,11 +62,7 @@ public class Simple3DGUI {
 		frame.setVisible(true);
 	}
 
-	public void displayStaticObject(Geometry geom) {
-		app.displayStaticObject(geom);
-	}
-
-	public void displayUnshaded(Mesh mesh) {
+	public void displayUnshaded(Model mesh) {
 		app.displayUnshaded(mesh);
 	}
 
