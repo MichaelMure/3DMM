@@ -16,8 +16,6 @@ public class DisplayModelApp {
 	public static void main(String[] args) {
 		Logger.getLogger("").setLevel(Level.WARNING);
 		Simple3DGUI gui = new Simple3DGUI();
-		gui.run();
-
 
 		Importer importer = new PlyImporter();
 

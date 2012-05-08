@@ -18,7 +18,6 @@ public class DisplayEigenFace {
 		Log.info(LogType.APP, mm.toString());
 
 		Simple3DGUI gui = new Simple3DGUI();
-		gui.run();
 		gui.displayUnshaded(mm.getReducedModel(0));
 
 		Log.info(LogType.APP, mm.toString());

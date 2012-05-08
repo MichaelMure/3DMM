@@ -17,7 +17,6 @@ public class BuildMMApp {
 
 
 		Simple3DGUI gui = new Simple3DGUI();
-		gui.run();
 
 		MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
 

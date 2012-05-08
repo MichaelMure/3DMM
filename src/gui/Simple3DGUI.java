@@ -18,8 +18,11 @@ public class Simple3DGUI {
   private DisplayApp app;
   private JFrame frame;
 
+  public Simple3DGUI() {
+  	run();
+  }
 
-	public void run() {
+	private void run() {
 		try {
 			EventQueue.invokeAndWait(new Runnable() {
 
