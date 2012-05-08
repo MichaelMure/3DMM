@@ -1,5 +1,8 @@
 package gui;
 
+import java.nio.FloatBuffer;
+
+import model.Model;
 import util.Log;
 import util.Log.LogType;
 
@@ -10,21 +13,19 @@ import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Box;
+import com.jme3.scene.VertexBuffer.Type;
 
 class DisplayApp extends SimpleApplication {
 
-	private Material unshaded;
 	private ChaseCamera chaseCam;
+	private Model model = null;
+	private Geometry geom = null;
+	private long modelVersion;
 
 	@Override
 	public void simpleInitApp() {
-		unshaded = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-		unshaded.setBoolean("VertexColor", true);
-
 		flyCam.setEnabled(false);
 		chaseCam = new ChaseCamera(cam, rootNode, inputManager);
 		chaseCam.setMinVerticalRotation((- FastMath.PI / 2.0f));
@@ -38,14 +39,29 @@ class DisplayApp extends SimpleApplication {
 		cam.setFrustumPerspective(45, settings.getWidth() / settings.getHeight(), 0.1f, 100f);
 	}
 
-	public void displayStaticObject(Geometry geom) {
-		rootNode.attachChildAt(autoScale(geom), 0);
+	@Override
+	public void simpleUpdate(float tpf) {
+		if(model == null)
+			return;
+
+		if(geom == null) {
+			geom = new Geometry("mesh", model.getMesh());
+			modelVersion = model.getVersion();
+			Material unshaded = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+			unshaded.setBoolean("VertexColor", true);
+			geom.setMaterial(unshaded);
+			rootNode.attachChildAt(autoScale(geom), 0);
+		}
+		else {
+			FloatBuffer verticesBuffer = (FloatBuffer) geom.getMesh().getBuffer(Type.Position).getData();
+			FloatBuffer colorsBuffer = (FloatBuffer) geom.getMesh().getBuffer(Type.Color).getData();
+			modelVersion = model.updateMesh(modelVersion, verticesBuffer, colorsBuffer);
+		}
 	}
 
-	public void displayUnshaded(Mesh mesh) {
-		Geometry geom = new Geometry("mesh", mesh);
-		geom.setMaterial(unshaded);
-		displayStaticObject(geom);
+	/** Display a model with just vertex colors. */
+	public void displayUnshaded(Model model) {
+		this.model = model;
 	}
 
 	/** Compute the size of the object, and if needed, add a scaling transform
@@ -68,14 +84,5 @@ class DisplayApp extends SimpleApplication {
 
 		Log.info(LogType.GUI, "Not auto-scaling");
 		return geom;
-	}
-
-
-	@SuppressWarnings("unused")
-	private void cubeScene() {
-		Box b = new Box(1,1,1);
-		Geometry geom = new Geometry("cube", b);
-		geom.setMaterial(unshaded);
-		displayStaticObject(geom);
 	}
 }
