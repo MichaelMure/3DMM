@@ -1,6 +1,9 @@
 package app;
 
-import gui.SimpleFaceGUI;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import gui.Simple3DGUI;
 import io.FileType;
 import model.MorphableModel;
 import model.MorphableModelBuilder;
@@ -10,14 +13,15 @@ import util.Log.LogType;
 public class BuildMMApp {
 
 	public static void main(String[] args) {
-		MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
-		Log.info(LogType.APP, mm.toString());
+		Logger.getLogger("").setLevel(Level.WARNING);
 
-		SimpleFaceGUI gui = new SimpleFaceGUI();
-		//gui.displayStaticShape(mm.getAverage().getShape3D());
-		//gui.displayRotatingShape(mm.getAverage().getShape3D());
-		gui.displayRotatingShape(mm.getAverage().getShape3D());
-		Log.info(LogType.APP, mm.toString());
+
+		Simple3DGUI gui = new Simple3DGUI();
 		gui.run();
+
+		MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
+
+		gui.displayUnshaded(mm.getAverage());
+		Log.info(LogType.APP, mm.toString());
 	}
 }
