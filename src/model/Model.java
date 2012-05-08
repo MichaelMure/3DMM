@@ -1,48 +1,57 @@
 package model;
 
-import javax.media.j3d.GeometryArray;
-import javax.media.j3d.IndexedTriangleArray;
-import javax.media.j3d.Shape3D;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.util.BufferUtils;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
-
-import util.NormalGenerator;
-import util.TwoComplement;
 
 public class Model {
 
 	private DoubleMatrix1D vertices;
 	private DoubleMatrix1D colors;
-	private boolean java3dColorsDirty;
-	private boolean java3dCoordsDirty;
-	private int[] faceIndices;
+	//private DoubleMatrix1D index;
+	private IntBuffer faceIndices;
 	private final int vertexCount;
+	private long version = 0;
 
 	/** Create a Model from a Java3D Shape3D. */
-	public Model(Shape3D shape3d) {
-		IndexedTriangleArray array = (IndexedTriangleArray) shape3d.getGeometry();
-		vertexCount = array.getVertexCount();
+	public Model(Mesh mesh) {
+		vertexCount = mesh.getVertexCount();
 
-		vertices = new DenseDoubleMatrix1D(array.getCoordRefDouble());
+		vertices = new DenseDoubleMatrix1D(vertexCount * 3);
 		colors = new DenseDoubleMatrix1D(vertexCount * 3);
+		/*IntBuffer indexBuffer = (IntBuffer) mesh.getBuffer(Type.Index).getData();
+		index = new DenseDoubleMatrix1D(indexBuffer.capacity());*/
 
-		byte[] java3dColors = array.getColorRefByte();
+		FloatBuffer verticesBuffer = (FloatBuffer) mesh.getBuffer(Type.Position).getData();
 		for(int x = 0; x < vertexCount * 3; x++) {
-			colors.setQuick(x, TwoComplement.to2complement(java3dColors[x]));
+			vertices.setQuick(x, verticesBuffer.get(x));
 		}
-		java3dColorsDirty = true;
-		java3dCoordsDirty = true;
 
-		faceIndices = array.getCoordIndicesRef();
+		FloatBuffer colorsBuffer = (FloatBuffer) mesh.getBuffer(Type.Color).getData();
+		for(int x = 0; x < vertexCount * 3; x++) {
+			colors.setQuick(x, colorsBuffer.get(x));
+		}
+
+
+		/*for(int x = 0; x < indexBuffer.capacity(); x++) {
+			index.setQuick(x, indexBuffer.get(x));
+		}*/
+
+		faceIndices = (IntBuffer) mesh.getBuffer(Type.Index).getData();
 	}
 
 	/** Construct a Model from two vectors for vertices and colors, and indices for faces.
 	 *  Shape should be a vector like (x1,y1,y1,x2,y2,z2 ...).
 	 *  Texture should be a vector like (r1,b1,g1,r2,g2,b2 ...).
 	 */
-	public Model(DoubleMatrix1D vertices, DoubleMatrix1D colors, int[] faceIndices) {
-		if(vertices.size() <= 0 || colors.size() <= 0 || faceIndices.length <= 0)
+	public Model(DoubleMatrix1D vertices, DoubleMatrix1D colors, IntBuffer faceIndices) {
+		if(vertices.size() <= 0 || colors.size() <= 0 || faceIndices.capacity() <= 0)
 			throw new IllegalArgumentException("At least one argument is empty.");
 		if(vertices.size() != colors.size())
 			throw new IllegalArgumentException("Size of shape and texture inconsistent.");
@@ -53,8 +62,6 @@ public class Model {
 		this.colors = colors;
 		this.faceIndices = faceIndices;
 		this.vertexCount = vertices.size() / 3;
-		this.java3dColorsDirty = true;
-		this.java3dCoordsDirty = true;
 	}
 
 	/** @return the vertex count. */
@@ -69,8 +76,10 @@ public class Model {
 
 	/** Update the vertices matrix. */
 	public void setVerticesMatrix(DoubleMatrix1D shape) {
-		this.vertices = shape;
-		this.java3dCoordsDirty = true;
+		synchronized (vertices) {
+			this.vertices = shape;
+		}
+		this.version++;
 	}
 
 	/** @return the color matrix. */
@@ -80,62 +89,74 @@ public class Model {
 
 	/** Update the color matrix */
 	public void setColorMatrix(DoubleMatrix1D color) {
-		this.colors = color;
-		this.java3dColorsDirty = true;
+		synchronized (this.colors) {
+			this.colors = color;
+		}
+		this.version++;
 	}
 
 	/** @return a reference to the face indices array. This array should be the same for each Face.
 	 * TODO: make this static.
 	 */
-	public int[] getFaceIndices() {
+	public IntBuffer getFaceIndices() {
 		return faceIndices;
 	}
 
 	/** @return a newly allocated IndexedTriangleArray for this face. */
-	public IndexedTriangleArray getGeometry() {
+	public Mesh getMesh() {
 
-		IndexedTriangleArray face = new IndexedTriangleArray(vertexCount,
-				GeometryArray.COORDINATES | GeometryArray.COLOR_3
-						| GeometryArray.NORMALS | GeometryArray.BY_REFERENCE
-						| GeometryArray.BY_REFERENCE_INDICES
-						| GeometryArray.USE_COORD_INDEX_ONLY, faceIndices.length);
+		Mesh mesh = new Mesh();
 
-		face.setCoordIndicesRef(faceIndices);
-		if(face.getCoordRefDouble() == null)
-			face.setCoordRefDouble(new double[vertexCount * 3]);
-		if(face.getColorRefByte() == null)
-			face.setColorRefByte(new byte[vertexCount * 3]);
-
-
-		updateJava3dVertices(face.getCoordRefDouble());
-		NormalGenerator.ComputeNormal(face);
-		updateJava3DColors(face.getColorRefByte());
-
-		face.setCapability(GeometryArray.ALLOW_REF_DATA_WRITE);
-		face.setCapability(GeometryArray.ALLOW_REF_DATA_READ);
-
-		return face;
-	}
-
-	/** @return a newly allocated Shape3D for this face. */
-	public Shape3D getShape3D() {
-		return new Shape3D(this.getGeometry());
-	}
-
-	/** Update the Java3D vertices array if necessary. */
-	private void updateJava3dVertices(double[] java3dVertices) {
-		if(java3dCoordsDirty) {
-			vertices.toArray(java3dVertices);
-		}
-	}
-
-	/** Update the Java3D colors array if necessary. */
-	private void updateJava3DColors(byte[] java3dColors) {
-		if(java3dColorsDirty) {
+		FloatBuffer verticesBuffer = BufferUtils.createFloatBuffer(vertexCount * 3);
+		synchronized (vertices) {
 			for(int x = 0; x < vertexCount * 3; x++) {
-				java3dColors[x] = TwoComplement.from2complement(colors.get(x));
+				verticesBuffer.put((float) vertices.getQuick(x));
 			}
 		}
+		mesh.setBuffer(Type.Position, 3, verticesBuffer);
+
+		FloatBuffer colorsBuffer = BufferUtils.createFloatBuffer(vertexCount * 3);
+		synchronized (colors) {
+			for(int x = 0; x < vertexCount * 3; x++) {
+				colorsBuffer.put((float) colors.getQuick(x));
+			}
+		}
+		mesh.setBuffer(Type.Color, 3, colorsBuffer);
+
+		/*IntBuffer indexBuffer = BufferUtils.createIntBuffer(index.size());
+		synchronized (index) {
+			for(int x = 0; x < index.size(); x++) {
+				indexBuffer.put((int) index.getQuick(x));
+			}
+		}*/
+		mesh.setBuffer(Type.Index, 3, faceIndices);
+
+		mesh.updateCounts();
+		mesh.updateBound();
+
+		return mesh;
 	}
 
+	public long updateMesh(long version, FloatBuffer verticesBuffer, FloatBuffer colorsBuffer) {
+		if(this.version != version)
+			return this.version;
+
+		synchronized (vertices) {
+			for (int x = 0; x < vertexCount * 3; x++) {
+				verticesBuffer.put(x, (float) vertices.getQuick(x));
+			}
+		}
+
+		synchronized (colors) {
+			for (int x = 0; x < vertexCount * 3; x++) {
+				colorsBuffer.put(x, (float) colors.getQuick(x));
+			}
+		}
+
+		return this.version;
+	}
+
+	public long getVersion() {
+		return version;
+	}
 }
