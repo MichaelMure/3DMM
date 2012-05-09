@@ -95,6 +95,13 @@ public abstract class PCA {
 		return data.rows();
 	}
 
+	/** @return how many sample are stored. */
+	public int getSampleNumber() {
+		if(data == null)
+			return 0;
+		return data.columns();
+	}
+
 	/** @return one original sample. */
 	public DoubleMatrix1D getSample(int index) {
 		return data.viewColumn(index);
