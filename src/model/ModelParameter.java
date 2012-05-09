@@ -5,9 +5,6 @@ import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
-import util.Log;
-import util.Log.LogType;
-
 
 public class ModelParameter {
 
@@ -108,7 +105,5 @@ public class ModelParameter {
 
 		verticesWeight.assign(Functions.div(totalVertices));
 		colorWeight.assign(Functions.div(totalColor));
-
-		Log.debug(LogType.MODEL, "Normalizing by colors: " + 1/totalColor + " vertices: " + 1/totalVertices);
 	}
 }
