@@ -1,11 +1,13 @@
 package app;
 
-import gui.SimpleFaceGUI;
+import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import gui.Simple3DGUI;
 import io.FileType;
 
-import javax.media.j3d.IndexedTriangleArray;
-import javax.media.j3d.Shape3D;
-
+import model.Model;
 import model.ModelParameter;
 import model.MorphableModel;
 import model.MorphableModelBuilder;
@@ -15,17 +17,31 @@ import util.Log.LogType;
 public class RandomMorphingApp {
 
 	public static void main(String[] args) {
+		Logger.getLogger("").setLevel(Level.WARNING);
 		MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
 		Log.info(LogType.APP, mm.toString());
 
-		SimpleFaceGUI gui = new SimpleFaceGUI();
-		Shape3D shape = mm.getModel(ModelParameter.getRandom(mm.getSize())).getShape3D();
+		Simple3DGUI gui = new Simple3DGUI();
 
-		RandomMorphingUpdater updater = new RandomMorphingUpdater(mm, (IndexedTriangleArray) shape.getGeometry());
+		ModelParameter origin = ModelParameter.getRandom(mm.getReducedSize());
+		ModelParameter target = ModelParameter.getRandom(mm.getReducedSize());
+		long start = Calendar.getInstance().getTimeInMillis();
+		Model model = mm.getModel(origin);
 
-		gui.displayStaticShape(shape);
-		gui.addBehavior(updater.getUpdateBehavior());
-		gui.run();
+		gui.displayUnshaded(model);
+
+		while (true) {
+			double period = 800d;
+			long now = Calendar.getInstance().getTimeInMillis();
+
+			if((now - start) >= period) {
+				start += Math.floor((now - start) / period) * period;
+				origin = target;
+				target = ModelParameter.getRandom(mm.getReducedSize());
+			}
+
+			mm.updateModel(model, origin.linearApplication(target, (now - start) / period));
+		}
 	}
 
 }
