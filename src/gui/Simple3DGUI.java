@@ -65,8 +65,8 @@ public class Simple3DGUI {
 		frame.setVisible(true);
 	}
 
-	public void displayUnshaded(Model mesh) {
-		app.displayUnshaded(mesh);
+	public void displayUnshaded(Model model) {
+		app.displayUnshaded(model);
 	}
 
 }
