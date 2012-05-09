@@ -48,7 +48,18 @@ public class MorphableModel {
 										 faceIndices);
 	}
 
+	public void updateModel(Model model, ModelParameter param) {
+		ensurePCA();
+		model.setVerticesMatrix(vertices.sampleToSampleSpace(param.getVerticesWeight()));
+		model.setColorMatrix(colors.sampleToSampleSpace(param.getColorWeight()));
+	}
+
 	public int getSize() {
+		assert(vertices.getSampleNumber() == colors.getSampleNumber());
+		return vertices.getSampleNumber();
+	}
+
+	public int getReducedSize() {
 		ensurePCA();
 		assert(vertices.getNumComponents() == colors.getNumComponents());
 		return vertices.getNumComponents();
@@ -56,6 +67,14 @@ public class MorphableModel {
 
 	public Model getAverage() {
 		return new Model(vertices.getMean(), colors.getMean(), faceIndices);
+	}
+
+	public void compute(int dimension) {
+		if(!vertices.computationDone())
+			vertices.computePCA(dimension);
+
+		if(!colors.computationDone())
+			colors.computePCA(dimension);
 	}
 
 	@Override
@@ -67,10 +86,6 @@ public class MorphableModel {
 	}
 
 	private void ensurePCA() {
-		if(!vertices.computationDone())
-			vertices.computePCA(PCA_DIMENSION);
-
-		if(!colors.computationDone())
-			colors.computePCA(PCA_DIMENSION);
+		compute(PCA_DIMENSION);
 	}
 }

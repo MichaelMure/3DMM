@@ -3,6 +3,9 @@ package model;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import util.Log;
+import util.Log.LogType;
+
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.util.BufferUtils;
@@ -14,7 +17,6 @@ public class Model {
 
 	private DoubleMatrix1D vertices;
 	private DoubleMatrix1D colors;
-	//private DoubleMatrix1D index;
 	private IntBuffer faceIndices;
 	private final int vertexCount;
 	private long version = 0;
@@ -25,8 +27,6 @@ public class Model {
 
 		vertices = new DenseDoubleMatrix1D(vertexCount * 3);
 		colors = new DenseDoubleMatrix1D(vertexCount * 3);
-		/*IntBuffer indexBuffer = (IntBuffer) mesh.getBuffer(Type.Index).getData();
-		index = new DenseDoubleMatrix1D(indexBuffer.capacity());*/
 
 		FloatBuffer verticesBuffer = (FloatBuffer) mesh.getBuffer(Type.Position).getData();
 		for(int x = 0; x < vertexCount * 3; x++) {
@@ -37,11 +37,6 @@ public class Model {
 		for(int x = 0; x < vertexCount * 3; x++) {
 			colors.setQuick(x, colorsBuffer.get(x));
 		}
-
-
-		/*for(int x = 0; x < indexBuffer.capacity(); x++) {
-			index.setQuick(x, indexBuffer.get(x));
-		}*/
 
 		faceIndices = (IntBuffer) mesh.getBuffer(Type.Index).getData();
 	}
@@ -123,35 +118,41 @@ public class Model {
 		}
 		mesh.setBuffer(Type.Color, 3, colorsBuffer);
 
-		/*IntBuffer indexBuffer = BufferUtils.createIntBuffer(index.size());
-		synchronized (index) {
-			for(int x = 0; x < index.size(); x++) {
-				indexBuffer.put((int) index.getQuick(x));
-			}
-		}*/
 		mesh.setBuffer(Type.Index, 3, faceIndices);
 
-		mesh.updateCounts();
 		mesh.updateBound();
 
 		return mesh;
 	}
 
-	public long updateMesh(long version, FloatBuffer verticesBuffer, FloatBuffer colorsBuffer) {
+	public long updateMesh(long version, Mesh mesh) {
 		if(this.version != version)
 			return this.version;
 
+		Log.info(LogType.MODEL, "Update mesh.");
+
+		FloatBuffer verticesBuffer = (FloatBuffer) mesh.getBuffer(Type.Position).getData();
+		FloatBuffer colorsBuffer = (FloatBuffer) mesh.getBuffer(Type.Color).getData();
+
+		verticesBuffer.clear();
+		colorsBuffer.clear();
+
 		synchronized (vertices) {
 			for (int x = 0; x < vertexCount * 3; x++) {
-				verticesBuffer.put(x, (float) vertices.getQuick(x));
+				verticesBuffer.put((float) vertices.getQuick(x));
 			}
 		}
 
 		synchronized (colors) {
 			for (int x = 0; x < vertexCount * 3; x++) {
-				colorsBuffer.put(x, (float) colors.getQuick(x));
+				colorsBuffer.put((float) colors.getQuick(x));
 			}
 		}
+
+		mesh.setBuffer(Type.Position, 3, verticesBuffer);
+		mesh.setBuffer(Type.Color, 3, colorsBuffer);
+		mesh.updateCounts();
+		mesh.updateBound();
 
 		return this.version;
 	}
