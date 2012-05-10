@@ -126,7 +126,7 @@ public class Model {
 	}
 
 	public long updateMesh(long version, Mesh mesh) {
-		if(this.version != version)
+		if(this.version == version)
 			return this.version;
 
 		Log.info(LogType.MODEL, "Update mesh.");
