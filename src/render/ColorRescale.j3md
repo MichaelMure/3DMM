@@ -1,0 +1,31 @@
+MaterialDef ColorRescale {
+ 
+    MaterialParameters {
+        Int NumSamples
+        Texture2D Texture
+        Vector4 offsets
+        Vector4 gains
+    }
+ 
+    Technique {
+        VertexShader GLSL150:   Common/MatDefs/Post/Post15.vert
+        FragmentShader GLSL150: render/ColorRescale15.frag
+ 
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+    }
+ 
+    Technique {
+        VertexShader GLSL100:   Common/MatDefs/Post/Post.vert
+        FragmentShader GLSL100: render/ColorRescale.frag
+ 
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+    }
+ 
+    Technique FixedFunc {
+    }
+ 
+}
