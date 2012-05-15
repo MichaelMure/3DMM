@@ -1,69 +1,62 @@
 package util;
 
-import javax.media.j3d.IndexedTriangleArray;
-import javax.vecmath.Vector3d;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.util.BufferUtils;
 
 public class NormalGenerator {
 
-	public static void ComputeNormal(IndexedTriangleArray array) {
+	public static void ComputeNormal(Mesh mesh) {
 		TimeCounter t = new TimeCounter("Computing normals");
-		int vertexCount = array.getVertexCount();
-		int facesCount = array.getIndexCount() / 3;
+		int vertexCount = mesh.getVertexCount();
+		int facesCount = mesh.getTriangleCount();
 
-		float[] normals = array.getNormalRefFloat();
-		if(normals == null)
-			normals = new float[vertexCount * 3];
+		FloatBuffer verticeBuffer = (FloatBuffer) mesh.getBuffer(Type.Position).getData();
+		Vector3f positions[] = BufferUtils.getVector3Array(verticeBuffer);
 
-		for(int x = 0; x < vertexCount * 3; x++) {
-			normals[x] = 0.0f;
+		IntBuffer indexBuffer = (IntBuffer) mesh.getBuffer(Type.Index).getData();
+
+		FloatBuffer normalBuffer;
+		if(mesh.getBuffer(Type.Normal) == null)
+			normalBuffer = BufferUtils.createVector3Buffer(vertexCount);
+		else
+			normalBuffer = (FloatBuffer) mesh.getBuffer(Type.Normal).getData();
+
+		for(int x = 0; x < vertexCount; x++) {
+			normalBuffer.put(x, 0f);
 		}
 
-		double[] coords = array.getCoordRefDouble();
-		int[] faces = array.getCoordIndicesRef();
+		Vector3f AB,BC;
+		Vector3f normal = new Vector3f();
 
-		Vector3d vecAB = new Vector3d();
-		Vector3d vecBC = new Vector3d();
-		Vector3d normal = new Vector3d();
 		for(int x = 0; x < facesCount; x++) {
-			int indiceA = faces[3*x];
-			int indiceB = faces[3*x+1];
-			int indiceC = faces[3*x+2];
+			int indiceA = indexBuffer.get(3*x+0);
+			int indiceB = indexBuffer.get(3*x+1);
+			int indiceC = indexBuffer.get(3*x+2);
 
-			vecAB.x = coords[3*indiceB+0] - coords[3*indiceA+0];
-			vecAB.y = coords[3*indiceB+1] - coords[3*indiceA+1];
-			vecAB.z = coords[3*indiceB+2] - coords[3*indiceA+2];
-			vecBC.x = coords[3*indiceC+0] - coords[3*indiceB+0];
-			vecBC.y = coords[3*indiceC+1] - coords[3*indiceB+1];
-			vecBC.z = coords[3*indiceC+2] - coords[3*indiceB+2];
+			AB = positions[indiceB].subtract(positions[indiceA]);
+			BC = positions[indiceC].subtract(positions[indiceB]);
 
-			vecAB.normalize();
-			vecBC.normalize();
+			/*vecAB.normalize();
+			vecBC.normalize();*/
 
-			normal.cross(vecAB, vecBC);
+			AB.cross(BC, normal);
 			normal.normalize();
 
-			normals[3*indiceA+0] += (float) -normal.x;
-			normals[3*indiceA+1] += (float) -normal.y;
-			normals[3*indiceA+2] += (float) -normal.z;
-			normals[3*indiceB+0] += (float) -normal.x;
-			normals[3*indiceB+1] += (float) -normal.y;
-			normals[3*indiceB+2] += (float) -normal.z;
-			normals[3*indiceC+0] += (float) -normal.x;
-			normals[3*indiceC+1] += (float) -normal.y;
-			normals[3*indiceC+2] += (float) -normal.z;
+			BufferUtils.addInBuffer(normal, normalBuffer, indiceA);
+			BufferUtils.addInBuffer(normal, normalBuffer, indiceB);
+			BufferUtils.addInBuffer(normal, normalBuffer, indiceC);
 		}
 
-		double lenght;
 		for(int x = 0; x < vertexCount; x++) {
-			lenght = Math.sqrt(normals[3 * x + 0] * normals[3 * x + 0]
-					+ normals[3 * x + 1] * normals[3 * x + 1]
-					+ normals[3 * x + 2] * normals[3 * x + 2]);
-			normals[3 * x + 0] = (float) (normals[3 * x + 0] / lenght);
-			normals[3 * x + 1] = (float) (normals[3 * x + 1] / lenght);
-			normals[3 * x + 2] = (float) (normals[3 * x + 2] / lenght);
+			BufferUtils.normalizeVector3(normalBuffer, x);
 		}
 
-		array.setNormalRefFloat(normals);
+		mesh.setBuffer(Type.Normal, 3, normalBuffer);
 		t.stop();
 	}
 
