@@ -1,11 +1,13 @@
 package render;
 
-import java.awt.Color;
+import util.Log;
+import util.Log.LogType;
 
-import javax.vecmath.Color3f;
-import javax.vecmath.Quat4d;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
+import com.jme3.bounding.BoundingBox;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
@@ -53,10 +55,10 @@ public class RenderParameter {
 	public RenderParameter() {
 		setCameraDistance(3.0);
 		setObjectScale(1.0);
-		setObjectPosition(new Vector3d());
-		setObjectRotation(new Quat4d());
-		setAmbientLightColor(new Color3f(Color.WHITE));
-		setDirectedLightColor(new Color3f(Color.WHITE));
+		setObjectPosition(new Vector3f());
+		setObjectRotation(new Quaternion());
+		setAmbientLightColor(ColorRGBA.White);
+		setDirectedLightColor(ColorRGBA.White);
 		setDirectedLightDirection(new Vector3f(0,1,0));
 
 		float[] offsets = new float[4];
@@ -84,75 +86,91 @@ public class RenderParameter {
 		this.matrix = matrix;
 	}
 
-	public double getCameraDistance() {
-		return matrix.getQuick(CAMERA_DISTANCE);
+	public float getCameraDistance() {
+		return (float) matrix.getQuick(CAMERA_DISTANCE);
 	}
 
 	public void setCameraDistance(double cameraDistance) {
 		matrix.setQuick(CAMERA_DISTANCE, cameraDistance);
 	}
 
-	public double getObjectScale() {
-		return matrix.getQuick(OBJECT_SCALE);
+	public float getObjectScale() {
+		return (float) matrix.getQuick(OBJECT_SCALE);
 	}
 
 	public void setObjectScale(double objectScale) {
 		matrix.setQuick(OBJECT_SCALE, objectScale);
 	}
 
-	public Vector3d getObjectPosition() {
-		return new Vector3d(matrix.getQuick(OBJECT_POSITION_X),
-				matrix.getQuick(OBJECT_POSITION_Y),
-				0.0);
+	public void initObjectScale(Geometry geom) {
+		BoundingBox bb = (BoundingBox) geom.getModelBound();
+		Vector3f extent = bb.getExtent(null);
+
+		if(extent.length() > 1.0) {
+			float scale = 1f / extent.length();
+			Log.info(LogType.GUI, "Auto-scaling: "+ scale);
+
+			setObjectScale(scale);
+			return;
+		}
+		Log.info(LogType.GUI, "Not auto-scaling");
 	}
 
-	public void setObjectPosition(Vector3d objectPosition) {
+	public Vector3f getObjectPosition() {
+		return new Vector3f((float) matrix.getQuick(OBJECT_POSITION_X),
+				(float) matrix.getQuick(OBJECT_POSITION_Y),
+				0.0f);
+	}
+
+	public void setObjectPosition(Vector3f objectPosition) {
 		matrix.setQuick(OBJECT_POSITION_X, objectPosition.x);
 		matrix.setQuick(OBJECT_POSITION_Y, objectPosition.y);
 	}
 
-	public Quat4d getObjectRotation() {
-		return new Quat4d(matrix.getQuick(OBJECT_ROTATION_X),
-				matrix.getQuick(OBJECT_ROTATION_Y),
-				matrix.getQuick(OBJECT_ROTATION_Z),
-				matrix.getQuick(OBJECT_ROTATION_W));
+	public Quaternion getObjectRotation() {
+		return new Quaternion((float) matrix.getQuick(OBJECT_ROTATION_X),
+													(float) matrix.getQuick(OBJECT_ROTATION_Y),
+													(float) matrix.getQuick(OBJECT_ROTATION_Z),
+													(float) matrix.getQuick(OBJECT_ROTATION_W));
 	}
 
-	public void setObjectRotation(Quat4d objectRotation) {
-		matrix.setQuick(OBJECT_ROTATION_X, objectRotation.x);
-		matrix.setQuick(OBJECT_ROTATION_Y, objectRotation.y);
-		matrix.setQuick(OBJECT_ROTATION_Z, objectRotation.z);
-		matrix.setQuick(OBJECT_ROTATION_W, objectRotation.w);
+	public void setObjectRotation(Quaternion objectRotation) {
+		matrix.setQuick(OBJECT_ROTATION_X, objectRotation.getX());
+		matrix.setQuick(OBJECT_ROTATION_Y, objectRotation.getY());
+		matrix.setQuick(OBJECT_ROTATION_Z, objectRotation.getZ());
+		matrix.setQuick(OBJECT_ROTATION_W, objectRotation.getW());
 	}
 
-	public Color3f getAmbientLightColor() {
-		return new Color3f((float) matrix.getQuick(AMBIENT_COLOR_R),
-				(float) matrix.getQuick(AMBIENT_COLOR_G),
-				(float) matrix.getQuick(AMBIENT_COLOR_B));
+	public ColorRGBA getAmbientLightColor() {
+		return new ColorRGBA((float) matrix.getQuick(AMBIENT_COLOR_R),
+												 (float) matrix.getQuick(AMBIENT_COLOR_G),
+												 (float) matrix.getQuick(AMBIENT_COLOR_B),
+												 1.0f);
 	}
 
-	public void setAmbientLightColor(Color3f ambientLightColor) {
-		matrix.setQuick(AMBIENT_COLOR_R, ambientLightColor.x);
-		matrix.setQuick(AMBIENT_COLOR_G, ambientLightColor.y);
-		matrix.setQuick(AMBIENT_COLOR_B, ambientLightColor.z);
+	public void setAmbientLightColor(ColorRGBA ambientLightColor) {
+		matrix.setQuick(AMBIENT_COLOR_R, ambientLightColor.r);
+		matrix.setQuick(AMBIENT_COLOR_G, ambientLightColor.g);
+		matrix.setQuick(AMBIENT_COLOR_B, ambientLightColor.b);
 	}
 
-	public Color3f getDirectedLightColor() {
-		return new Color3f((float) matrix.getQuick(DIRECTED_LIGHT_COLOR_R),
-				(float) matrix.getQuick(DIRECTED_LIGHT_COLOR_G),
-				(float) matrix.getQuick(DIRECTED_LIGHT_COLOR_B));
+	public ColorRGBA getDirectedLightColor() {
+		return new ColorRGBA((float) matrix.getQuick(DIRECTED_LIGHT_COLOR_R),
+												 (float) matrix.getQuick(DIRECTED_LIGHT_COLOR_G),
+												 (float) matrix.getQuick(DIRECTED_LIGHT_COLOR_B),
+												 1.0f);
 	}
 
-	public void setDirectedLightColor(Color3f directedLightColor) {
-		matrix.setQuick(DIRECTED_LIGHT_COLOR_R, directedLightColor.x);
-		matrix.setQuick(DIRECTED_LIGHT_COLOR_G, directedLightColor.y);
-		matrix.setQuick(DIRECTED_LIGHT_COLOR_B, directedLightColor.z);
+	public void setDirectedLightColor(ColorRGBA directedLightColor) {
+		matrix.setQuick(DIRECTED_LIGHT_COLOR_R, directedLightColor.r);
+		matrix.setQuick(DIRECTED_LIGHT_COLOR_G, directedLightColor.g);
+		matrix.setQuick(DIRECTED_LIGHT_COLOR_B, directedLightColor.b);
 	}
 
 	public Vector3f getDirectedLightDirection() {
 		return new Vector3f((float) matrix.getQuick(DIRECTED_LIGHT_DIRECTION_X),
-				(float) matrix.getQuick(DIRECTED_LIGHT_DIRECTION_Y),
-				(float) matrix.getQuick(DIRECTED_LIGHT_DIRECTION_Z));
+												(float) matrix.getQuick(DIRECTED_LIGHT_DIRECTION_Y),
+												(float) matrix.getQuick(DIRECTED_LIGHT_DIRECTION_Z));
 	}
 
 	public void setDirectedLightDirection(Vector3f directedLightDirection) {
@@ -173,9 +191,9 @@ public class RenderParameter {
 	public void setColorsOffsets(float[] colorsOffsets) {
 		if(colorsOffsets.length != 3 && colorsOffsets.length != 4)
 			throw new IllegalArgumentException("Unexpected array length for colors offsets.");
-					matrix.setQuick(COLOR_OFFSET_R, colorsOffsets[0]);
-					matrix.setQuick(COLOR_OFFSET_G, colorsOffsets[1]);
-					matrix.setQuick(COLOR_OFFSET_B, colorsOffsets[2]);
+		matrix.setQuick(COLOR_OFFSET_R, colorsOffsets[0]);
+		matrix.setQuick(COLOR_OFFSET_G, colorsOffsets[1]);
+		matrix.setQuick(COLOR_OFFSET_B, colorsOffsets[2]);
 	}
 
 	public float[] getColorsGains() {
