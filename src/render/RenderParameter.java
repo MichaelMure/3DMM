@@ -60,21 +60,8 @@ public class RenderParameter {
 		setAmbientLightColor(ColorRGBA.White);
 		setDirectedLightColor(ColorRGBA.White);
 		setDirectedLightDirection(new Vector3f(0,1,0));
-
-		float[] offsets = new float[4];
-		offsets[0] = 1.0f;
-		offsets[1] = 1.0f;
-		offsets[2] = 1.0f;
-		offsets[3] = 1.0f;
-		setColorsOffsets(offsets);
-
-		float[] gains = new float[4];
-		gains[0] = 0.0f;
-		gains[1] = 0.0f;
-		gains[2] = 0.0f;
-		gains[3] = 0.0f;
-		setColorsGains(gains);
-
+		setColorsOffsets(new ColorRGBA(0f, 0f, 0f, 0f));
+		setColorsGains(new ColorRGBA(1f, 1f, 1f, 1f));
 		setObjectShininess(1f);
 	}
 
@@ -179,38 +166,30 @@ public class RenderParameter {
 		matrix.setQuick(DIRECTED_LIGHT_DIRECTION_Z, directedLightDirection.z);
 	}
 
-	public float[] getColorsOffsets() {
-		float[] tab = new float[4];
-		tab[0] = (float) matrix.getQuick(COLOR_OFFSET_R);
-		tab[1] = (float) matrix.getQuick(COLOR_OFFSET_G);
-		tab[2] = (float) matrix.getQuick(COLOR_OFFSET_B);
-		tab[3] = 0.0f;
-		return tab;
+	public ColorRGBA getColorsOffsets() {
+		return new ColorRGBA((float) matrix.getQuick(COLOR_OFFSET_R),
+												 (float) matrix.getQuick(COLOR_OFFSET_G),
+												 (float) matrix.getQuick(COLOR_OFFSET_B),
+												 0.0f);
 	}
 
-	public void setColorsOffsets(float[] colorsOffsets) {
-		if(colorsOffsets.length != 3 && colorsOffsets.length != 4)
-			throw new IllegalArgumentException("Unexpected array length for colors offsets.");
-		matrix.setQuick(COLOR_OFFSET_R, colorsOffsets[0]);
-		matrix.setQuick(COLOR_OFFSET_G, colorsOffsets[1]);
-		matrix.setQuick(COLOR_OFFSET_B, colorsOffsets[2]);
+	public void setColorsOffsets(ColorRGBA offsets) {
+		matrix.setQuick(COLOR_OFFSET_R, offsets.r);
+		matrix.setQuick(COLOR_OFFSET_G, offsets.g);
+		matrix.setQuick(COLOR_OFFSET_B, offsets.b);
 	}
 
-	public float[] getColorsGains() {
-		float[] tab = new float[4];
-		tab[0] = (float) matrix.getQuick(COLOR_GAIN_R);
-		tab[1] = (float) matrix.getQuick(COLOR_GAIN_G);
-		tab[2] = (float) matrix.getQuick(COLOR_GAIN_B);
-		tab[3] = 1.0f;
-		return tab;
+	public ColorRGBA getColorsGains() {
+		return new ColorRGBA((float) matrix.getQuick(COLOR_GAIN_R),
+												 (float) matrix.getQuick(COLOR_GAIN_G),
+												 (float) matrix.getQuick(COLOR_GAIN_B),
+												 1.0f);
 	}
 
-	public void setColorsGains(float[] colorsGains) {
-		if(colorsGains.length != 3 && colorsGains.length != 4)
-			throw new IllegalArgumentException("Unexpected array length for colors gains.");
-		matrix.setQuick(COLOR_GAIN_R, colorsGains[0]);
-		matrix.setQuick(COLOR_GAIN_G, colorsGains[1]);
-		matrix.setQuick(COLOR_GAIN_B, colorsGains[2]);
+	public void setColorsGains(ColorRGBA gains) {
+		matrix.setQuick(COLOR_GAIN_R, gains.r);
+		matrix.setQuick(COLOR_GAIN_G, gains.g);
+		matrix.setQuick(COLOR_GAIN_B, gains.b);
 	}
 
 	public float getObjectShininess() {

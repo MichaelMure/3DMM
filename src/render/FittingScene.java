@@ -7,6 +7,7 @@ import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue.ShadowMode;
@@ -27,6 +28,7 @@ public class FittingScene {
 	private DirectionalLight directLight;
 	private AmbientLight ambientLight;
 	private BasicShadowRenderer bsr;
+	private ColorRescaleFilter crf;
 
 	public FittingScene(Mesh mesh, RenderParameter params) {
 		this.mesh = mesh;
@@ -75,7 +77,13 @@ public class FittingScene {
 		fpp.addFilter(ssaoFilter);
 		viewPort.addProcessor(fpp);*/
 
-    update();
+		/* Colors */
+		FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+		crf = new ColorRescaleFilter();
+		fpp.addFilter(crf);
+		viewPort.addProcessor(fpp);
+
+		update();
 	}
 
 	public void update() {
@@ -96,6 +104,10 @@ public class FittingScene {
 		directLight.setColor(params.getDirectedLightColor());
 		ambientLight.setColor(params.getAmbientLightColor());
 		bsr.setDirection(params.getDirectedLightDirection());
+
+		/* Colors */
+		crf.setOffsets(params.getColorsOffsets());
+		crf.setGains(params.getColorsGains());
 
 		/* Update object */
 		mat.setFloat("Shininess", params.getObjectShininess());
