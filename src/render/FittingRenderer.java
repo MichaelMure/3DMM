@@ -1,11 +1,10 @@
 package render;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import javax.imageio.ImageIO;
+import util.Log;
+import util.Log.LogType;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.post.SceneProcessor;
@@ -24,11 +23,15 @@ public class FittingRenderer extends SimpleApplication implements SceneProcessor
 	private RenderParameter params;
 
 	private ByteBuffer cpuBuf;
+	private BufferedImage renderOutput;
+
+	private FittingRater rater;
 
 	public FittingRenderer(Mesh mesh, BufferedImage target) {
 		this.target = target;
 		this.params = new RenderParameter();
 		this.scene = new FittingScene(mesh, params);
+		this.rater = new FittingRater(target);
 	}
 
 	@Override
@@ -39,6 +42,7 @@ public class FittingRenderer extends SimpleApplication implements SceneProcessor
 		this.setPauseOnLostFocus(false);
 
 		cpuBuf = BufferUtils.createByteBuffer(target.getWidth() * target.getHeight() * 7);
+		renderOutput = new BufferedImage(target.getWidth(),target.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
 
 		scene.createScene(rootNode, cam, assetManager, viewPort);
 
@@ -65,25 +69,20 @@ public class FittingRenderer extends SimpleApplication implements SceneProcessor
 
 	@Override
 	public void postFrame(FrameBuffer out) {
-		synchronized (cpuBuf) {
-			cpuBuf.clear();
-			renderer.readFrameBuffer(out, cpuBuf);
-		}
+		cpuBuf.clear();
+		renderer.readFrameBuffer(out, cpuBuf);
+		Screenshots.convertScreenShot(cpuBuf, renderOutput);
 
-		try {
+		rater.setRender(renderOutput);
+		Log.info(LogType.MODEL, "Rate: " + rater.getRate());
+		Log.info(LogType.MODEL, "Pixels: " + rater.getNbPixels());
+		Log.info(LogType.MODEL, "Ratio: " + rater.getRatio());
+
+		/*try {
 			ImageIO.write(getRender(), "png", new File("out.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-
-		/*
-		 * FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
-		 * BloomFilter bf = new BloomFilter(BloomFilter.GlowMode.Objects);
-		 * bf.setBloomIntensity(2.0f); bf.setExposurePower(1.3f); fpp.addFilter(bf);
-		 * BloomUI bui = new BloomUI(inputManager, bf); viewPort.addProcessor(fpp);
-		 */
-
-		/* Update parameters */
+		}*/
 	}
 
 	@Override
