@@ -59,7 +59,7 @@ public class RenderParameter {
 		setObjectRotation(new Quaternion());
 		setAmbientLightColor(ColorRGBA.White);
 		setDirectedLightColor(ColorRGBA.White);
-		setDirectedLightDirection(new Vector3f(0,1,0));
+		setDirectedLightDirection(new Vector3f(-0.5f,-1,-1));
 		setColorsOffsets(new ColorRGBA(0f, 0f, 0f, 0f));
 		setColorsGains(new ColorRGBA(1f, 1f, 1f, 1f));
 		setObjectShininess(1f);
