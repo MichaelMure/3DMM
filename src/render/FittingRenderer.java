@@ -3,35 +3,32 @@ package render;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
-import util.Log;
-import util.Log.LogType;
-
 import com.jme3.app.SimpleApplication;
 import com.jme3.post.SceneProcessor;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.Mesh;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.Screenshots;
 
 public class FittingRenderer extends SimpleApplication implements SceneProcessor {
 
-	private FittingScene scene;
-	private BufferedImage target;
-	private RenderParameter params;
+	public interface Callback {
+		public void rendererCallback();
+	}
+
+	private final Callback callback;
+	private final FittingScene scene;
+	private final BufferedImage target;
 
 	private ByteBuffer cpuBuf;
 	private BufferedImage renderOutput;
 
-	private FittingRater rater;
-
-	public FittingRenderer(Mesh mesh, BufferedImage target) {
+	public FittingRenderer(Callback callback, FittingScene scene, BufferedImage target) {
+		this.callback = callback;
+		this.scene = scene;
 		this.target = target;
-		this.params = new RenderParameter();
-		this.scene = new FittingScene(mesh, params);
-		this.rater = new FittingRater(target);
 	}
 
 	@Override
@@ -73,11 +70,7 @@ public class FittingRenderer extends SimpleApplication implements SceneProcessor
 		renderer.readFrameBuffer(out, cpuBuf);
 		Screenshots.convertScreenShot(cpuBuf, renderOutput);
 
-		rater.setRender(renderOutput);
-		Log.info(LogType.MODEL, "Rate: " + rater.getRate());
-		Log.info(LogType.MODEL, "Pixels: " + rater.getNbPixels());
-		Log.info(LogType.MODEL, "Ratio: " + rater.getRatio());
-
+		callback.rendererCallback();
 		/*try {
 			ImageIO.write(getRender(), "png", new File("out.png"));
 		} catch (IOException e) {
