@@ -13,6 +13,7 @@ public class Log {
 		IO, /* Import/Export */
 		GUI, /* User interface */
 		MODEL, /* 3D Morphable Model */
+		FITTING, /* Fitting part */
 		TIME /* Time counter */
 	}
 
