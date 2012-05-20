@@ -7,7 +7,7 @@ import com.jme3.bounding.BoundingBox;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
+import com.jme3.scene.Mesh;
 
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
@@ -62,7 +62,12 @@ public class RenderParameter {
 		setDirectedLightDirection(new Vector3f(-0.5f,-1,-1));
 		setColorsOffsets(new ColorRGBA(0f, 0f, 0f, 0f));
 		setColorsGains(new ColorRGBA(1f, 1f, 1f, 1f));
-		setObjectShininess(1f);
+		setObjectShininess(80f);
+	}
+
+	public RenderParameter(RenderParameter param) {
+		this.matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
+		this.matrix.assign(param.matrix);
 	}
 
 	public DenseDoubleMatrix1D getMatrix() {
@@ -71,6 +76,35 @@ public class RenderParameter {
 
 	public void setMatrix(DenseDoubleMatrix1D matrix) {
 		this.matrix = matrix;
+	}
+
+	@Override
+	public String toString() {
+		String result = "Render Parameters: \n";
+		result += "Camera distance          : " + getCameraDistance() + "\n";
+		result += "Object scale             : " + getObjectScale() + "\n";
+		result += "Object position          : " + getObjectPosition() + "\n";
+		result += "Object rotation          : " + getObjectRotation() + "\n";
+		result += "Ambient color            : " + getAmbientLightColor() + "\n";
+		result += "Directed light color     : " + getDirectedLightColor() + "\n";
+		result += "Directed light direction : " + getDirectedLightDirection() + "\n";
+		result += "Color offset             : " + getColorsOffsets() + "\n";
+		result += "Color gain               : " + getColorsGains() + "\n";
+		result += "Object shininess         : " + getObjectShininess() + "\n";
+
+		return result;
+	}
+
+	public void copy(RenderParameter params) {
+		matrix.assign(params.matrix);
+	}
+
+	/** Multiply the specified parameter by a ratio. */
+	public void scaleParam(int index, double ratio) {
+		if(index < 0 || index > PARAMS_SIZE -1)
+			throw new IllegalArgumentException("Unexpected index");
+
+		matrix.setQuick(index, matrix.getQuick(index) * ratio);
 	}
 
 	public float getCameraDistance() {
@@ -89,8 +123,8 @@ public class RenderParameter {
 		matrix.setQuick(OBJECT_SCALE, objectScale);
 	}
 
-	public void initObjectScale(Geometry geom) {
-		BoundingBox bb = (BoundingBox) geom.getModelBound();
+	public void initObjectScale(Mesh mesh) {
+		BoundingBox bb = (BoundingBox) mesh.getBound();
 		Vector3f extent = bb.getExtent(null);
 
 		if(extent.length() > 1.0) {
