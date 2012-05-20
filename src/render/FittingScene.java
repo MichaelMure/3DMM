@@ -18,8 +18,6 @@ import com.jme3.shadow.BasicShadowRenderer;
 
 public class FittingScene {
 
-	private RenderParameter params;
-
 	private Mesh mesh = null;
 	private Geometry geom = null;
 	private Material mat = null;
@@ -30,9 +28,8 @@ public class FittingScene {
 	private BasicShadowRenderer bsr;
 	private ColorRescaleFilter crf;
 
-	public FittingScene(Mesh mesh, RenderParameter params) {
+	public FittingScene(Mesh mesh) {
 		this.mesh = mesh;
-		this.params = params;
 	}
 
 	public void createScene(Node rootNode, Camera cam, AssetManager assetManager, ViewPort viewPort) {
@@ -41,7 +38,6 @@ public class FittingScene {
 		/* Object */
 		NormalGenerator.ComputeNormal(mesh);
 		geom = new Geometry("mesh", mesh);
-		params.initObjectScale(geom);
 
 		/* Material */
 		mat = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -82,11 +78,9 @@ public class FittingScene {
 		crf = new ColorRescaleFilter();
 		fpp.addFilter(crf);
 		viewPort.addProcessor(fpp);
-
-		update();
 	}
 
-	public void update() {
+	public void update(RenderParameter params) {
 		/* Update view */
 		cam.setLocation(new Vector3f(0f, 0f, params.getCameraDistance()));
 
