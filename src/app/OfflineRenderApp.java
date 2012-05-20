@@ -35,7 +35,9 @@ public class OfflineRenderApp implements FittingRenderer.Callback {
 		try {
 			Mesh face = importer.loadObject("data/00017_20061201_00812_neutral_face05_BAD.ply");
 			BufferedImage target = ImageIO.read(new File(args[0]));
-			FittingScene scene = new FittingScene(face, new RenderParameter());
+			FittingScene scene = new FittingScene(face);
+			RenderParameter param = new RenderParameter();
+			param.initObjectScale(face);
 
 			renderer = new FittingRenderer(this, scene, target);
 			renderer.setShowSettings(false);
