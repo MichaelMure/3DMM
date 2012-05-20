@@ -47,6 +47,7 @@ public class RenderParameter {
 
 	private final static int OBJECT_SHININESS = 23;
 
+	public final static int LAST_PARAM = OBJECT_SHININESS;
 	private final static int PARAMS_SIZE = OBJECT_SHININESS +1;
 
 
@@ -101,7 +102,7 @@ public class RenderParameter {
 
 	/** Multiply the specified parameter by a ratio. */
 	public void scaleParam(int index, double ratio) {
-		if(index < 0 || index > PARAMS_SIZE -1)
+		if(index < 0 || index > LAST_PARAM)
 			throw new IllegalArgumentException("Unexpected index");
 
 		matrix.setQuick(index, matrix.getQuick(index) * ratio);
