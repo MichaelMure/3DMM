@@ -45,9 +45,31 @@ public class ModelParameter {
 	public ModelParameter(DoubleMatrix1D verticesWeight, DoubleMatrix1D colorWeight) {
 		if(verticesWeight.size() != colorWeight.size())
 			throw new IllegalArgumentException("Different size for color and vertice weights.");
-		this.verticesWeight = verticesWeight;
-		this.colorWeight = colorWeight;
 		this.modelCount = verticesWeight.size();
+		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
+		this.verticesWeight.assign(verticesWeight);
+		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
+		this.colorWeight.assign(colorWeight);
+	}
+
+	/** Copy constructor */
+	public ModelParameter(ModelParameter param) {
+		this.modelCount = param.modelCount;
+		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
+		this.verticesWeight.assign(param.verticesWeight);
+		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
+		this.colorWeight.assign(param.colorWeight);
+	}
+
+	/** In place randomization of the parameters */
+	public void Random() {
+		colorWeight.assign(Functions.random());
+		verticesWeight.assign(Functions.random());
+
+		colorWeight.assign(Functions.pow(3));
+		verticesWeight.assign(Functions.pow(3));
+
+		normalize();
 	}
 
 	/** @return the number of parameter stored. */
