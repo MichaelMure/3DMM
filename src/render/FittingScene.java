@@ -32,7 +32,7 @@ public class FittingScene {
 		this.mesh = mesh;
 	}
 
-	public void createScene(Node rootNode, Camera cam, AssetManager assetManager, ViewPort viewPort) {
+	public void createScene(Node rootNode, Camera cam, AssetManager assetManager, ViewPort viewPort, RenderParameter params) {
 		this.cam = cam;
 
 		/* Object */
@@ -66,7 +66,7 @@ public class FittingScene {
     viewPort.addProcessor(pssmRenderer);*/
 
     bsr = new BasicShadowRenderer(assetManager, 1024);
-    viewPort.addProcessor(bsr);
+    //viewPort.addProcessor(bsr);
 
     /*FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
 		SSAOFilter ssaoFilter = new SSAOFilter(12.94f, 43.92f, 0.33f, 0.61f);
@@ -78,6 +78,8 @@ public class FittingScene {
 		crf = new ColorRescaleFilter();
 		fpp.addFilter(crf);
 		viewPort.addProcessor(fpp);
+
+		update(params);
 	}
 
 	public void update(RenderParameter params) {
@@ -92,6 +94,9 @@ public class FittingScene {
 		geom.setLocalRotation(params.getObjectRotation());
 		geom.setLocalTranslation(params.getObjectPosition());
 		geom.setLocalScale(params.getObjectScale());
+		System.out.println(geom.getLocalScale());
+		/*System.out.println(geom.getLocalTranslation());
+		System.out.println(geom.getLocalRotation());*/
 
 		/* Update lightning */
 		directLight.setDirection(params.getDirectedLightDirection());

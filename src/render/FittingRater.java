@@ -74,8 +74,10 @@ public class FittingRater {
 				}
 			}
 
-		rate = (double) total_error / (double) nb_pixels;
 		ratio = (double) nb_pixels / (double) (render.getWidth() * render.getHeight());
+		rate = ratio * ((double) total_error / (double)  nb_pixels);
+		//rate = total_error;
+
 		dirty = false;
 	}
 }
