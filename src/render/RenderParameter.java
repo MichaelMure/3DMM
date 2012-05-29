@@ -23,45 +23,47 @@ public class RenderParameter {
 	private final static int OBJECT_ROTATION_X = 4;
 	private final static int OBJECT_ROTATION_Y = 5;
 	private final static int OBJECT_ROTATION_Z = 6;
-	private final static int OBJECT_ROTATION_W = 7;
 
-	private final static int AMBIENT_COLOR_R = 8;
-	private final static int AMBIENT_COLOR_G = 9;
-	private final static int AMBIENT_COLOR_B = 10;
+	private final static int AMBIENT_COLOR_R = 7;
+	private final static int AMBIENT_COLOR_G = 8;
+	private final static int AMBIENT_COLOR_B = 9;
 
-	private final static int DIRECTED_LIGHT_COLOR_R = 11;
-	private final static int DIRECTED_LIGHT_COLOR_G = 12;
-	private final static int DIRECTED_LIGHT_COLOR_B = 13;
+	private final static int DIRECTED_LIGHT_COLOR_R = 10;
+	private final static int DIRECTED_LIGHT_COLOR_G = 11;
+	private final static int DIRECTED_LIGHT_COLOR_B = 12;
 
-	private final static int DIRECTED_LIGHT_DIRECTION_X = 14;
-	private final static int DIRECTED_LIGHT_DIRECTION_Y = 15;
-	private final static int DIRECTED_LIGHT_DIRECTION_Z = 16;
+	private final static int DIRECTED_LIGHT_DIRECTION_X = 13;
+	private final static int DIRECTED_LIGHT_DIRECTION_Y = 14;
+	private final static int DIRECTED_LIGHT_DIRECTION_Z = 15;
 
-	private final static int COLOR_OFFSET_R = 17;
-	private final static int COLOR_OFFSET_G = 18;
-	private final static int COLOR_OFFSET_B = 19;
+	private final static int COLOR_OFFSET_R = 16;
+	private final static int COLOR_OFFSET_G = 17;
+	private final static int COLOR_OFFSET_B = 18;
 
-	private final static int COLOR_GAIN_R = 20;
-	private final static int COLOR_GAIN_G = 21;
-	private final static int COLOR_GAIN_B = 22;
+	private final static int COLOR_GAIN_R = 19;
+	private final static int COLOR_GAIN_G = 20;
+	private final static int COLOR_GAIN_B = 21;
 
-	private final static int OBJECT_SHININESS = 23;
+	private final static int OBJECT_SHININESS = 22;
 
 	public final static int LAST_PARAM = OBJECT_SHININESS;
-	private final static int PARAMS_SIZE = OBJECT_SHININESS +1;
+	private final static int PARAMS_SIZE = LAST_PARAM +1;
 
+	private final static float EPSILON = 0.0001f;
 
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
 	public RenderParameter() {
 		setCameraDistance(3.0);
 		setObjectScale(1.0);
-		setObjectPosition(new Vector3f());
-		setObjectRotation(new Quaternion());
+		setObjectPosition(new Vector3f(EPSILON, EPSILON, EPSILON));
+		matrix.setQuick(OBJECT_ROTATION_X, EPSILON);
+		matrix.setQuick(OBJECT_ROTATION_Y, EPSILON);
+		matrix.setQuick(OBJECT_ROTATION_Z, EPSILON);
 		setAmbientLightColor(ColorRGBA.White);
 		setDirectedLightColor(ColorRGBA.White);
 		setDirectedLightDirection(new Vector3f(-0.5f,-1,-1));
-		setColorsOffsets(new ColorRGBA(0f, 0f, 0f, 0f));
+		setColorsOffsets(new ColorRGBA(EPSILON, EPSILON, EPSILON, EPSILON));
 		setColorsGains(new ColorRGBA(1f, 1f, 1f, 1f));
 		setObjectShininess(80f);
 	}
@@ -93,7 +95,8 @@ public class RenderParameter {
 		result += "Camera distance          : " + getCameraDistance() + "\n";
 		result += "Object scale             : " + getObjectScale() + "\n";
 		result += "Object position          : " + getObjectPosition() + "\n";
-		result += "Object rotation          : " + getObjectRotation() + "\n";
+		result += "Object rotation          : (" + matrix.getQuick(OBJECT_ROTATION_X)
+				+ ", " + matrix.getQuick(OBJECT_ROTATION_Y) + ", " + matrix.getQuick(OBJECT_ROTATION_Z) + ")\n";
 		result += "Ambient color            : " + getAmbientLightColor() + "\n";
 		result += "Directed light color     : " + getDirectedLightColor() + "\n";
 		result += "Directed light direction : " + getDirectedLightDirection() + "\n";
@@ -120,7 +123,16 @@ public class RenderParameter {
 		if(index < 0 || index > LAST_PARAM)
 			throw new IllegalArgumentException("Unexpected index");
 
-		matrix.setQuick(index, matrix.getQuick(index) * ratio);
+		matrix.setQuick(index, matrix.getQuick(index) + matrix.getQuick(index) * (ratio - 1.0) * getStandartDeviationSquared(index));
+	}
+
+	public double getStandartDeviationSquared(int index) {
+		switch (index) {
+		case OBJECT_SCALE: return 1.0/(250.0*250.0);
+		case OBJECT_SHININESS: return 25*25;
+
+		default: return 1.0;
+		}
 	}
 
 	public float getCameraDistance() {
@@ -165,17 +177,15 @@ public class RenderParameter {
 	}
 
 	public Quaternion getObjectRotation() {
-		return new Quaternion((float) matrix.getQuick(OBJECT_ROTATION_X),
-													(float) matrix.getQuick(OBJECT_ROTATION_Y),
-													(float) matrix.getQuick(OBJECT_ROTATION_Z),
-													(float) matrix.getQuick(OBJECT_ROTATION_W));
+		return new Quaternion().fromAngles(OBJECT_ROTATION_X, OBJECT_ROTATION_Y, OBJECT_ROTATION_Z);
 	}
 
 	public void setObjectRotation(Quaternion objectRotation) {
-		matrix.setQuick(OBJECT_ROTATION_X, objectRotation.getX());
-		matrix.setQuick(OBJECT_ROTATION_Y, objectRotation.getY());
-		matrix.setQuick(OBJECT_ROTATION_Z, objectRotation.getZ());
-		matrix.setQuick(OBJECT_ROTATION_W, objectRotation.getW());
+		float[] angles = new float[3];
+		objectRotation.toAngles(angles);
+		matrix.setQuick(OBJECT_ROTATION_X, angles[0]);
+		matrix.setQuick(OBJECT_ROTATION_Y, angles[1]);
+		matrix.setQuick(OBJECT_ROTATION_Z, angles[2]);
 	}
 
 	public ColorRGBA getAmbientLightColor() {
