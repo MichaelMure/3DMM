@@ -79,6 +79,14 @@ public class RenderParameter {
 		this.matrix = matrix;
 	}
 
+	public double get(int index) {
+		return matrix.getQuick(index);
+	}
+
+	public void set(int index, double value) {
+		matrix.setQuick(index, value);
+	}
+
 	@Override
 	public String toString() {
 		String result = "Render Parameters: \n";
