@@ -111,6 +111,21 @@ public class ModelParameter {
 		return new ModelParameter(v, c);
 	}
 
+	public void scaleVerticeParam(int index, double ratio) {
+		if(index < 0 || index > modelCount)
+			throw new IllegalArgumentException("Unexpected index");
+
+		verticesWeight.setQuick(index, verticesWeight.getQuick(index) * ratio);
+	}
+
+	public void scaleColorParam(int index, double ratio) {
+		if(index < 0 || index > modelCount)
+			throw new IllegalArgumentException("Unexpected index");
+
+		colorWeight.setQuick(index, colorWeight.getQuick(index) * ratio);
+	}
+
+
 	@Override
 	public String toString() {
 		String result = "ModelParameter: ";
