@@ -104,6 +104,13 @@ public class RenderParameter {
 		return result;
 	}
 
+	public String getDataString() {
+		String result = "";
+		for(int x = 0; x < matrix.size() -1; x++)
+			result += String.format("%f\t", matrix.getQuick(x));
+		return result + String.format("%f", matrix.getQuick(matrix.size()-1));
+	}
+
 	public void copy(RenderParameter params) {
 		matrix.assign(params.matrix);
 	}
