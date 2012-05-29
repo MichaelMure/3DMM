@@ -39,7 +39,7 @@ public class OfflineRenderApp implements FittingRenderer.Callback {
 			RenderParameter param = new RenderParameter();
 			param.initObjectScale(face);
 
-			renderer = new FittingRenderer(this, scene, target);
+			renderer = new FittingRenderer(this, scene, target, param);
 			renderer.setShowSettings(false);
 			renderer.start();
 		} catch (IOException e) {
