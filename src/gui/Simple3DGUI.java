@@ -18,7 +18,16 @@ public class Simple3DGUI {
   private DisplayApp app;
   private JFrame frame;
 
+  private final int width;
+  private final int height;
+
   public Simple3DGUI() {
+  	this(640,480);
+  }
+
+  public Simple3DGUI(int width, int height) {
+  	this.width = width;
+  	this.height = height;
   	run();
   }
 
@@ -40,8 +49,8 @@ public class Simple3DGUI {
 
 	private void createCanvas() {
 		AppSettings settings = new AppSettings(true);
-    settings.setWidth(640);
-    settings.setHeight(480);
+    settings.setWidth(width);
+    settings.setHeight(height);
     /* Disable audio */
     settings.setAudioRenderer(null);
 
