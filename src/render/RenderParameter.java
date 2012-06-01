@@ -227,10 +227,12 @@ public class RenderParameter {
 	}
 
 	public ColorRGBA getColorsOffsets() {
-		return new ColorRGBA((float) matrix.getQuick(COLOR_OFFSET_R),
-												 (float) matrix.getQuick(COLOR_OFFSET_G),
-												 (float) matrix.getQuick(COLOR_OFFSET_B),
-												 0.0f);
+		ColorRGBA c = new ColorRGBA();
+		c.r = (float) matrix.getQuick(COLOR_OFFSET_R);
+		c.g = (float) matrix.getQuick(COLOR_OFFSET_G);
+		c.b = (float) matrix.getQuick(COLOR_OFFSET_B);
+		c.a = 0.0f;
+		return c;
 	}
 
 	public void setColorsOffsets(ColorRGBA offsets) {
@@ -240,10 +242,12 @@ public class RenderParameter {
 	}
 
 	public ColorRGBA getColorsGains() {
-		return new ColorRGBA((float) matrix.getQuick(COLOR_GAIN_R),
-												 (float) matrix.getQuick(COLOR_GAIN_G),
-												 (float) matrix.getQuick(COLOR_GAIN_B),
-												 1.0f);
+		ColorRGBA c = new ColorRGBA();
+		c.r = (float) matrix.getQuick(COLOR_GAIN_R);
+		c.g = (float) matrix.getQuick(COLOR_GAIN_G);
+		c.b = (float) matrix.getQuick(COLOR_GAIN_B);
+		c.a = 1.0f;
+		return c;
 	}
 
 	public void setColorsGains(ColorRGBA gains) {
