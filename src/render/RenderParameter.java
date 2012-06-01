@@ -9,6 +9,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 
+import cern.colt.bitvector.BitVector;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 public class RenderParameter {
@@ -53,6 +54,17 @@ public class RenderParameter {
 
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
+	private static final BitVector enabled = new BitVector(PARAMS_SIZE);
+
+	static {
+		enabled.clear();
+		enabled.not(); /* Enable all */
+		enabled.clear(OBJECT_SCALE);
+		enabled.clear(OBJECT_ROTATION_X);
+		enabled.clear(OBJECT_ROTATION_Y);
+		enabled.clear(OBJECT_ROTATION_Z);
+	}
+
 	public RenderParameter() {
 		setCameraDistance(3.0);
 		setObjectScale(1.0);
@@ -87,6 +99,19 @@ public class RenderParameter {
 
 	public void set(int index, double value) {
 		matrix.setQuick(index, value);
+	}
+
+	/** Return the next enabled parameter index, following the given index.
+	 *  If nothing is food (ie, it was the last enabled parameter, 0 is returned.
+	 */
+	public static int nextEnabled(int index) {
+		index++;
+		while(index <= LAST_PARAM) {
+			if(enabled.get(index))
+				return index;
+			index++;
+		}
+		return -1;
 	}
 
 	@Override
