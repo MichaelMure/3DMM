@@ -47,7 +47,7 @@ public class RenderParameter {
 
 	private final static int OBJECT_SHININESS = 22;
 
-	public final static int LAST_PARAM = OBJECT_SHININESS;
+	private final static int LAST_PARAM = OBJECT_SHININESS;
 	private final static int PARAMS_SIZE = LAST_PARAM +1;
 
 	private final static float EPSILON = 0.0001f;
@@ -55,6 +55,7 @@ public class RenderParameter {
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
 	private static final BitVector enabled = new BitVector(PARAMS_SIZE);
+	private int index = 0;
 
 	static {
 		enabled.clear();
@@ -93,25 +94,31 @@ public class RenderParameter {
 		this.matrix = matrix;
 	}
 
-	public double get(int index) {
-		return matrix.getQuick(index);
+	/** Initialize the iterator */
+	public void start() {
+		index = -1;
+		next();
 	}
 
-	public void set(int index, double value) {
-		matrix.setQuick(index, value);
-	}
-
-	/** Return the next enabled parameter index, following the given index.
-	 *  If nothing is food (ie, it was the last enabled parameter, 0 is returned.
+	/** Increment the iterator.
+	 *  @return true if the iterator is still valid, false if the iteration in ended.
 	 */
-	public static int nextEnabled(int index) {
+	public boolean next() {
 		index++;
 		while(index <= LAST_PARAM) {
 			if(enabled.get(index))
-				return index;
+				return true;
 			index++;
 		}
-		return -1;
+		return false;
+	}
+
+	public double get() {
+		return matrix.getQuick(index);
+	}
+
+	public void set(double value) {
+		matrix.setQuick(index, value);
 	}
 
 	@Override
@@ -144,20 +151,25 @@ public class RenderParameter {
 	}
 
 	/** Multiply the specified parameter by a ratio. */
-	public void scaleParam(int index, double ratio) {
+	public void scaleParam(double ratio) {
 		if(index < 0 || index > LAST_PARAM)
 			throw new IllegalArgumentException("Unexpected index");
 
 		matrix.setQuick(index, matrix.getQuick(index) + matrix.getQuick(index) * (ratio - 1.0) * getStandartDeviationSquared(index));
 	}
 
-	public double getStandartDeviationSquared(int index) {
+	public double getStandartDeviation() {
 		switch (index) {
 		case OBJECT_SCALE: return 1.0/(250.0*250.0);
 		case OBJECT_SHININESS: return 25*25;
 
 		default: return 1.0;
 		}
+	}
+
+	public double getStandartDeviationSquared() {
+		double sd = getStandartDeviation();
+		return sd * sd;
 	}
 
 	public float getCameraDistance() {
