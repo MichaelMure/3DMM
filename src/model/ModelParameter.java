@@ -1,5 +1,6 @@
 package model;
 
+import cern.colt.bitvector.BitVector;
 import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -11,6 +12,25 @@ public class ModelParameter {
 	private final DoubleMatrix1D verticesWeight;
 	private final DoubleMatrix1D colorWeight;
 	private final int modelCount;
+
+	private static BitVector enabledVertice = null;
+	private static BitVector enabledColor = null;
+
+	private enum State { Vertice, Color};
+	private State state = State.Vertice;
+	private int index = -1;
+
+	private static void initEnabled(int modelCount) {
+		if(enabledColor == null || enabledColor.size() != modelCount ||
+				enabledVertice == null || enabledVertice.size() != modelCount) {
+			enabledColor = new BitVector(modelCount);
+			enabledColor.clear();
+			enabledColor.not(); /* Enable all */
+			enabledVertice = new BitVector(modelCount);
+			enabledVertice.clear();
+			enabledVertice.not(); /* Enable all */
+		}
+	}
 
 	/** @return a new random ModelParameter with random values.
 	 *  Both vertices weights and colors weights are normalized
@@ -27,6 +47,8 @@ public class ModelParameter {
 
 		param.normalize();
 
+		initEnabled(modelCount);
+
 		return param;
 	}
 
@@ -40,6 +62,7 @@ public class ModelParameter {
 
 		verticesWeight.set(0, 1.0);
 		colorWeight.set(0, 1.0);
+		initEnabled(modelCount);
 	}
 
 	public ModelParameter(DoubleMatrix1D verticesWeight, DoubleMatrix1D colorWeight) {
@@ -50,6 +73,7 @@ public class ModelParameter {
 		this.verticesWeight.assign(verticesWeight);
 		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
 		this.colorWeight.assign(colorWeight);
+		initEnabled(modelCount);
 	}
 
 	/** Copy constructor */
@@ -59,6 +83,44 @@ public class ModelParameter {
 		this.verticesWeight.assign(param.verticesWeight);
 		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
 		this.colorWeight.assign(param.colorWeight);
+		initEnabled(modelCount);
+	}
+
+	/** Initialize the iterator */
+	public void start() {
+		state = State.Vertice;
+		index = -1;
+		next();
+	}
+
+	/** Increment the iterator.
+	 *  @return true if the iterator is still valid, false if the iteration in ended.
+	 */
+	public boolean next() {
+		index++;
+
+		switch (state) {
+		case Vertice:
+			while(index < modelCount) {
+				if(enabledVertice.get(index))
+					return true;
+				index++;
+			}
+			index = 0;
+			state = State.Color;
+			/* No break here, we slip to color handling. */
+
+		case Color:
+			while(index < modelCount) {
+				if(enabledColor.get(index))
+					return true;
+				index++;
+			}
+			/* No break here neither */
+
+		default:
+			return false;
+		}
 	}
 
 	/** In place randomization of the parameters */
@@ -111,20 +173,16 @@ public class ModelParameter {
 		return new ModelParameter(v, c);
 	}
 
-	public void scaleVerticeParam(int index, double ratio) {
-		if(index < 0 || index > modelCount)
-			throw new IllegalArgumentException("Unexpected index");
-
-		verticesWeight.setQuick(index, verticesWeight.getQuick(index) * ratio);
+	public void scaleParam(double ratio) {
+		switch (state) {
+		case Vertice:
+			verticesWeight.setQuick(index, verticesWeight.getQuick(index) * ratio);
+			break;
+		case Color:
+			colorWeight.setQuick(index, colorWeight.getQuick(index) * ratio);
+			break;
+		}
 	}
-
-	public void scaleColorParam(int index, double ratio) {
-		if(index < 0 || index > modelCount)
-			throw new IllegalArgumentException("Unexpected index");
-
-		colorWeight.setQuick(index, colorWeight.getQuick(index) * ratio);
-	}
-
 
 	@Override
 	public String toString() {
