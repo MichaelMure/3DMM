@@ -226,10 +226,12 @@ public class RenderParameter {
 	}
 
 	public ColorRGBA getAmbientLightColor() {
-		return new ColorRGBA((float) matrix.getQuick(AMBIENT_COLOR_R),
-												 (float) matrix.getQuick(AMBIENT_COLOR_G),
-												 (float) matrix.getQuick(AMBIENT_COLOR_B),
-												 1.0f);
+		ColorRGBA c = new ColorRGBA();
+		c.r = (float) matrix.getQuick(AMBIENT_COLOR_R);
+		c.g = (float) matrix.getQuick(AMBIENT_COLOR_G);
+		c.b = (float) matrix.getQuick(AMBIENT_COLOR_B);
+		c.a = 1.0f;
+		return c;
 	}
 
 	public void setAmbientLightColor(ColorRGBA ambientLightColor) {
@@ -239,10 +241,12 @@ public class RenderParameter {
 	}
 
 	public ColorRGBA getDirectedLightColor() {
-		return new ColorRGBA((float) matrix.getQuick(DIRECTED_LIGHT_COLOR_R),
-												 (float) matrix.getQuick(DIRECTED_LIGHT_COLOR_G),
-												 (float) matrix.getQuick(DIRECTED_LIGHT_COLOR_B),
-												 1.0f);
+		ColorRGBA c = new ColorRGBA();
+		c.r = (float) matrix.getQuick(DIRECTED_LIGHT_COLOR_R);
+		c.g = (float) matrix.getQuick(DIRECTED_LIGHT_COLOR_G);
+		c.b = (float) matrix.getQuick(DIRECTED_LIGHT_COLOR_B);
+		c.a = 1.0f;
+		return c;
 	}
 
 	public void setDirectedLightColor(ColorRGBA directedLightColor) {
