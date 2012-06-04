@@ -21,8 +21,8 @@ public class ModelParameter {
 	private int index = -1;
 
 	private static void initEnabled(int modelCount) {
-		if(enabledColor == null || enabledColor.size() != modelCount ||
-				enabledVertice == null || enabledVertice.size() != modelCount) {
+		if (enabledColor == null   || enabledColor.size() != modelCount ||
+			  enabledVertice == null || enabledVertice.size() != modelCount) {
 			enabledColor = new BitVector(modelCount);
 			enabledColor.clear();
 			enabledColor.not(); /* Enable all */
@@ -84,6 +84,13 @@ public class ModelParameter {
 		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
 		this.colorWeight.assign(param.colorWeight);
 		initEnabled(modelCount);
+	}
+
+	public void copy(ModelParameter modelParams) {
+		if(this.modelCount != modelParams.modelCount)
+			throw new IllegalArgumentException("Incoherent model count");
+		this.verticesWeight.assign(modelParams.verticesWeight);
+		this.colorWeight.assign(modelParams.colorWeight);
 	}
 
 	/** Initialize the iterator */
@@ -173,13 +180,25 @@ public class ModelParameter {
 		return new ModelParameter(v, c);
 	}
 
-	public void scaleParam(double ratio) {
+	public double get() {
 		switch (state) {
 		case Vertice:
-			verticesWeight.setQuick(index, verticesWeight.getQuick(index) * ratio);
+			return verticesWeight.getQuick(index);
+		case Color:
+			return colorWeight.getQuick(index);
+		default:
+			assert false;
+			return 0;
+		}
+	}
+
+	public void set(double value) {
+		switch (state) {
+		case Vertice:
+			verticesWeight.setQuick(index, value);
 			break;
 		case Color:
-			colorWeight.setQuick(index, colorWeight.getQuick(index) * ratio);
+			colorWeight.setQuick(index, value);
 			break;
 		}
 	}
@@ -194,11 +213,24 @@ public class ModelParameter {
 	}
 
 	/** Make sure that the sum of each weight array equal 1.0 */
-	private void normalize() {
+	public void normalize() {
 		double totalVertices = verticesWeight.zSum();
 		double totalColor = colorWeight.zSum();
 
 		verticesWeight.assign(Functions.div(totalVertices));
 		colorWeight.assign(Functions.div(totalColor));
+	}
+
+	public double getStandartDeviation() {
+		return 1.0;
+	}
+
+	public String getDataString() {
+		String result = "";
+		for(int x = 0; x < modelCount; x++)
+			result += String.format("%f\t", verticesWeight.getQuick(x));
+		for(int x = 0; x < modelCount -1; x++)
+			result += String.format("%f\t", colorWeight.getQuick(x));
+		return result + String.format("%f", colorWeight.getQuick(modelCount-1));
 	}
 }
