@@ -55,7 +55,7 @@ public class RenderParameter {
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
 	private static final BitVector enabled = new BitVector(PARAMS_SIZE);
-	private int index = 0;
+	private int index = -1;
 
 	static {
 		enabled.clear();
