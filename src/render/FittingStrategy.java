@@ -35,8 +35,9 @@ public class FittingStrategy implements FittingRenderer.Callback {
 	private int step;
 	private int superStep = 0;
 	private double errorRef;
-	private double ratio = 1.00001;
-	private double alpha = 0.001;
+	private double ratio = 1.001;
+	private double lambda = 0.002;
+	private double sigma = 100;
 
 	PrintWriter out;
 
@@ -87,7 +88,7 @@ public class FittingStrategy implements FittingRenderer.Callback {
 		}
 		else {
 			Log.info(LogType.FITTING, "Fitting state: " + state + "  | step: " + step);
-			renderer.saveRender(superStep + "_" + step);
+			//renderer.saveRender(superStep + "_" + step);
 		}
 
 		rater.setRender(renderer.getRender());
@@ -100,30 +101,30 @@ public class FittingStrategy implements FittingRenderer.Callback {
 			out.println(renderParamsCurrent.getDataString());
 			out.flush();
 			errorRef = rater.getRate();
-			step = 1; // skip camera distance
+			step = RenderParameter.nextEnabled(-1);
 			renderParamsCurrent.scaleParam(step, ratio);
 			scene.update(renderParamsCurrent);
 			state = State.RenderParams;
 			break;
 
 		case RenderParams:
-			double d = (errorRef - rater.getRate()) / (renderParamsRef.get(step) - renderParamsCurrent.get(step));
-			d += 2.0 * (renderParamsCurrent.get(step) - renderParamsStart.get(step)) / renderParamsCurrent.getStandartDeviationSquared(step);
+			double d = (1.0/(sigma*sigma)) * (errorRef - rater.getRate()) / (renderParamsRef.get(step) - renderParamsCurrent.get(step));
+			d += 2.0 * (renderParamsCurrent.get(step) - renderParamsStart.get(step)) / RenderParameter.getStandartDeviationSquared(step);
 
-			double nextDiff =  - alpha * d;
+			double nextDiff =  - lambda * d;
 			renderParamsNext.set(step, renderParamsRef.get(step) + nextDiff);
 
 			Log.info(LogType.FITTING, "Step: " + step + " Derivate: " + d + " | " + renderParamsRef.get(step) + " + (" + nextDiff + ")");
 
 			renderParamsCurrent.copy(renderParamsRef);
-			if(step < RenderParameter.LAST_PARAM) {
-				step++;
+
+			step = RenderParameter.nextEnabled(step);
+			if(step != -1) {
 				renderParamsCurrent.copy(renderParamsRef);
 				renderParamsCurrent.scaleParam(step, ratio);
 				scene.update(renderParamsCurrent);
 			}
 			else {
-				step = 1; // skip camera distance
 				superStep++;
 				//modelParamsCurrent.scaleVerticeParam(step, ratio);
 
