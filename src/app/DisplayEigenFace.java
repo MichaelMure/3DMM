@@ -15,6 +15,9 @@ public class DisplayEigenFace {
 	public static void main(String[] args) {
 		Logger.getLogger("").setLevel(Level.WARNING);
 		MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
+		/* Compute the maximum number of eigen face available */
+		mm.compute(mm.getSize());
+
 		Log.info(LogType.APP, mm.toString());
 
 		Simple3DGUI gui = new Simple3DGUI();
