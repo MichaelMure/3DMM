@@ -150,14 +150,6 @@ public class RenderParameter {
 		matrix.assign(params.matrix);
 	}
 
-	/** Multiply the specified parameter by a ratio. */
-	public void scaleParam(double ratio) {
-		if(index < 0 || index > LAST_PARAM)
-			throw new IllegalArgumentException("Unexpected index");
-
-		matrix.setQuick(index, matrix.getQuick(index) + matrix.getQuick(index) * (ratio - 1.0) * getStandartDeviationSquared(index));
-	}
-
 	public double getStandartDeviation() {
 		switch (index) {
 		case OBJECT_SCALE: return 1.0/(250.0*250.0);
@@ -165,11 +157,6 @@ public class RenderParameter {
 
 		default: return 1.0;
 		}
-	}
-
-	public double getStandartDeviationSquared() {
-		double sd = getStandartDeviation();
-		return sd * sd;
 	}
 
 	public float getCameraDistance() {
