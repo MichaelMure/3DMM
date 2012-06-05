@@ -11,16 +11,20 @@ public class ModelParameter {
 
 	private final DoubleMatrix1D verticesWeight;
 	private final DoubleMatrix1D colorWeight;
-	private final int modelCount;
+	private static int modelCount = 0;
 
 	private static BitVector enabledVertice = null;
 	private static BitVector enabledColor = null;
 
 	private enum State { Vertice, Color};
-	private State state = State.Vertice;
-	private int index = -1;
+	private static State state = State.Vertice;
+	private static int index = -1;
 
-	private static void initEnabled(int modelCount) {
+	static {
+		initEnabled();
+	}
+
+	private static void initEnabled() {
 		if (enabledColor == null   || enabledColor.size() != modelCount ||
 			  enabledVertice == null || enabledVertice.size() != modelCount) {
 			enabledColor = new BitVector(modelCount);
@@ -32,11 +36,16 @@ public class ModelParameter {
 		}
 	}
 
+	public static void setModelCount(int modelCount) {
+		ModelParameter.modelCount = modelCount;
+		initEnabled();
+	}
+
 	/** @return a new random ModelParameter with random values.
 	 *  Both vertices weights and colors weights are normalized
 	 *  (both sums are equal to one).
 	 */
-	public static ModelParameter getRandom(int modelCount) {
+	public static ModelParameter getRandom() {
 		DoubleMatrix1D vWeight = DoubleFactory1D.dense.random(modelCount);
 		DoubleMatrix1D cWeight = DoubleFactory1D.dense.random(modelCount);
 
@@ -47,54 +56,44 @@ public class ModelParameter {
 
 		param.normalize();
 
-		initEnabled(modelCount);
-
 		return param;
 	}
 
 	/** Construct a new ModelParameter with the first coef set to 1, and all the others to 0.
 	 *  @param modelCount the number of model in the morphable model
 	 */
-	public ModelParameter(int modelCount) {
+	public ModelParameter() {
 		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
 		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
-		this.modelCount = modelCount;
 
 		verticesWeight.set(0, 1.0);
 		colorWeight.set(0, 1.0);
-		initEnabled(modelCount);
 	}
 
 	public ModelParameter(DoubleMatrix1D verticesWeight, DoubleMatrix1D colorWeight) {
-		if(verticesWeight.size() != colorWeight.size())
-			throw new IllegalArgumentException("Different size for color and vertice weights.");
-		this.modelCount = verticesWeight.size();
+		if(verticesWeight.size() != modelCount || colorWeight.size() != modelCount)
+			throw new IllegalArgumentException("Incoherent model count. Use setModelCount() if not a bug.");
 		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
 		this.verticesWeight.assign(verticesWeight);
 		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
 		this.colorWeight.assign(colorWeight);
-		initEnabled(modelCount);
 	}
 
 	/** Copy constructor */
 	public ModelParameter(ModelParameter param) {
-		this.modelCount = param.modelCount;
 		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
 		this.verticesWeight.assign(param.verticesWeight);
 		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
 		this.colorWeight.assign(param.colorWeight);
-		initEnabled(modelCount);
 	}
 
 	public void copy(ModelParameter modelParams) {
-		if(this.modelCount != modelParams.modelCount)
-			throw new IllegalArgumentException("Incoherent model count");
 		this.verticesWeight.assign(modelParams.verticesWeight);
 		this.colorWeight.assign(modelParams.colorWeight);
 	}
 
 	/** Initialize the iterator */
-	public void start() {
+	public static void start() {
 		state = State.Vertice;
 		index = -1;
 		next();
@@ -103,7 +102,7 @@ public class ModelParameter {
 	/** Increment the iterator.
 	 *  @return true if the iterator is still valid, false if the iteration in ended.
 	 */
-	public boolean next() {
+	public static boolean next() {
 		index++;
 
 		switch (state) {
@@ -160,9 +159,6 @@ public class ModelParameter {
 	 * return value = (1.0 - alpha) * this + alpha * targetParam
 	 */
 	public ModelParameter linearApplication(ModelParameter targetParam, double alpha) {
-		if(this.modelCount != targetParam.modelCount)
-			throw new IllegalArgumentException("Incoherent number of model count.");
-
 		class linapp implements DoubleDoubleFunction {
 			private final double alpha;
 			public linapp(double alpha) {

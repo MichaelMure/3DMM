@@ -11,10 +11,10 @@ public class CompleteParameter {
 
 	private ModelParameter modelParams;
 	private RenderParameter renderParams;
-	private State state;
+	private static State state;
 
-	public CompleteParameter(int modelCount) {
-		this.modelParams = new ModelParameter(modelCount);
+	public CompleteParameter() {
+		this.modelParams = new ModelParameter();
 		this.renderParams = new RenderParameter();
 	}
 
@@ -28,29 +28,29 @@ public class CompleteParameter {
 		this.renderParams.copy(cp.renderParams);
 	}
 
-	public void start() {
+	public static void start() {
 		state = State.Model;
-		modelParams.start();
+		ModelParameter.start();
 	}
 
-	public boolean next() {
+	public static boolean next() {
 		switch (state) {
 		case Model:
-			if(modelParams.next())
+			if(ModelParameter.next())
 				return true;
 			state = State.Render;
-			renderParams.start();
+			RenderParameter.start();
 			break;
 
 		case Render:
-			if(renderParams.next())
+			if(RenderParameter.next())
 				return true;
 			return false;
 		}
 		return false;
 	}
 
-	public State getState() {
+	public static State getState() {
 		return state;
 	}
 

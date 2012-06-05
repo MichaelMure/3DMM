@@ -55,7 +55,7 @@ public class RenderParameter {
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
 	private static final BitVector enabled = new BitVector(PARAMS_SIZE);
-	private int index = -1;
+	private static int index = -1;
 
 	static {
 		enabled.clear();
@@ -95,7 +95,7 @@ public class RenderParameter {
 	}
 
 	/** Initialize the iterator */
-	public void start() {
+	public static void start() {
 		index = -1;
 		next();
 	}
@@ -103,7 +103,7 @@ public class RenderParameter {
 	/** Increment the iterator.
 	 *  @return true if the iterator is still valid, false if the iteration in ended.
 	 */
-	public boolean next() {
+	public static boolean next() {
 		index++;
 		while(index <= LAST_PARAM) {
 			if(enabled.get(index))

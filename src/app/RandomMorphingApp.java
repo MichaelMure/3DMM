@@ -23,8 +23,9 @@ public class RandomMorphingApp {
 
 		Simple3DGUI gui = new Simple3DGUI();
 
-		ModelParameter origin = ModelParameter.getRandom(mm.getReducedSize());
-		ModelParameter target = ModelParameter.getRandom(mm.getReducedSize());
+		ModelParameter.setModelCount(mm.getReducedSize());
+		ModelParameter origin = ModelParameter.getRandom();
+		ModelParameter target = ModelParameter.getRandom();
 		long start = Calendar.getInstance().getTimeInMillis();
 		Model model = mm.getModel(origin);
 
@@ -37,7 +38,7 @@ public class RandomMorphingApp {
 			if((now - start) >= period) {
 				start += Math.floor((now - start) / period) * period;
 				origin = target;
-				target = ModelParameter.getRandom(mm.getReducedSize());
+				target = ModelParameter.getRandom();
 			}
 
 			mm.updateModel(model, origin.linearApplication(target, (now - start) / period));

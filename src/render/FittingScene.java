@@ -37,6 +37,7 @@ public class FittingScene {
 
 		/* Object */
 		NormalGenerator.ComputeNormal(mesh);
+
 		geom = new Geometry("mesh", mesh);
 
 		/* Material */
