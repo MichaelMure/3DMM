@@ -22,17 +22,13 @@ public class FittingStrategy implements FittingRenderer.Callback {
 	private MorphableModel mm;
 	private Mesh mesh;
 
-	private RenderParameter renderParamsRef;
-	private RenderParameter renderParamsCurrent;
-	private RenderParameter renderParamsNext;
-	private RenderParameter renderParamsStart;
-	private ModelParameter modelParamsRef;
-	private ModelParameter modelParamsCurrent;
-	private ModelParameter modelParamsNext;
+	private CompleteParameter start;
+	private CompleteParameter ref;
+	private CompleteParameter current;
+	private CompleteParameter next;
 
-	private enum State {Reference, RenderParams, VerticeParams, TextureParams};
+	private enum State {Reference, Fitting};
 	private State state;
-	private int step;
 	private int superStep = 0;
 	private double errorRef;
 	private double ratio = 1.001;
@@ -56,17 +52,15 @@ public class FittingStrategy implements FittingRenderer.Callback {
 		this.rater = new FittingRater(target);
 
 		Log.info(LogType.FITTING, "Initialize parameters.");
-		this.renderParamsRef = new RenderParameter();
-		renderParamsRef.initObjectScale(mesh);
-		this.renderParamsCurrent = new RenderParameter(renderParamsRef);
-		this.renderParamsNext = new RenderParameter(renderParamsRef);
-		this.renderParamsStart = new RenderParameter(renderParamsRef);
-		this.modelParamsRef = new ModelParameter(mm.getReducedSize());
-		this.modelParamsCurrent = new ModelParameter(modelParamsRef);
-		this.modelParamsNext = new ModelParameter(modelParamsRef);
+		ModelParameter.setModelCount(mm.getReducedSize());
+		this.start = new CompleteParameter();
+		start.getRenderParameter().initObjectScale(mesh);
+		this.ref = new CompleteParameter(start);
+		this.current = new CompleteParameter(start);
+		this.next = new CompleteParameter(start);
 
 		Log.info(LogType.FITTING, "Creating the renderer.");
-		this.renderer = new FittingRenderer(this, scene, target, renderParamsRef);
+		this.renderer = new FittingRenderer(this, scene, target, ref.getRenderParameter());
 		this.renderer.setShowSettings(false);
 
 		this.state = State.Reference;
@@ -86,10 +80,6 @@ public class FittingStrategy implements FittingRenderer.Callback {
 			Log.info(LogType.FITTING, "Fitting state: " + state);
 			renderer.saveRender(superStep + "_REF");
 		}
-		else {
-			Log.info(LogType.FITTING, "Fitting state: " + state + "  | step: " + step);
-			//renderer.saveRender(superStep + "_" + step);
-		}
 
 		rater.setRender(renderer.getRender());
 		Log.info(LogType.MODEL, "Rate: " + rater.getRate());
@@ -98,57 +88,48 @@ public class FittingStrategy implements FittingRenderer.Callback {
 
 		switch (state) {
 		case Reference:
-			out.println(renderParamsCurrent.getDataString());
+			out.println(current.getDataString());
 			out.flush();
 			errorRef = rater.getRate();
-			step = RenderParameter.nextEnabled(-1);
-			renderParamsCurrent.scaleParam(step, ratio);
-			scene.update(renderParamsCurrent);
-			state = State.RenderParams;
+			CompleteParameter.start();
+			current.scaleParam(ratio);
+			scene.update(current.getRenderParameter());
+			state = State.Fitting;
 			break;
 
-		case RenderParams:
-			double d = (1.0/(sigma*sigma)) * (errorRef - rater.getRate()) / (renderParamsRef.get(step) - renderParamsCurrent.get(step));
-			d += 2.0 * (renderParamsCurrent.get(step) - renderParamsStart.get(step)) / RenderParameter.getStandartDeviationSquared(step);
+		case Fitting:
+			double d = 0;
+
+			switch(CompleteParameter.getState()) {
+			case Model:
+				break;
+			case Render:
+				d = (1.0/(sigma*sigma)) * (errorRef - rater.getRate()) / (ref.get() - current.get());
+				d += 2.0 * (current.get() - start.get()) / CompleteParameter.getStandartDeviationSquared();
+				break;
+			}
 
 			double nextDiff =  - lambda * d;
-			renderParamsNext.set(step, renderParamsRef.get(step) + nextDiff);
+			Log.info(LogType.FITTING, "Derivate: " + d + " | " + ref.get() + " + (" + nextDiff + ")");
 
-			Log.info(LogType.FITTING, "Step: " + step + " Derivate: " + d + " | " + renderParamsRef.get(step) + " + (" + nextDiff + ")");
+			next.set(ref.get() + nextDiff);
+			current.copy(ref);
 
-			renderParamsCurrent.copy(renderParamsRef);
-
-			step = RenderParameter.nextEnabled(step);
-			if(step != -1) {
-				renderParamsCurrent.copy(renderParamsRef);
-				renderParamsCurrent.scaleParam(step, ratio);
-				scene.update(renderParamsCurrent);
+			if(CompleteParameter.next()) {
+				current.copy(ref);
+				current.scaleParam(ratio);
+				scene.update(current.getRenderParameter());
+				/* TODO: Update model */
 			}
 			else {
 				superStep++;
-				//modelParamsCurrent.scaleVerticeParam(step, ratio);
-
-				/* TODO: Update model */
-				//state = State.VerticeParams;
 				state = State.Reference;
-				renderParamsRef.copy(renderParamsNext);
-				scene.update(renderParamsRef);
-				System.out.println(renderParamsRef);
+				ref.copy(next);
+				scene.update(ref.getRenderParameter());
+				System.out.println(ref);
 			}
 
 			break;
-
-		case VerticeParams:
-
-			break;
-
-		case TextureParams:
-
-			break;
 		}
-
 	}
-
-
-
 }

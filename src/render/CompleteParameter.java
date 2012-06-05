@@ -4,7 +4,7 @@ import model.ModelParameter;
 
 public class CompleteParameter {
 
-	private enum State {
+	public enum State {
 		Model,
 		Render
 	}
@@ -19,8 +19,8 @@ public class CompleteParameter {
 	}
 
 	public CompleteParameter(CompleteParameter cp) {
-		this.modelParams = new ModelParameter(modelParams);
-		this.renderParams = new RenderParameter(renderParams);
+		this.modelParams = new ModelParameter(cp.modelParams);
+		this.renderParams = new RenderParameter(cp.renderParams);
 	}
 
 	public void copy(CompleteParameter cp) {
@@ -28,9 +28,12 @@ public class CompleteParameter {
 		this.renderParams.copy(cp.renderParams);
 	}
 
-	public static void start() {
+	public static boolean start() {
 		state = State.Model;
-		ModelParameter.start();
+		if(ModelParameter.start())
+			return true;
+		state = State.Render;
+		return RenderParameter.start();
 	}
 
 	public static boolean next() {
@@ -39,13 +42,10 @@ public class CompleteParameter {
 			if(ModelParameter.next())
 				return true;
 			state = State.Render;
-			RenderParameter.start();
-			break;
+			return RenderParameter.start();
 
 		case Render:
-			if(RenderParameter.next())
-				return true;
-			return false;
+			return RenderParameter.next();
 		}
 		return false;
 	}
@@ -85,28 +85,28 @@ public class CompleteParameter {
 
 		switch (state) {
 		case Model:
-			modelParams.set(modelParams.get() + direction * (ratio - 1.0) * modelParams.getStandartDeviation());
+			modelParams.set(modelParams.get() + direction * (ratio - 1.0) * ModelParameter.getStandartDeviation());
 			modelParams.normalize();
 			break;
 		case Render:
-			renderParams.set(renderParams.get() + direction * (ratio - 1.0) * renderParams.getStandartDeviation());
+			renderParams.set(renderParams.get() + direction * (ratio - 1.0) * RenderParameter.getStandartDeviation());
 			break;
 		}
 	}
 
-	public double getStandartDeviation() {
+	public static double getStandartDeviation() {
 		switch (state) {
 		case Model:
-			return modelParams.getStandartDeviation();
+			return ModelParameter.getStandartDeviation();
 		case Render:
-			return renderParams.getStandartDeviation();
+			return RenderParameter.getStandartDeviation();
 		default:
 			assert false;
 			return 0;
 		}
 	}
 
-	public double getStandartDeviationSquared() {
+	public static double getStandartDeviationSquared() {
 		double d = getStandartDeviation();
 		return d*d;
 	}

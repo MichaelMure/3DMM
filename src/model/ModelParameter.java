@@ -93,10 +93,10 @@ public class ModelParameter {
 	}
 
 	/** Initialize the iterator */
-	public static void start() {
+	public static boolean start() {
 		state = State.Vertice;
 		index = -1;
-		next();
+		return next();
 	}
 
 	/** Increment the iterator.
@@ -217,7 +217,7 @@ public class ModelParameter {
 		colorWeight.assign(Functions.div(totalColor));
 	}
 
-	public double getStandartDeviation() {
+	public static double getStandartDeviation() {
 		return 1.0;
 	}
 

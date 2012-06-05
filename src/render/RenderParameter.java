@@ -95,9 +95,9 @@ public class RenderParameter {
 	}
 
 	/** Initialize the iterator */
-	public static void start() {
+	public static boolean start() {
 		index = -1;
-		next();
+		return next();
 	}
 
 	/** Increment the iterator.
@@ -150,10 +150,15 @@ public class RenderParameter {
 		matrix.assign(params.matrix);
 	}
 
-	public double getStandartDeviation() {
+	public static double getStandartDeviation() {
 		switch (index) {
-		case OBJECT_SCALE: return 1.0/(250.0*250.0);
-		case OBJECT_SHININESS: return 25*25;
+		case OBJECT_SCALE: return 1.0/300.0;
+		case OBJECT_SHININESS: return 0.2;
+		case OBJECT_POSITION_X:
+		case OBJECT_POSITION_Y: return 0.05;
+		case DIRECTED_LIGHT_DIRECTION_X:
+		case DIRECTED_LIGHT_DIRECTION_Y:
+		case DIRECTED_LIGHT_DIRECTION_Z: return 0.1;
 
 		default: return 1.0;
 		}
