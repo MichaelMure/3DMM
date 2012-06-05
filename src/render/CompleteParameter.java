@@ -16,7 +16,11 @@ public class CompleteParameter {
 	public CompleteParameter(int modelCount) {
 		this.modelParams = new ModelParameter(modelCount);
 		this.renderParams = new RenderParameter();
-		this.state = State.Model;
+	}
+
+	public CompleteParameter(CompleteParameter cp) {
+		this.modelParams = new ModelParameter(modelParams);
+		this.renderParams = new RenderParameter(renderParams);
 	}
 
 	public void copy(CompleteParameter cp) {
