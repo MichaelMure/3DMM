@@ -50,6 +50,10 @@ public class CompleteParameter {
 		return false;
 	}
 
+	public State getState() {
+		return state;
+	}
+
 	public double get() {
 		switch (state) {
 		case Model:
