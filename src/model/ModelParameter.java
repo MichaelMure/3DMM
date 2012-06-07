@@ -130,7 +130,7 @@ public class ModelParameter {
 	}
 
 	/** In place randomization of the parameters */
-	public void Random() {
+	public void randomize() {
 		colorWeight.assign(Functions.random());
 		verticesWeight.assign(Functions.random());
 
