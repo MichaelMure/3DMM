@@ -13,7 +13,6 @@ import util.Log;
 import util.Log.LogType;
 
 public class Simple3DGUI {
-	private JmeCanvasContext context;
   private Canvas canvas;
   private DisplayApp app;
   private JFrame frame;
@@ -60,7 +59,7 @@ public class Simple3DGUI {
     app.createCanvas();
     app.startCanvas();
 
-    context = (JmeCanvasContext) app.getContext();
+    JmeCanvasContext context = (JmeCanvasContext) app.getContext();
     context.setSystemListener(app);
     canvas = context.getCanvas();
     canvas.setSize(settings.getWidth(), settings.getHeight());
