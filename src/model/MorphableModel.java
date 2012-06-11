@@ -108,6 +108,14 @@ public class MorphableModel {
 		return new Model(vertices.getMean(), colors.getMean(), faceIndices);
 	}
 
+	public double getColorEV(int index) {
+		return colors.getEigenValue(index);
+	}
+
+	public double getVerticeEV(int index) {
+		return vertices.getEigenValue(index);
+	}
+
 	public void compute(int dimension) {
 		if(!vertices.computationDone())
 			vertices.computePCA(dimension);

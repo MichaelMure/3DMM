@@ -217,7 +217,12 @@ public class ModelParameter {
 	}
 
 	public static double getStandartDeviation() {
-		return 1.0;
+		switch(state) {
+		case Color: return mm.getColorEV(index);
+		case Vertice: return mm.getVerticeEV(index);
+		}
+		assert(false);
+		return 0;
 	}
 
 	public String getDataString() {
