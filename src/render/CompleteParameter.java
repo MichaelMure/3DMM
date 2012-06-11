@@ -1,5 +1,7 @@
 package render;
 
+import com.jme3.scene.Mesh;
+
 import model.ModelParameter;
 
 public class CompleteParameter {
@@ -86,7 +88,6 @@ public class CompleteParameter {
 		switch (state) {
 		case Model:
 			modelParams.set(modelParams.get() + direction * (ratio - 1.0) * ModelParameter.getStandartDeviation());
-			modelParams.normalize();
 			break;
 		case Render:
 			renderParams.set(renderParams.get() + direction * (ratio - 1.0) * RenderParameter.getStandartDeviation());
@@ -128,4 +129,17 @@ public class CompleteParameter {
 		return modelParams;
 	}
 
+	/** Utility shortcut to retrieve a mesh from a ModelParameter */
+	public Mesh getMesh() {
+		return modelParams.getMesh();
+	}
+
+	/** Utility shortcut to update a mesh from a ModelParameter */
+	public void updateMesh(Mesh mesh) {
+		modelParams.updateMesh(mesh);
+	}
+
+	public void updateScene(FittingScene scene) {
+		scene.update(renderParams);
+	}
 }

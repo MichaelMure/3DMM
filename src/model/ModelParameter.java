@@ -1,5 +1,7 @@
 package model;
 
+import com.jme3.scene.Mesh;
+
 import cern.colt.bitvector.BitVector;
 import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.matrix.DoubleFactory1D;
@@ -9,20 +11,20 @@ import cern.jet.math.Functions;
 
 public class ModelParameter {
 
-	private final DoubleMatrix1D verticesWeight;
-	private final DoubleMatrix1D colorWeight;
+	/* Morphable Model */
+	private static MorphableModel mm;
 	private static int modelCount = 0;
 
-	private static BitVector enabledVertice = null;
-	private static BitVector enabledColor = null;
-
+	/* Iterator */
 	private enum State { Vertice, Color};
 	private static State state = State.Vertice;
 	private static int index = -1;
 
-	static {
-		initEnabled();
-	}
+	private final DoubleMatrix1D verticesWeight;
+	private final DoubleMatrix1D colorWeight;
+
+	private static BitVector enabledVertice = null;
+	private static BitVector enabledColor = null;
 
 	private static void initEnabled() {
 		if (enabledColor == null   || enabledColor.size() != modelCount ||
@@ -36,8 +38,9 @@ public class ModelParameter {
 		}
 	}
 
-	public static void setModelCount(int modelCount) {
-		ModelParameter.modelCount = modelCount;
+	public static void setMorphableModel(MorphableModel mm) {
+		ModelParameter.mm = mm;
+		ModelParameter.modelCount = mm.getReducedSize();
 		initEnabled();
 	}
 
@@ -59,17 +62,13 @@ public class ModelParameter {
 		return param;
 	}
 
-	/** Construct a new ModelParameter with the first coef set to 1, and all the others to 0.
-	 *  @param modelCount the number of model in the morphable model
-	 */
+	/** Construct a new ModelParameter with all weight set to 0 (average model). */
 	public ModelParameter() {
 		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
 		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
-
-		verticesWeight.set(0, 1.0);
-		colorWeight.set(0, 1.0);
 	}
 
+	/** Construct a new ModelParameter from the provided weight. */
 	public ModelParameter(DoubleMatrix1D verticesWeight, DoubleMatrix1D colorWeight) {
 		if(verticesWeight.size() != modelCount || colorWeight.size() != modelCount)
 			throw new IllegalArgumentException("Incoherent model count. Use setModelCount() if not a bug.");
@@ -209,7 +208,7 @@ public class ModelParameter {
 	}
 
 	/** Make sure that the sum of each weight array equal 1.0 */
-	public void normalize() {
+	private void normalize() {
 		double totalVertices = verticesWeight.zSum();
 		double totalColor = colorWeight.zSum();
 
@@ -228,5 +227,15 @@ public class ModelParameter {
 		for(int x = 0; x < modelCount -1; x++)
 			result += String.format("%f\t", colorWeight.getQuick(x));
 		return result + String.format("%f", colorWeight.getQuick(modelCount-1));
+	}
+
+	/** Utility shortcut to retrieve a mesh from a ModelParameter */
+	public Mesh getMesh() {
+		return mm.getModel(this).getMesh();
+	}
+
+	/** Utility shortcut to update a mesh from a ModelParameter */
+	public void updateMesh(Mesh mesh) {
+		mm.updateMesh(mesh, this);
 	}
 }

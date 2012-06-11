@@ -23,7 +23,7 @@ public class RandomMorphingApp {
 
 		Simple3DGUI gui = new Simple3DGUI();
 
-		ModelParameter.setModelCount(mm.getReducedSize());
+		ModelParameter.setMorphableModel(mm);
 		ModelParameter origin = ModelParameter.getRandom();
 		ModelParameter target = ModelParameter.getRandom();
 		long start = Calendar.getInstance().getTimeInMillis();

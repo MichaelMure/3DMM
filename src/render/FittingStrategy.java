@@ -19,7 +19,6 @@ public class FittingStrategy implements FittingRenderer.Callback {
 	private FittingScene scene;
 	private FittingRater rater;
 	private FittingRenderer renderer;
-	private MorphableModel mm;
 	private Mesh mesh;
 
 	private CompleteParameter start;
@@ -33,31 +32,33 @@ public class FittingStrategy implements FittingRenderer.Callback {
 	private double errorRef;
 	private double ratio = 1.001;
 	private double lambda = 0.002;
-	private double sigma = 100;
+	private double sigma = 7;
 
 	PrintWriter out;
 
 	public FittingStrategy(MorphableModel mm, BufferedImage target) {
-		this.mm = mm;
+		ModelParameter.setMorphableModel(mm);
 		this.target = target;
 	}
 
 	public void start() {
 		Log.info(LogType.FITTING, "Creating the fitting strategy.");
+
+		this.start = new CompleteParameter();
+
 		Log.info(LogType.FITTING, "Creating the average mesh.");
-		this.mesh = mm.getAverage().getMesh();
-		Log.info(LogType.FITTING, "Creating the scene.");
-		this.scene = new FittingScene(mesh);
-		Log.info(LogType.FITTING, "Creating the rater.");
-		this.rater = new FittingRater(target);
+		this.mesh = start.getMesh();
 
 		Log.info(LogType.FITTING, "Initialize parameters.");
-		ModelParameter.setModelCount(mm.getReducedSize());
-		this.start = new CompleteParameter();
 		start.getRenderParameter().initObjectScale(mesh);
 		this.ref = new CompleteParameter(start);
 		this.current = new CompleteParameter(start);
 		this.next = new CompleteParameter(start);
+
+		Log.info(LogType.FITTING, "Creating the scene.");
+		this.scene = new FittingScene(mesh);
+		Log.info(LogType.FITTING, "Creating the rater.");
+		this.rater = new FittingRater(target);
 
 		Log.info(LogType.FITTING, "Creating the renderer.");
 		this.renderer = new FittingRenderer(this, scene, target, ref.getRenderParameter());
@@ -93,7 +94,11 @@ public class FittingStrategy implements FittingRenderer.Callback {
 			errorRef = rater.getRate();
 			CompleteParameter.start();
 			current.scaleParam(ratio);
-			scene.update(current.getRenderParameter());
+
+			switch(CompleteParameter.getState()) {
+			case Model:   current.updateMesh(mesh);	break;
+			case Render:	current.updateScene(scene); break;
+			}
 			state = State.Fitting;
 			break;
 
@@ -118,14 +123,17 @@ public class FittingStrategy implements FittingRenderer.Callback {
 			if(CompleteParameter.next()) {
 				current.copy(ref);
 				current.scaleParam(ratio);
-				scene.update(current.getRenderParameter());
-				/* TODO: Update model */
+				switch(CompleteParameter.getState()) {
+				case Model:   current.updateMesh(mesh);	break;
+				case Render:	current.updateScene(scene); break;
+				}
 			}
 			else {
 				superStep++;
 				state = State.Reference;
 				ref.copy(next);
-				scene.update(ref.getRenderParameter());
+				ref.updateMesh(mesh);
+				ref.updateScene(scene);
 				System.out.println(ref);
 			}
 
