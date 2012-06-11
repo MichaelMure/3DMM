@@ -15,6 +15,7 @@ public abstract class PCA {
 	protected DoubleMatrix2D data = null; /* Original data */
 	private DoubleMatrix2D reducedData = null; /* Data after PCA */
 	protected DoubleMatrix2D basis = null; /* Transformation matrix between sample and feature space. */
+	protected DoubleMatrix1D eigenValues = null; /* Eigen Values used for standard deviation */
 
 	private DoubleMatrix1D mean = null;
 	private boolean meanDirty = true;
@@ -67,7 +68,7 @@ public abstract class PCA {
 		return dataLock;
 	}
 
-	/** This method should compute the basis matrix. */
+	/** This method should compute the basis matrix and the eigenValue matrix. */
 	protected abstract void doComputeBasis();
 
 	/** @return the basis vector. */
@@ -80,6 +81,12 @@ public abstract class PCA {
 	public DoubleMatrix1D getBasisVector(int index) {
 		ensureBasis();
 		return basis.viewColumn(index);
+	}
+
+	/** @return one eigen value. */
+	public double getEigenValue(int index) {
+		ensureBasis();
+		return eigenValues.get(index);
 	}
 
 	/** @return the number of component of the feature space. */

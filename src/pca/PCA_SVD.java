@@ -19,7 +19,8 @@ public class PCA_SVD extends PCA {
 		variance = Statistic.correlation(variance);
 
 		EigenvalueDecomposition eg = new EigenvalueDecomposition(variance);
-		basis = eg.getV().viewPart(0, 0, numComponents, data.columns());
+		basis = eg.getV().viewColumnFlip().viewPart(0, 0, numComponents, data.columns()).copy();
+		eigenValues = eg.getRealEigenvalues().viewFlip().copy();
 	}
 
 }
