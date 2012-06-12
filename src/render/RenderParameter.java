@@ -48,7 +48,7 @@ public class RenderParameter {
 	private final static int OBJECT_SHININESS = 22;
 
 	private final static int LAST_PARAM = OBJECT_SHININESS;
-	private final static int PARAMS_SIZE = LAST_PARAM +1;
+	public final static int PARAMS_SIZE = LAST_PARAM +1;
 
 	private final static float EPSILON = 0.0001f;
 
@@ -114,10 +114,18 @@ public class RenderParameter {
 	}
 
 	public double get() {
-		return matrix.getQuick(index);
+		return get(index);
 	}
 
 	public void set(double value) {
+		set(index, value);
+	}
+
+	public double get(int index) {
+		return matrix.getQuick(index);
+	}
+
+	public void set(int index, double value) {
 		matrix.setQuick(index, value);
 	}
 
