@@ -68,15 +68,15 @@ public class FittingRater {
 			    green_diff = green - green_ref;
 			    blue_diff = blue - blue_ref;
 
-			    total_error += Math.sqrt(red_diff * red_diff + green_diff * green_diff + blue_diff * blue_diff);
+			    total_error += red_diff * red_diff + green_diff * green_diff + blue_diff * blue_diff;
 
 			    nb_pixels++;
 				}
 			}
 
 		ratio = (double) nb_pixels / (double) (render.getWidth() * render.getHeight());
-		rate = ratio * ((double) total_error / (double)  nb_pixels);
-		//rate = total_error;
+		//rate = ratio * ((double) total_error / (double)  nb_pixels);
+		rate = total_error;
 
 		dirty = false;
 	}
