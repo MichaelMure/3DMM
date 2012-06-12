@@ -2,6 +2,7 @@ package render;
 
 import com.jme3.scene.Mesh;
 
+import model.Model;
 import model.ModelParameter;
 
 public class CompleteParameter {
@@ -127,6 +128,11 @@ public class CompleteParameter {
 
 	public ModelParameter getModelParameter() {
 		return modelParams;
+	}
+
+	/** Utility shortcut to retrieve a Model from a ModelParameter */
+	public Model getModel() {
+		return modelParams.getModel();
 	}
 
 	/** Utility shortcut to retrieve a mesh from a ModelParameter */

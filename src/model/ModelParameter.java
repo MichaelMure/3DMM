@@ -234,6 +234,11 @@ public class ModelParameter {
 		return result + String.format("%f", colorWeight.getQuick(modelCount-1));
 	}
 
+	/** Utility shortcut to retrieve a Model from a ModelParameter */
+	public Model getModel() {
+		return mm.getModel(this);
+	}
+
 	/** Utility shortcut to retrieve a mesh from a ModelParameter */
 	public Mesh getMesh() {
 		return mm.getModel(this).getMesh();
