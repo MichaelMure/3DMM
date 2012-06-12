@@ -1,0 +1,16 @@
+            3DMM
+            ¯¯¯¯
+This software is an implementation of the 3D morphable model, as defined
+by Volker Blanz and Thomas Vetter in "A Morphable Model For The
+Synthesis Of 3D Faces" (SIGGRAPH 99).
+
+Author:
+* Michael Muré (Multimedia Signal Processing Laboratory
+                Ajou University - South Korea
+                batolettre@gmail.com)
+
+This software is released under the term of the GPLv3 license.
+
+Further documentation shall be added at some point.
+
+Feel free to contact me for questions or comments.
