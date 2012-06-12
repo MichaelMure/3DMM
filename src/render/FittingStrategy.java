@@ -30,9 +30,9 @@ public class FittingStrategy implements FittingRenderer.Callback {
 	private State state;
 	private int superStep = 0;
 	private double errorRef;
-	private double ratio = 1.001;
-	private double lambda = 0.002;
-	private double sigma = 7;
+	private double ratio = 1.06;
+	private double lambda = 0.02;
+	private double sigma = 5000;
 
 	PrintWriter out;
 
@@ -103,18 +103,19 @@ public class FittingStrategy implements FittingRenderer.Callback {
 			break;
 
 		case Fitting:
-			double d = 0;
+			double d = (1.0/(sigma*sigma)) * (errorRef - rater.getRate()) / (ref.get() - current.get());
 
 			switch(CompleteParameter.getState()) {
 			case Model:
+				d += 2.0 * current.get() / CompleteParameter.getStandartDeviationSquared();
 				break;
 			case Render:
-				d = (1.0/(sigma*sigma)) * (errorRef - rater.getRate()) / (ref.get() - current.get());
 				d += 2.0 * (current.get() - start.get()) / CompleteParameter.getStandartDeviationSquared();
 				break;
 			}
 
-			double nextDiff =  - lambda * d;
+			/* We add a random noise to try to avoid local minimum */
+			double nextDiff =  - lambda * d * (1.0 + (Math.random() - 0.5) * 0.1);
 			Log.info(LogType.FITTING, "Derivate: " + d + " | " + ref.get() + " + (" + nextDiff + ")");
 
 			next.set(ref.get() + nextDiff);
