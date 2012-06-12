@@ -304,4 +304,34 @@ public class RenderParameter {
 	public void setObjectShininess(float objectShininess) {
 		matrix.setQuick(OBJECT_SHININESS, objectShininess);
 	}
+
+	public static String getDescription(int index) {
+		switch(index) {
+		case CAMERA_DISTANCE: return "Camera distance";
+		case OBJECT_SCALE: return "Object scale";
+		case OBJECT_POSITION_X: return "Object position X";
+		case OBJECT_POSITION_Y: return "Object position Y";
+		case OBJECT_ROTATION_X: return "Object rotation X";
+		case OBJECT_ROTATION_Y: return "Object rotation Y";
+		case OBJECT_ROTATION_Z: return "Object rotation Z";
+		case AMBIENT_COLOR_R: return "Ambient color red";
+		case AMBIENT_COLOR_G: return "Ambient color green";
+		case AMBIENT_COLOR_B: return "Ambient color blue";
+		case DIRECTED_LIGHT_COLOR_R: return "Directed light color red";
+		case DIRECTED_LIGHT_COLOR_G: return "Directed light color green";
+		case DIRECTED_LIGHT_COLOR_B: return "Directed light color blue";
+		case DIRECTED_LIGHT_DIRECTION_X: return "Directed light rotation X";
+		case DIRECTED_LIGHT_DIRECTION_Y: return "Directed light rotation Y";
+		case DIRECTED_LIGHT_DIRECTION_Z: return "Directed light rotation Z";
+		case COLOR_GAIN_R: return "Color gain red";
+		case COLOR_GAIN_G: return "Color gain green";
+		case COLOR_GAIN_B: return "Color gain blue";
+		case COLOR_OFFSET_R: return "Color offset red";
+		case COLOR_OFFSET_G: return "Color offset green";
+		case COLOR_OFFSET_B: return "Color offset blue";
+		case OBJECT_SHININESS: return "Object shininess";
+		}
+		assert(false);
+		return "";
+	}
 }
