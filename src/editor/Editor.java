@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
@@ -85,11 +84,8 @@ public class Editor {
 
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setViewportView(sliderPanel);
-		//scrollPane.setMinimumSize(new Dimension(200, 200));
 
 		sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
-		sliderPanel.setMinimumSize(new Dimension(200, 200));
-		sliderPanel.setPreferredSize(new Dimension(400, 600));
 
 		createSliders();
 
@@ -103,6 +99,11 @@ public class Editor {
 		sliderPanel.add(new JLabel("Model parameters:"));
 		for(int i = 0; i < modelParam.getModelCount(); i++) {
 			sliderPanel.add(new Slider("Eigen Face " + (i+1), -1, 1, 0.01, 0));
+		}
+
+		sliderPanel.add(new JLabel("Render parameters:"));
+		for(int i = 0; i < RenderParameter.PARAMS_SIZE; i++) {
+			sliderPanel.add(new Slider(RenderParameter.getDescription(i), -1, 1, 0.01, 0));
 		}
 	}
 }
