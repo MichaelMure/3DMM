@@ -8,6 +8,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.VertexBuffer.Type;
 
+import parameter.ModelParameter;
 import pca.PCA;
 import pca.PCA_SVD;
 import util.Log;

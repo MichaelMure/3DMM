@@ -8,17 +8,16 @@ import java.awt.Dimension;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 
-import render.RenderParameter;
+import parameter.ModelParameter;
+import parameter.RenderParameter;
 
 import model.Model;
-import model.ModelParameter;
 import model.MorphableModel;
 
 import com.jme3.system.AppSettings;

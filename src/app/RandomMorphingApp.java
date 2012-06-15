@@ -4,11 +4,12 @@ import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import parameter.ModelParameter;
+
 import gui.Simple3DGUI;
 import io.FileType;
 
 import model.Model;
-import model.ModelParameter;
 import model.MorphableModel;
 import model.MorphableModelBuilder;
 import util.Log;

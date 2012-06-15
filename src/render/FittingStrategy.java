@@ -5,12 +5,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import parameter.CompleteParameter;
+import parameter.ModelParameter;
+
 import com.jme3.scene.Mesh;
 
 import util.Log;
 import util.Log.LogType;
 
-import model.ModelParameter;
 import model.MorphableModel;
 
 public class FittingStrategy implements FittingRenderer.Callback {

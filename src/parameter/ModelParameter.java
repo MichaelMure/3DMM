@@ -1,8 +1,10 @@
-package model;
+package parameter;
+
+import model.Model;
+import model.MorphableModel;
 
 import com.jme3.scene.Mesh;
 
-import cern.colt.bitvector.BitVector;
 import cern.colt.function.DoubleDoubleFunction;
 import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
@@ -15,33 +17,12 @@ public class ModelParameter {
 	private static MorphableModel mm;
 	private static int modelCount = 0;
 
-	/* Iterator */
-	private enum State { Vertice, Color};
-	private static State state = State.Vertice;
-	private static int index = -1;
-
 	private final DoubleMatrix1D verticesWeight;
 	private final DoubleMatrix1D colorWeight;
-
-	private static BitVector enabledVertice = null;
-	private static BitVector enabledColor = null;
-
-	private static void initEnabled() {
-		if (enabledColor == null   || enabledColor.size() != modelCount ||
-			  enabledVertice == null || enabledVertice.size() != modelCount) {
-			enabledColor = new BitVector(modelCount);
-			enabledColor.clear();
-			enabledColor.not(); /* Enable all */
-			enabledVertice = new BitVector(modelCount);
-			enabledVertice.clear();
-			enabledVertice.not(); /* Enable all */
-		}
-	}
 
 	public static void setMorphableModel(MorphableModel mm) {
 		ModelParameter.mm = mm;
 		ModelParameter.modelCount = mm.getReducedSize();
-		initEnabled();
 	}
 
 	/** @return a new random ModelParameter with random values.
@@ -91,43 +72,6 @@ public class ModelParameter {
 		this.colorWeight.assign(modelParams.colorWeight);
 	}
 
-	/** Initialize the iterator */
-	public static boolean start() {
-		state = State.Vertice;
-		index = -1;
-		return next();
-	}
-
-	/** Increment the iterator.
-	 *  @return true if the iterator is still valid, false if the iteration in ended.
-	 */
-	public static boolean next() {
-		index++;
-
-		switch (state) {
-		case Vertice:
-			while(index < modelCount) {
-				if(enabledVertice.get(index))
-					return true;
-				index++;
-			}
-			index = 0;
-			state = State.Color;
-			/* No break here, we slip to color handling. */
-
-		case Color:
-			while(index < modelCount) {
-				if(enabledColor.get(index))
-					return true;
-				index++;
-			}
-			/* No break here neither */
-
-		default:
-			return false;
-		}
-	}
-
 	/** In place randomization of the parameters */
 	public void randomize() {
 		colorWeight.assign(Functions.random());
@@ -142,19 +86,34 @@ public class ModelParameter {
 	/** @return the number of parameter stored in each
 	 * vertices and color.
 	 */
-	public int getModelCount() {
+	public static int getModelCount() {
 		return modelCount;
 	}
 
-	/** @return the weight vector for the vertices. */
-	public DoubleMatrix1D getVerticesWeight() {
-		return verticesWeight;
+	public double get(int index) {
+		if(index < modelCount)
+			return verticesWeight.getQuick(index);
+		else
+			return colorWeight.getQuick(index);
 	}
 
-	/** @return the weight vector for the colors. */
-	public DoubleMatrix1D getColorWeight() {
-		return colorWeight;
+	public void set(int index, double value) {
+		if(index < modelCount)
+			verticesWeight.setQuick(index, value);
+		else
+			colorWeight.setQuick(index, value);
 	}
+
+   /** @return the weight vector for the vertices. */
+   public DoubleMatrix1D getVerticesWeight() {
+           return verticesWeight;
+   }
+
+   /** @return the weight vector for the colors. */
+   public DoubleMatrix1D getColorWeight() {
+           return colorWeight;
+   }
+
 
 	/** @return a linear application of this and another ModelParameter.
 	 * return value = (1.0 - alpha) * this + alpha * targetParam
@@ -177,29 +136,6 @@ public class ModelParameter {
 		return new ModelParameter(v, c);
 	}
 
-	public double get() {
-		switch (state) {
-		case Vertice:
-			return verticesWeight.getQuick(index);
-		case Color:
-			return colorWeight.getQuick(index);
-		default:
-			assert false;
-			return 0;
-		}
-	}
-
-	public void set(double value) {
-		switch (state) {
-		case Vertice:
-			verticesWeight.setQuick(index, value);
-			break;
-		case Color:
-			colorWeight.setQuick(index, value);
-			break;
-		}
-	}
-
 	@Override
 	public String toString() {
 		String result = "ModelParameter: ";
@@ -218,13 +154,11 @@ public class ModelParameter {
 		colorWeight.assign(Functions.div(totalColor));
 	}
 
-	public static double getStandartDeviation() {
-		switch(state) {
-		case Color: return mm.getColorEV(index);
-		case Vertice: return mm.getVerticeEV(index);
-		}
-		assert(false);
-		return 0;
+	public static double getStandartDeviation(int index) {
+		if(index < modelCount)
+			return mm.getVerticeEV(index);
+		else
+			return mm.getColorEV(index - modelCount);
 	}
 
 	public String getDataString() {
@@ -234,6 +168,13 @@ public class ModelParameter {
 		for(int x = 0; x < modelCount -1; x++)
 			result += String.format("%f\t", colorWeight.getQuick(x));
 		return result + String.format("%f", colorWeight.getQuick(modelCount-1));
+	}
+
+	public static String getDescription(int index) {
+		if(index < modelCount)
+			return "Shape " + (index+1);
+		else
+			return "Texture " + (index+1 - modelCount);
 	}
 
 	/** Utility shortcut to retrieve a Model from a ModelParameter */

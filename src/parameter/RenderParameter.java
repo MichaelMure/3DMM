@@ -1,4 +1,4 @@
-package render;
+package parameter;
 
 import util.Log;
 import util.Log.LogType;
@@ -14,61 +14,45 @@ import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
 public class RenderParameter {
 
-	private final static int CAMERA_DISTANCE = 0;
+	public final static int CAMERA_DISTANCE = 0;
 
-	private final static int OBJECT_SCALE = 1;
+	public final static int OBJECT_SCALE = 1;
 
-	private final static int OBJECT_POSITION_X = 2;
-	private final static int OBJECT_POSITION_Y = 3;
+	public final static int OBJECT_POSITION_X = 2;
+	public final static int OBJECT_POSITION_Y = 3;
 
-	private final static int OBJECT_ROTATION_X = 4;
-	private final static int OBJECT_ROTATION_Y = 5;
-	private final static int OBJECT_ROTATION_Z = 6;
+	public final static int OBJECT_ROTATION_X = 4;
+	public final static int OBJECT_ROTATION_Y = 5;
+	public final static int OBJECT_ROTATION_Z = 6;
 
-	private final static int AMBIENT_COLOR_R = 7;
-	private final static int AMBIENT_COLOR_G = 8;
-	private final static int AMBIENT_COLOR_B = 9;
+	public final static int AMBIENT_COLOR_R = 7;
+	public final static int AMBIENT_COLOR_G = 8;
+	public final static int AMBIENT_COLOR_B = 9;
 
-	private final static int DIRECTED_LIGHT_COLOR_R = 10;
-	private final static int DIRECTED_LIGHT_COLOR_G = 11;
-	private final static int DIRECTED_LIGHT_COLOR_B = 12;
+	public final static int DIRECTED_LIGHT_COLOR_R = 10;
+	public final static int DIRECTED_LIGHT_COLOR_G = 11;
+	public final static int DIRECTED_LIGHT_COLOR_B = 12;
 
-	private final static int DIRECTED_LIGHT_DIRECTION_X = 13;
-	private final static int DIRECTED_LIGHT_DIRECTION_Y = 14;
-	private final static int DIRECTED_LIGHT_DIRECTION_Z = 15;
+	public final static int DIRECTED_LIGHT_DIRECTION_X = 13;
+	public final static int DIRECTED_LIGHT_DIRECTION_Y = 14;
+	public final static int DIRECTED_LIGHT_DIRECTION_Z = 15;
 
-	private final static int COLOR_OFFSET_R = 16;
-	private final static int COLOR_OFFSET_G = 17;
-	private final static int COLOR_OFFSET_B = 18;
+	public final static int COLOR_OFFSET_R = 16;
+	public final static int COLOR_OFFSET_G = 17;
+	public final static int COLOR_OFFSET_B = 18;
 
-	private final static int COLOR_GAIN_R = 19;
-	private final static int COLOR_GAIN_G = 20;
-	private final static int COLOR_GAIN_B = 21;
+	public final static int COLOR_GAIN_R = 19;
+	public final static int COLOR_GAIN_G = 20;
+	public final static int COLOR_GAIN_B = 21;
 
-	private final static int OBJECT_SHININESS = 22;
+	public final static int OBJECT_SHININESS = 22;
 
-	private final static int LAST_PARAM = OBJECT_SHININESS;
+	public final static int LAST_PARAM = OBJECT_SHININESS;
 	public final static int PARAMS_SIZE = LAST_PARAM +1;
 
 	private final static float EPSILON = 0.0001f;
 
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
-
-	private static final BitVector enabled = new BitVector(PARAMS_SIZE);
-	private static int index = -1;
-
-	static {
-		enabled.clear();
-		enabled.not(); /* Enable all */
-		enabled.clear(OBJECT_SCALE);
-		enabled.clear(OBJECT_ROTATION_X);
-		enabled.clear(OBJECT_ROTATION_Y);
-		enabled.clear(OBJECT_ROTATION_Z);
-		enabled.clear(OBJECT_POSITION_X);
-		enabled.clear(OBJECT_POSITION_Y);
-
-		enabled.clear();
-	}
 
 	public RenderParameter() {
 		setCameraDistance(3.0);
@@ -94,33 +78,6 @@ public class RenderParameter {
 
 	public void setMatrix(DenseDoubleMatrix1D matrix) {
 		this.matrix = matrix;
-	}
-
-	/** Initialize the iterator */
-	public static boolean start() {
-		index = -1;
-		return next();
-	}
-
-	/** Increment the iterator.
-	 *  @return true if the iterator is still valid, false if the iteration in ended.
-	 */
-	public static boolean next() {
-		index++;
-		while(index <= LAST_PARAM) {
-			if(enabled.get(index))
-				return true;
-			index++;
-		}
-		return false;
-	}
-
-	public double get() {
-		return get(index);
-	}
-
-	public void set(double value) {
-		set(index, value);
 	}
 
 	public double get(int index) {
@@ -160,7 +117,7 @@ public class RenderParameter {
 		matrix.assign(params.matrix);
 	}
 
-	public static double getStandartDeviation() {
+	public static double getStandartDeviation(int index) {
 		switch (index) {
 		case OBJECT_SCALE: return 1.0/300.0;
 		case CAMERA_DISTANCE: return 1;
@@ -308,7 +265,7 @@ public class RenderParameter {
 		matrix.setQuick(OBJECT_SHININESS, objectShininess);
 	}
 
-	public static String getDescription() {
+	public static String getDescription(int index) {
 		switch(index) {
 		case CAMERA_DISTANCE: return "Camera distance";
 		case OBJECT_SCALE: return "Object scale";

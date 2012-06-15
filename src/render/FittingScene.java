@@ -1,5 +1,6 @@
 package render;
 
+import parameter.RenderParameter;
 import util.NormalGenerator;
 
 import com.jme3.asset.AssetManager;

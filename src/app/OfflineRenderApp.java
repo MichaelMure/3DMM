@@ -15,11 +15,17 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.WindowConstants;
 
+import parameter.ModelParameter;
+import parameter.RenderParameter;
+
+
+import model.MorphableModel;
+import model.MorphableModelBuilder;
+
 import com.jme3.scene.Mesh;
 
 import render.FittingRenderer;
 import render.FittingScene;
-import render.RenderParameter;
 import util.Log;
 import util.Log.LogType;
 

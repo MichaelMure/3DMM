@@ -3,6 +3,8 @@ package app;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import parameter.ModelParameter;
+
 import gui.Simple3DGUI;
 import io.FileType;
 import model.MorphableModel;

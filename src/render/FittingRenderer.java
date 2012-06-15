@@ -7,6 +7,8 @@ import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
+import parameter.RenderParameter;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.post.SceneProcessor;
 import com.jme3.renderer.RenderManager;
