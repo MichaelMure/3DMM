@@ -139,7 +139,9 @@ public class ModelParameter {
 		normalize();
 	}
 
-	/** @return the number of parameter stored. */
+	/** @return the number of parameter stored in each
+	 * vertices and color.
+	 */
 	public int getModelCount() {
 		return modelCount;
 	}
