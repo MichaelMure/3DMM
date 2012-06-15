@@ -64,15 +64,17 @@ public class RenderParameter {
 		enabled.clear(OBJECT_ROTATION_X);
 		enabled.clear(OBJECT_ROTATION_Y);
 		enabled.clear(OBJECT_ROTATION_Z);
+		enabled.clear(OBJECT_POSITION_X);
+		enabled.clear(OBJECT_POSITION_Y);
+
+		enabled.clear();
 	}
 
 	public RenderParameter() {
 		setCameraDistance(3.0);
 		setObjectScale(1.0);
 		setObjectPosition(new Vector3f(EPSILON, EPSILON, EPSILON));
-		matrix.setQuick(OBJECT_ROTATION_X, EPSILON);
-		matrix.setQuick(OBJECT_ROTATION_Y, EPSILON);
-		matrix.setQuick(OBJECT_ROTATION_Z, EPSILON);
+		setObjectRotation(Quaternion.DIRECTION_Z);
 		setAmbientLightColor(ColorRGBA.White);
 		setDirectedLightColor(ColorRGBA.White);
 		setDirectedLightDirection(new Vector3f(-0.5f,-1,-1));
@@ -161,6 +163,7 @@ public class RenderParameter {
 	public static double getStandartDeviation() {
 		switch (index) {
 		case OBJECT_SCALE: return 1.0/300.0;
+		case CAMERA_DISTANCE: return 1;
 		case OBJECT_SHININESS: return 0.2;
 		case OBJECT_POSITION_X:
 		case OBJECT_POSITION_Y: return 0.05;
@@ -305,7 +308,7 @@ public class RenderParameter {
 		matrix.setQuick(OBJECT_SHININESS, objectShininess);
 	}
 
-	public static String getDescription(int index) {
+	public static String getDescription() {
 		switch(index) {
 		case CAMERA_DISTANCE: return "Camera distance";
 		case OBJECT_SCALE: return "Object scale";
