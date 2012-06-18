@@ -11,7 +11,7 @@ import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
 
-public class ModelParameter {
+public class ModelParameter implements Parameter {
 
 	/* Morphable Model */
 	private static MorphableModel mm;
@@ -90,6 +90,7 @@ public class ModelParameter {
 		return modelCount;
 	}
 
+	@Override
 	public double get(int index) {
 		if(index < modelCount)
 			return verticesWeight.getQuick(index);
@@ -97,6 +98,7 @@ public class ModelParameter {
 			return colorWeight.getQuick(index - modelCount);
 	}
 
+	@Override
 	public void set(int index, double value) {
 		if(index < modelCount)
 			verticesWeight.setQuick(index, value);
@@ -170,7 +172,8 @@ public class ModelParameter {
 		return result + String.format("%f", colorWeight.getQuick(modelCount-1));
 	}
 
-	public static String getDescription(int index) {
+	@Override
+	public String getDescription(int index) {
 		if(index < modelCount)
 			return "Shape " + (index+1);
 		else
@@ -190,5 +193,15 @@ public class ModelParameter {
 	/** Utility shortcut to update a mesh from a ModelParameter */
 	public void updateMesh(Mesh mesh) {
 		mm.updateMesh(mesh, this);
+	}
+
+	@Override
+	public double getMin(int index) {
+		return -1;
+	}
+
+	@Override
+	public double getMax(int index) {
+		return 1;
 	}
 }
