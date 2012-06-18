@@ -9,10 +9,9 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Mesh;
 
-import cern.colt.bitvector.BitVector;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 
-public class RenderParameter {
+public class RenderParameter implements Parameter {
 
 	public final static int CAMERA_DISTANCE = 0;
 
@@ -80,10 +79,12 @@ public class RenderParameter {
 		this.matrix = matrix;
 	}
 
+	@Override
 	public double get(int index) {
 		return matrix.getQuick(index);
 	}
 
+	@Override
 	public void set(int index, double value) {
 		matrix.setQuick(index, value);
 	}
@@ -265,7 +266,8 @@ public class RenderParameter {
 		matrix.setQuick(OBJECT_SHININESS, objectShininess);
 	}
 
-	public static String getDescription(int index) {
+	@Override
+	public String getDescription(int index) {
 		switch(index) {
 		case CAMERA_DISTANCE: return "Camera distance";
 		case OBJECT_SCALE: return "Object scale";
@@ -293,5 +295,42 @@ public class RenderParameter {
 		}
 		assert(false);
 		return "";
+	}
+
+	@Override
+	public double getMin(int index) {
+		switch(index) {
+		case CAMERA_DISTANCE: return 2;
+		case OBJECT_POSITION_X:
+		case OBJECT_POSITION_Y: return -1;
+		case OBJECT_ROTATION_X:
+		case OBJECT_ROTATION_Y:
+		case OBJECT_ROTATION_Z: return 0; /* TODO */
+		case OBJECT_SCALE: return getObjectScale() / Math.sqrt(10);
+		case OBJECT_SHININESS: return 1;
+		}
+		return 0;
+	}
+
+	@Override
+	public double getMax(int index) {
+		switch (index) {
+		case CAMERA_DISTANCE: return 10;
+		case OBJECT_SCALE: return getObjectScale() * Math.sqrt(10);
+		case OBJECT_ROTATION_X:
+		case OBJECT_ROTATION_Y:
+		case OBJECT_ROTATION_Z: return 1; /* TODO */
+		case AMBIENT_COLOR_R:
+		case AMBIENT_COLOR_G:
+		case AMBIENT_COLOR_B:
+		case DIRECTED_LIGHT_COLOR_R:
+		case DIRECTED_LIGHT_COLOR_G:
+		case DIRECTED_LIGHT_COLOR_B: return 5;
+		case COLOR_GAIN_R:
+		case COLOR_GAIN_G:
+		case COLOR_GAIN_B: return 2;
+		case OBJECT_SHININESS: return 128;
+		}
+		return 1;
 	}
 }
