@@ -88,17 +88,10 @@ public class FittingScene {
 		/* Update view */
 		cam.setLocation(new Vector3f(0f, 0f, params.getCameraDistance()));
 
-		/* Update object */
-		// TODO: update mesh
-		NormalGenerator.ComputeNormal(mesh);
-
 		/* Place object */
 		geom.setLocalRotation(params.getObjectRotation());
 		geom.setLocalTranslation(params.getObjectPosition());
 		geom.setLocalScale(params.getObjectScale());
-		System.out.println(geom.getLocalScale());
-		/*System.out.println(geom.getLocalTranslation());
-		System.out.println(geom.getLocalRotation());*/
 
 		/* Update lightning */
 		directLight.setDirection(params.getDirectedLightDirection());
