@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import parameter.CompleteParameter;
+import parameter.CompleteParameterIterator;
 import parameter.ModelParameter;
 
 import com.jme3.scene.Mesh;
@@ -27,6 +28,8 @@ public class FittingStrategy implements FittingRenderer.Callback {
 	private CompleteParameter ref;
 	private CompleteParameter current;
 	private CompleteParameter next;
+
+	private CompleteParameterIterator it;
 
 	private enum State {Reference, Fitting};
 	private State state;
@@ -57,6 +60,8 @@ public class FittingStrategy implements FittingRenderer.Callback {
 		this.current = new CompleteParameter(start);
 		this.next = new CompleteParameter(start);
 
+		this.it = new CompleteParameterIterator();
+
 		Log.info(LogType.FITTING, "Creating the scene.");
 		this.scene = new FittingScene(mesh);
 		Log.info(LogType.FITTING, "Creating the rater.");
@@ -81,7 +86,7 @@ public class FittingStrategy implements FittingRenderer.Callback {
 	public void rendererCallback() {
 		if(state == State.Reference) {
 			Log.info(LogType.FITTING, "Fitting state: " + state);
-			renderer.saveRender(superStep + "_REF");
+			//renderer.saveRender(superStep + "_REF");
 		}
 
 		rater.setRender(renderer.getRender());
@@ -94,39 +99,42 @@ public class FittingStrategy implements FittingRenderer.Callback {
 			out.println(current.getDataString());
 			out.flush();
 			errorRef = rater.getRate();
-			CompleteParameter.start();
-			current.scaleParam(ratio);
+			it.start();
+			it.scaleParam(current, ratio);
 
-			switch(CompleteParameter.getState()) {
+			switch(it.getState()) {
 			case Model:   current.updateMesh(mesh);	break;
 			case Render:	current.updateScene(scene); break;
 			}
 			state = State.Fitting;
+
+			if(superStep > 100) sigma = 4000;
+			if(superStep > 200) sigma = 3000;
 			break;
 
 		case Fitting:
-			double d = (1.0/(sigma*sigma)) * (errorRef - rater.getRate()) / (ref.get() - current.get());
+			double d = (1.0/(sigma*sigma)) * (errorRef - rater.getRate()) / (it.get(ref) - it.get(current));
 
-			switch(CompleteParameter.getState()) {
+			switch(it.getState()) {
 			case Model:
-				d += 2.0 * current.get() / CompleteParameter.getStandartDeviationSquared();
+				d += 2.0 * it.get(current) / it.getStandartDeviationSquared();
 				break;
 			case Render:
-				d += 2.0 * (current.get() - start.get()) / CompleteParameter.getStandartDeviationSquared();
+				d += 2.0 * (it.get(current) - it.get(start)) / it.getStandartDeviationSquared();
 				break;
 			}
 
 			/* We add a random noise to try to avoid local minimum */
 			double nextDiff =  - lambda * d * (1.0 + (Math.random() - 0.5) * 0.1);
-			Log.info(LogType.FITTING, "Derivate: " + d + " | " + ref.get() + " + (" + nextDiff + ")");
+			Log.info(LogType.FITTING, "Derivate: " + d + " | " + it.get(ref) + " + (" + nextDiff + ")");
 
-			next.set(ref.get() + nextDiff);
+			it.set(next, it.get(ref) + nextDiff);
 			current.copy(ref);
 
-			if(CompleteParameter.next()) {
+			if(it.next()) {
 				current.copy(ref);
-				current.scaleParam(ratio);
-				switch(CompleteParameter.getState()) {
+				it.scaleParam(current, ratio);
+				switch(it.getState()) {
 				case Model:   current.updateMesh(mesh);	break;
 				case Render:	current.updateScene(scene); break;
 				}
