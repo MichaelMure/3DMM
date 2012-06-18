@@ -59,11 +59,6 @@ public class FittingRenderer extends SimpleApplication implements SceneProcessor
 		this.restart();
 	}
 
-	@Override
-	public void simpleUpdate(float tpf) {
-		// modelVersion = model.updateMesh(modelVersion, mesh);
-	}
-
 	public BufferedImage getRender() {
 		BufferedImage image = new BufferedImage(target.getWidth(),
 				target.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
@@ -85,14 +80,17 @@ public class FittingRenderer extends SimpleApplication implements SceneProcessor
 		renderer.readFrameBuffer(out, cpuBuf);
 		Screenshots.convertScreenShot(cpuBuf, renderOutput);
 
-		callback.rendererCallback();
+		if(callback != null)
+			callback.rendererCallback();
 	}
 
 	@Override
 	public boolean isInitialized() {
 		return true;
 	}
-
+	@Override
+	public void simpleUpdate(float tpf) {
+	}
 	@Override
 	public void cleanup() {}
 	@Override
