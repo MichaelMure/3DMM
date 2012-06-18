@@ -94,14 +94,14 @@ public class ModelParameter {
 		if(index < modelCount)
 			return verticesWeight.getQuick(index);
 		else
-			return colorWeight.getQuick(index);
+			return colorWeight.getQuick(index - modelCount);
 	}
 
 	public void set(int index, double value) {
 		if(index < modelCount)
 			verticesWeight.setQuick(index, value);
 		else
-			colorWeight.setQuick(index, value);
+			colorWeight.setQuick(index - modelCount, value);
 	}
 
    /** @return the weight vector for the vertices. */
