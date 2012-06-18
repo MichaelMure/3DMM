@@ -1,7 +1,5 @@
 package editor;
 
-import gui.DisplayApp;
-
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
@@ -16,34 +14,37 @@ import javax.swing.WindowConstants;
 
 import parameter.ModelParameter;
 import parameter.RenderParameter;
+import render.FittingScene;
 
-import model.Model;
 import model.MorphableModel;
 
+import com.jme3.app.SimpleApplication;
+import com.jme3.scene.Mesh;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeCanvasContext;
 
 public class Editor {
 	private JmeCanvasContext context;
   private Canvas canvas;
-  private DisplayApp app;
   private JFrame frame;
   private JPanel sliderPanel;
 
   private ModelParameter modelParam;
   private RenderParameter renderParam;
-  private Model model;
+  private Mesh mesh;
+  private FittingScene scene;
 
   public Editor(MorphableModel mm) {
 		ModelParameter.setMorphableModel(mm);
 
 		modelParam = new ModelParameter();
 		renderParam = new RenderParameter();
-		model = modelParam.getModel();
-		renderParam.initObjectScale(model.getMesh());
+
+		mesh = modelParam.getMesh();
+		renderParam.initObjectScale(mesh);
+		scene = new FittingScene(mesh);
 
 		createCanvas();
-		app.displayUnshaded(model);
 		createFrame();
   }
 
@@ -54,7 +55,7 @@ public class Editor {
     /* Disable audio */
     settings.setAudioRenderer(null);
 
-    app = new DisplayApp();
+    EditorApplication app = new EditorApplication();
     app.setPauseOnLostFocus(false);
     app.setSettings(settings);
     app.createCanvas();
@@ -95,14 +96,20 @@ public class Editor {
 	}
 
 	private void createSliders() {
-		sliderPanel.add(new JLabel("Model parameters:"));
-		for(int i = 0; i < modelParam.getModelCount(); i++) {
-			sliderPanel.add(new Slider("Eigen Face " + (i+1), -1, 1, 0.01, 0));
-		}
+		sliderPanel.add(new ModelParameterUI(modelParam));
+		sliderPanel.add(new RenderParameterUI(renderParam));
+	}
 
-		sliderPanel.add(new JLabel("Render parameters:"));
-		for(int i = 0; i < RenderParameter.PARAMS_SIZE; i++) {
-			sliderPanel.add(new Slider(RenderParameter.getDescription(i), -1, 1, 0.01, 0));
+	private class EditorApplication extends SimpleApplication {
+		@Override
+		public void simpleInitApp() {
+			scene.createScene(rootNode, cam, assetManager, viewPort, renderParam);
+			flyCam.setEnabled(false);
 		}
+		@Override
+		public void simpleUpdate(float tpf) {
+			scene.update(renderParam);
+			modelParam.updateMesh(mesh);
+    }
 	}
 }

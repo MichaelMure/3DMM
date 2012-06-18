@@ -1,14 +1,21 @@
 package editor;
 
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import parameter.Parameter;
+
 public class Slider extends JPanel {
 
 	private static final long serialVersionUID = -4409767652756651033L;
+
+	private Parameter param;
+	private int index;
+
 	private JSlider slider;
 	private JLabel description;
 	private JLabel valueLabel;
@@ -16,11 +23,18 @@ public class Slider extends JPanel {
 	private double min;
 
 
-	public Slider(String label, double min, double max, double resolution, double value) {
-		this.description = new JLabel(label);
+	public Slider(Parameter param, int index) {
+		this.param = param;
+		this.index = index;
 
-		this.min = min;
-		double extent = max - min;
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
+		this.description = new JLabel(param.getDescription(index));
+
+
+		this.min = param.getMin(index);
+		double extent = param.getMax(index) - min;
+		double resolution = extent / 10000;
 		int increment = (int) (extent / resolution);
 		scale = increment / extent;
 
@@ -32,7 +46,8 @@ public class Slider extends JPanel {
 		this.valueLabel = new JLabel();
 		this.add(this.valueLabel);
 
-		setValue(value);
+		setValue(param.get(index));
+		valueLabel.setText(String.format("%+.2f",getValue()));
 	}
 
 	private double getValue() {
@@ -44,11 +59,10 @@ public class Slider extends JPanel {
 	}
 
 	class SliderListener implements ChangeListener {
-
 		@Override
 		public void stateChanged(ChangeEvent e) {
-			//valueLabel.setText(new DecimalFormat("#.##").format(getValue()));
 			valueLabel.setText(String.format("%+.2f",getValue()));
+			param.set(index, getValue());
 		}
 	}
 }
