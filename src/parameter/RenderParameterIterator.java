@@ -47,14 +47,6 @@ public class RenderParameterIterator{
 		param.set(index, value);
 	}
 
-	public double getMin() {
-		return RenderParameter.getMin(index);
-	}
-
-	public double getMax() {
-		return RenderParameter.getMax(index);
-	}
-
 	public double getStandartDeviation() {
 		return RenderParameter.getStandartDeviation(index);
 	}

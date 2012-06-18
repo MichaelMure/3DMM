@@ -83,20 +83,7 @@ public class ModelParameterIterator {
 		}
 	}
 
-	public double getMin() {
-		return ModelParameter.getMin(index);
-	}
-
-	public double getMax() {
-		return ModelParameter.getMax(index);
-	}
-
 	public double getStandartDeviation() {
 		return ModelParameter.getStandartDeviation(index);
 	}
-
-	public String getDescription() {
-		return ModelParameter.getDescription(index);
-	}
-
 }
