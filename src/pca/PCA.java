@@ -34,6 +34,7 @@ public class PCA {
 		this.eigenValues = eigenValues;
 		this.mean = mean;
 		this.meanDirty = false;
+		this.dataLock = true;
 	}
 
 	/** Create a new PCA with the provided data, with one column = one sample. */
@@ -86,25 +87,25 @@ public class PCA {
 
 	/** @return the basis vector. */
 	public DoubleMatrix2D getBasis() {
-		ensureBasis();
+		assert basis != null;
 		return basis;
 	}
 
 	/** @return a vector of the feature space basis. */
 	public DoubleMatrix1D getBasisVector(int index) {
-		ensureBasis();
+		assert basis != null;
 		return basis.viewColumn(index);
 	}
 
 	/** @return one eigen value. */
 	public double getEigenValue(int index) {
-		ensureBasis();
+		ensureReducedData();
 		return eigenValues.get(index);
 	}
 
 	/** @return the number of component of the feature space. */
 	public int getNumComponents() {
-		ensureBasis();
+		ensureReducedData();
 		return numComponents;
 	}
 
@@ -152,7 +153,7 @@ public class PCA {
 	 *  @param sample the sample to convert.
 	 */
 	private DoubleMatrix1D sampleToFeatureSpaceNoMean(DoubleMatrix1D sample) {
-		ensureBasis();
+		ensureReducedData();
 
 		if(sample.size() != data.rows())
 			throw new IllegalArgumentException("Unexpected sample length.");
@@ -226,8 +227,8 @@ public class PCA {
 
 	/** If no explicit computeBasis call have been made with a numComponents,
 	 *  we compute the PCA with the same dimension as the original data. */
-	private void ensureBasis() {
-		if(basis == null)
+	private void ensureReducedData() {
+		if(reducedData == null)
 			computePCA(data.rows());
 	}
 
