@@ -5,6 +5,8 @@ import java.nio.IntBuffer;
 import java.util.Map;
 
 import pca.PCA;
+import util.Log;
+import util.Log.LogType;
 
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.DoubleMatrix2D;
@@ -19,11 +21,36 @@ import com.jme3.util.BufferUtils;
 
 public class MorphableModelLoader {
 
+	/** Load a morphable model:
+	 * - the default location
+	 * - all the dimensions.
+	 */
 	public static MorphableModel loadMAT() throws IOException {
 		return loadMAT("data/01_MorphableModel.mat");
 	}
 
+	/** Load a morphable model:
+	 * - the default location
+	 * @param dimension number of dimension to load.
+	 */
+	public static MorphableModel loadMAT(int dimension) throws IOException {
+		return loadMAT("data/01_MorphableModel.mat", dimension);
+	}
+
+	/** Load a morphable model:
+	 * - all the dimensions.
+	 * @param filename the matlab file.
+	 */
 	public static MorphableModel loadMAT(String filename) throws IOException {
+		return loadMAT(filename, -1);
+	}
+
+	/** Load a morphable model:
+	 * @param filename the matlab file.
+	 * @param dimension number of dimension to load.
+	 */
+	public static MorphableModel loadMAT(String filename, int dimension) throws IOException {
+		Log.info(LogType.MODEL, "Loading PCA from matlab database.");
 		MatFileReader reader = new MatFileReader(filename);
 		Map<String, MLArray> map = reader.getContent();
 
@@ -38,11 +65,13 @@ public class MorphableModelLoader {
 
 		/* Read shape matrices */
 		MLArray array = map.get("shapeEV");
-		int numComponent = array.getM();
+		if(dimension <= 0)
+			dimension = array.getM();
+		Log.info(LogType.MODEL, "Dimension: " + dimension);
 		assert(array.isSingle());
 		MLSingle shapeEV =  (MLSingle) array;
-		DoubleMatrix1D eigenValues = new DenseDoubleMatrix1D(shapeEV.getM());
-		for(int x = 0; x < shapeEV.getM(); x++)
+		DoubleMatrix1D eigenValues = new DenseDoubleMatrix1D(dimension);
+		for(int x = 0; x < dimension; x++)
 			eigenValues.setQuick(x, shapeEV.get(x));
 		shapeEV = null;
 		map.remove("shapeEV");
@@ -59,21 +88,21 @@ public class MorphableModelLoader {
 		array = map.get("shapePC");
 		assert(array.isSingle());
 		MLSingle shapePC =  (MLSingle) array;
-		DoubleMatrix2D reducedData = new DenseDoubleMatrix2D(shapePC.getM(), shapePC.getN());
+		DoubleMatrix2D reducedData = new DenseDoubleMatrix2D(shapePC.getM(), dimension);
 		for(int row = 0; row < shapePC.getM(); row++)
-			for(int col = 0; col < shapePC.getN(); col++)
+			for(int col = 0; col < dimension; col++)
 				reducedData.setQuick(row, col, shapePC.get(row, col));
 		shapePC = null;
 		map.remove("shapePC");
 
-		PCA verticesPCA = new PCA(numComponent, reducedData, eigenValues, mean);
+		PCA verticesPCA = new PCA(dimension, reducedData, eigenValues, mean);
 
 		/* Read color matrices */
 		array = map.get("texEV");
 		assert(array.isSingle());
 		MLSingle texEV =  (MLSingle) array;
-		eigenValues = new DenseDoubleMatrix1D(texEV.getM());
-		for(int x = 0; x < texEV.getM(); x++)
+		eigenValues = new DenseDoubleMatrix1D(dimension);
+		for(int x = 0; x < dimension; x++)
 			eigenValues.setQuick(x, texEV.get(x));
 		texEV = null;
 		map.remove("texEV");
@@ -83,30 +112,33 @@ public class MorphableModelLoader {
 		MLSingle texMU =  (MLSingle) array;
 		mean = new DenseDoubleMatrix1D(texMU.getM());
 		for(int x = 0; x < texMU.getM(); x++)
-			mean.setQuick(x, texMU.get(x));
+			mean.setQuick(x, texMU.get(x) / 255f);
 		texMU = null;
 		map.remove("texMU");
 
 		array = map.get("texPC");
 		assert(array.isSingle());
 		MLSingle texPC =  (MLSingle) array;
-		reducedData = new DenseDoubleMatrix2D(texPC.getM(), texPC.getN());
+		reducedData = new DenseDoubleMatrix2D(texPC.getM(), dimension);
 		for(int row = 0; row < texPC.getM(); row++)
-			for(int col = 0; col < texPC.getN(); col++)
-				reducedData.setQuick(row, col, texPC.get(row, col));
+			for(int col = 0; col < dimension; col++)
+				reducedData.setQuick(row, col, texPC.get(row, col) / 255f);
 		texMU = null;
 		map.remove("texPC");
 
-		PCA colorsPCA = new PCA(numComponent, reducedData, eigenValues, mean);
+		PCA colorsPCA = new PCA(dimension, reducedData, eigenValues, mean);
 
 		/* Read triangle data */
 		array = map.get("tl");
 		assert(array.isDouble());
 		MLDouble tl = (MLDouble) array;
 		IntBuffer faceIndices = BufferUtils.createIntBuffer(tl.getM() * tl.getN());
-		for(int col = 0; col < tl.getN(); col++)
-			for(int row = 0; row < tl.getM(); row++)
-				faceIndices.put(tl.get(row, col).intValue());
+		for(int row = 0; row < tl.getM(); row++) {
+			for(int col = tl.getN() - 1; col >= 0; col--) { /* Reverse order to have good normals */
+				int indice = tl.get(row, col).intValue() - 1; /* triangle start from 1 in matlab data */
+				faceIndices.put(indice);
+			}
+		}
 
 		return new MorphableModel(verticesPCA, colorsPCA, faceIndices);
 	}
