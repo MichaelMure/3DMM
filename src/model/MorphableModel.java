@@ -27,6 +27,12 @@ public class MorphableModel {
 		colors = new PCA_SVD();
 	}
 
+	public MorphableModel(PCA vertices, PCA colors, IntBuffer faceIndices) {
+		this.vertices = vertices;
+		this.colors = colors;
+		this.faceIndices = faceIndices;
+	}
+
 	public void addModel(Model model) {
 		if(faceIndices == null)
 			faceIndices = model.getFaceIndices();
