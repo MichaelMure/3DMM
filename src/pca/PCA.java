@@ -10,7 +10,7 @@ import util.Log;
 import util.Log.LogType;
 import util.TimeCounter;
 
-public abstract class PCA {
+public class PCA {
 	protected int numComponents; /* Dimension of reduced data. */
 	protected DoubleMatrix2D data = null; /* Original data */
 	private DoubleMatrix2D reducedData = null; /* Data after PCA */
@@ -23,6 +23,17 @@ public abstract class PCA {
 	private boolean dataLock = false; /* If the data already has been centered. */
 
 	public PCA() {
+	}
+
+	public PCA(int numComponents,
+			DoubleMatrix2D reducedData,
+			DoubleMatrix1D eigenValues,
+			DoubleMatrix1D mean) {
+		this.numComponents = numComponents;
+		this.reducedData = reducedData;
+		this.eigenValues = eigenValues;
+		this.mean = mean;
+		this.meanDirty = false;
 	}
 
 	/** Create a new PCA with the provided data, with one column = one sample. */
@@ -69,7 +80,9 @@ public abstract class PCA {
 	}
 
 	/** This method should compute the basis matrix and the eigenValue matrix. */
-	protected abstract void doComputeBasis();
+	protected void doComputeBasis() {
+		assert(false);
+	}
 
 	/** @return the basis vector. */
 	public DoubleMatrix2D getBasis() {
