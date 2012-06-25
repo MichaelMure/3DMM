@@ -3,17 +3,50 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/jinput.jar"/>
-	<classpathentry kind="lib" path="lib/jME3-core.jar"/>
-	<classpathentry kind="lib" path="lib/jME3-desktop.jar"/>
-	<classpathentry kind="lib" path="lib/jME3-effects.jar"/>
-	<classpathentry kind="lib" path="lib/jME3-lwjgl-natives.jar"/>
-	<classpathentry kind="lib" path="lib/jME3-lwjgl.jar"/>
+	<classpathentry kind="lib" path="lib/jinput.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jMonkeyEngine-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jME3-core.jar" sourcepath="/home/michael/stage/jMonkeyEngine">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jMonkeyEngine-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jME3-desktop.jar" sourcepath="/home/michael/stage/jMonkeyEngine">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jMonkeyEngine-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jME3-effects.jar" sourcepath="/home/michael/stage/jMonkeyEngine">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jMonkeyEngine-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jME3-lwjgl-natives.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jMonkeyEngine-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/jME3-lwjgl.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/3DMM/lib/jMonkeyEngine-doc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/jME3-plugins.jar"/>
 	<classpathentry kind="lib" path="lib/jME3-terrain.jar"/>
 	<classpathentry kind="lib" path="lib/jply-0.2.0.jar"/>
 	<classpathentry kind="lib" path="lib/lwjgl.jar"/>
-	<classpathentry kind="lib" path="lib/colt.jar"/>
+	<classpathentry kind="lib" path="lib/colt.jar" sourcepath="/home/michael/stage/colt">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/colt/doc/api/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/concurrent.jar"/>
+	<classpathentry kind="lib" path="lib/jmatio.jar" sourcepath="/home/michael/stage/JMatIO/build/JMatIO/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/michael/stage/JMatIO/build/JMatIO/doc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
