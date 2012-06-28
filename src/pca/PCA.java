@@ -170,7 +170,11 @@ public class PCA {
 
 		ensureMean();
 
-		DoubleMatrix1D result = new Algebra().mult(reducedData, sample);
+		DoubleMatrix1D s_copy = sample.copy();
+
+		s_copy.assign(eigenValues, Functions.mult);
+
+		DoubleMatrix1D result = new Algebra().mult(reducedData, s_copy);
 
 		return result.assign(mean, Functions.plus);
 	}
@@ -196,7 +200,7 @@ public class PCA {
 
 	@Override
 	public String toString() {
-		return "PCA: \n" + data;
+		return "PCA: \n" + basis;
 	}
 
 	/** Update the mean sample of the original data. */
