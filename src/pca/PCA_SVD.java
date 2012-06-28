@@ -20,7 +20,7 @@ public class PCA_SVD extends PCA {
 
 		EigenvalueDecomposition eg = new EigenvalueDecomposition(variance);
 		basis = eg.getV().viewColumnFlip().viewPart(0, 0, numComponents, data.columns()).copy();
-		eigenValues = eg.getRealEigenvalues().viewFlip().copy();
+		eigenValues = eg.getRealEigenvalues().viewFlip().viewPart(0, numComponents).copy();
 	}
 
 }
