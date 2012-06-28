@@ -197,11 +197,11 @@ public class ModelParameter implements Parameter {
 
 	@Override
 	public double getMin(int index) {
-		return -1;
+		return -5;
 	}
 
 	@Override
 	public double getMax(int index) {
-		return 1;
+		return 5;
 	}
 }
