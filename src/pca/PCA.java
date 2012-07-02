@@ -82,6 +82,7 @@ public class PCA {
 
 	/** This method should compute the basis matrix and the eigenValue matrix. */
 	protected void doComputeBasis() {
+		/* This class need to be subclassed to implement a PCA method. */
 		assert(false);
 	}
 
