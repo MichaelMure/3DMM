@@ -1,5 +1,7 @@
 package parameter;
 
+import javax.swing.event.EventListenerList;
+
 import util.Log;
 import util.Log.LogType;
 
@@ -53,6 +55,8 @@ public class RenderParameter implements Parameter {
 
 	private DenseDoubleMatrix1D matrix = new DenseDoubleMatrix1D(PARAMS_SIZE);
 
+	private final EventListenerList listeners = new EventListenerList();
+
 	public RenderParameter() {
 		setCameraDistance(3.0);
 		setObjectScale(1.0);
@@ -77,6 +81,7 @@ public class RenderParameter implements Parameter {
 
 	public void setMatrix(DenseDoubleMatrix1D matrix) {
 		this.matrix = matrix;
+		fireParamChanged();
 	}
 
 	@Override
@@ -87,6 +92,7 @@ public class RenderParameter implements Parameter {
 	@Override
 	public void set(int index, double value) {
 		matrix.setQuick(index, value);
+		fireParamChanged();
 	}
 
 	@Override
@@ -139,6 +145,7 @@ public class RenderParameter implements Parameter {
 
 	public void setCameraDistance(double cameraDistance) {
 		matrix.setQuick(CAMERA_DISTANCE, cameraDistance);
+		fireParamChanged();
 	}
 
 	public float getObjectScale() {
@@ -147,6 +154,7 @@ public class RenderParameter implements Parameter {
 
 	public void setObjectScale(double objectScale) {
 		matrix.setQuick(OBJECT_SCALE, objectScale);
+		fireParamChanged();
 	}
 
 	public void initObjectScale(Mesh mesh) {
@@ -161,6 +169,7 @@ public class RenderParameter implements Parameter {
 			return;
 		}
 		Log.info(LogType.GUI, "Not auto-scaling");
+		fireParamChanged();
 	}
 
 	public Vector3f getObjectPosition() {
@@ -184,6 +193,7 @@ public class RenderParameter implements Parameter {
 		matrix.setQuick(OBJECT_ROTATION_X, angles[0]);
 		matrix.setQuick(OBJECT_ROTATION_Y, angles[1]);
 		matrix.setQuick(OBJECT_ROTATION_Z, angles[2]);
+		fireParamChanged();
 	}
 
 	public ColorRGBA getAmbientLightColor() {
@@ -199,6 +209,7 @@ public class RenderParameter implements Parameter {
 		matrix.setQuick(AMBIENT_COLOR_R, ambientLightColor.r);
 		matrix.setQuick(AMBIENT_COLOR_G, ambientLightColor.g);
 		matrix.setQuick(AMBIENT_COLOR_B, ambientLightColor.b);
+		fireParamChanged();
 	}
 
 	public ColorRGBA getDirectedLightColor() {
@@ -214,6 +225,7 @@ public class RenderParameter implements Parameter {
 		matrix.setQuick(DIRECTED_LIGHT_COLOR_R, directedLightColor.r);
 		matrix.setQuick(DIRECTED_LIGHT_COLOR_G, directedLightColor.g);
 		matrix.setQuick(DIRECTED_LIGHT_COLOR_B, directedLightColor.b);
+		fireParamChanged();
 	}
 
 	public Vector3f getDirectedLightDirection() {
@@ -226,6 +238,7 @@ public class RenderParameter implements Parameter {
 		matrix.setQuick(DIRECTED_LIGHT_DIRECTION_X, directedLightDirection.x);
 		matrix.setQuick(DIRECTED_LIGHT_DIRECTION_Y, directedLightDirection.y);
 		matrix.setQuick(DIRECTED_LIGHT_DIRECTION_Z, directedLightDirection.z);
+		fireParamChanged();
 	}
 
 	public ColorRGBA getColorsOffsets() {
@@ -241,6 +254,7 @@ public class RenderParameter implements Parameter {
 		matrix.setQuick(COLOR_OFFSET_R, offsets.r);
 		matrix.setQuick(COLOR_OFFSET_G, offsets.g);
 		matrix.setQuick(COLOR_OFFSET_B, offsets.b);
+		fireParamChanged();
 	}
 
 	public ColorRGBA getColorsGains() {
@@ -256,6 +270,7 @@ public class RenderParameter implements Parameter {
 		matrix.setQuick(COLOR_GAIN_R, gains.r);
 		matrix.setQuick(COLOR_GAIN_G, gains.g);
 		matrix.setQuick(COLOR_GAIN_B, gains.b);
+		fireParamChanged();
 	}
 
 	public float getObjectShininess() {
@@ -264,6 +279,7 @@ public class RenderParameter implements Parameter {
 
 	public void setObjectShininess(float objectShininess) {
 		matrix.setQuick(OBJECT_SHININESS, objectShininess);
+		fireParamChanged();
 	}
 
 	@Override
@@ -332,5 +348,16 @@ public class RenderParameter implements Parameter {
 		case OBJECT_SHININESS: return 128;
 		}
 		return 1;
+	}
+
+	@Override
+	public void addListener(ParameterListener listener) {
+		this.listeners.add(ParameterListener.class, listener);
+	}
+
+	protected void fireParamChanged() {
+		for(ParameterListener l : listeners.getListeners(ParameterListener.class)) {
+			l.modelChanged();
+		}
 	}
 }

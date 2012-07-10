@@ -1,5 +1,7 @@
 package parameter;
 
+import javax.swing.event.EventListenerList;
+
 import model.Model;
 import model.MorphableModel;
 
@@ -19,6 +21,8 @@ public class ModelParameter implements Parameter {
 
 	private final DoubleMatrix1D verticesWeight;
 	private final DoubleMatrix1D colorWeight;
+
+	private final EventListenerList listeners = new EventListenerList();
 
 	public static void setMorphableModel(MorphableModel mm) {
 		ModelParameter.mm = mm;
@@ -81,6 +85,7 @@ public class ModelParameter implements Parameter {
 		verticesWeight.assign(Functions.pow(3));
 
 		normalize();
+		fireParamChanged();
 	}
 
 	/** @return the number of parameter stored in each
@@ -104,6 +109,7 @@ public class ModelParameter implements Parameter {
 			verticesWeight.setQuick(index, value);
 		else
 			colorWeight.setQuick(index - modelCount, value);
+		fireParamChanged();
 	}
 
    /** @return the weight vector for the vertices. */
@@ -203,5 +209,16 @@ public class ModelParameter implements Parameter {
 	@Override
 	public double getMax(int index) {
 		return 5;
+	}
+
+	@Override
+	public void addListener(ParameterListener listener) {
+		this.listeners.add(ParameterListener.class, listener);
+	}
+
+	protected void fireParamChanged() {
+		for(ParameterListener l : listeners.getListeners(ParameterListener.class)) {
+			l.modelChanged();
+		}
 	}
 }
