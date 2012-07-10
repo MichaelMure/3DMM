@@ -13,12 +13,12 @@ public class NormalGenerator {
 	public static void ComputeNormal(Mesh mesh) {
 		TimeCounter t = new TimeCounter("Computing normals");
 		int vertexCount = mesh.getVertexCount();
-		int facesCount = mesh.getTriangleCount();
 
 		FloatBuffer verticeBuffer = (FloatBuffer) mesh.getBuffer(Type.Position).getData();
 		Vector3f positions[] = BufferUtils.getVector3Array(verticeBuffer);
 
 		IntBuffer indexBuffer = (IntBuffer) mesh.getBuffer(Type.Index).getData();
+		int facesCount = indexBuffer.limit() / 3;
 
 		FloatBuffer normalBuffer;
 		if(mesh.getBuffer(Type.Normal) == null)
