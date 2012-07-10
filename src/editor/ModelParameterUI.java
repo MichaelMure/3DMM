@@ -17,11 +17,11 @@ public class ModelParameterUI extends JPanel {
 		int modelCount = ModelParameter.getModelCount();
 
 		for(int i = 0; i < modelCount; i++) {
-			this.add(new Slider(param, i));
+			this.add(new ParamSlider(param, i));
 		}
 
 		for(int i = 0; i < modelCount; i++) {
-			this.add(new Slider(param, modelCount + i));
+			this.add(new ParamSlider(param, modelCount + i));
 		}
 	}
 }

@@ -3,6 +3,7 @@ package editor;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -34,7 +35,7 @@ public class Editor {
   private Mesh mesh;
   private FittingScene scene;
 
-  public Editor(MorphableModel mm) {
+  public Editor(MorphableModel mm) throws IOException {
 		ModelParameter.setMorphableModel(mm);
 
 		modelParam = new ModelParameter();
@@ -69,7 +70,7 @@ public class Editor {
     //canvas.setSize(settings.getWidth(), settings.getHeight());
 	}
 
-	private void createFrame() {
+	private void createFrame() throws IOException {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -95,9 +96,10 @@ public class Editor {
 		frame.setVisible(true);
 	}
 
-	private void createSliders() {
+	private void createSliders() throws IOException {
 		sliderPanel.add(new ModelParameterUI(modelParam));
 		sliderPanel.add(new RenderParameterUI(renderParam));
+		sliderPanel.add(new AttributeUI("data/04_attributes.mat", modelParam));
 	}
 
 	private class EditorApplication extends SimpleApplication {

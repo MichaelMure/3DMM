@@ -15,7 +15,7 @@ public class RenderParameterUI extends JPanel {
 		this.add(new JLabel("Render parameters:"));
 
 		for(int i = 0; i <= RenderParameter.LAST_PARAM; i++) {
-			this.add(new Slider(param, i));
+			this.add(new ParamSlider(param, i));
 		}
 	}
 }

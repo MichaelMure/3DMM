@@ -7,9 +7,10 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import parameter.ParameterListener;
 import parameter.Parameter;
 
-public class Slider extends JPanel {
+public class ParamSlider extends JPanel {
 
 	private static final long serialVersionUID = -4409767652756651033L;
 
@@ -23,14 +24,13 @@ public class Slider extends JPanel {
 	private double min;
 
 
-	public Slider(Parameter param, int index) {
+	public ParamSlider(Parameter param, int index) {
 		this.param = param;
 		this.index = index;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
 		this.description = new JLabel(param.getDescription(index));
-
 
 		this.min = param.getMin(index);
 		double extent = param.getMax(index) - min;
@@ -48,6 +48,8 @@ public class Slider extends JPanel {
 
 		setValue(param.get(index));
 		valueLabel.setText(String.format("%+.2f",getValue()));
+
+		param.addListener(new ModelListener());
 	}
 
 	private double getValue() {
@@ -63,6 +65,13 @@ public class Slider extends JPanel {
 		public void stateChanged(ChangeEvent e) {
 			valueLabel.setText(String.format("%+.2f",getValue()));
 			param.set(index, getValue());
+		}
+	}
+
+	class ModelListener implements ParameterListener {
+		@Override
+		public void modelChanged() {
+			setValue(param.get(index));
 		}
 	}
 }
