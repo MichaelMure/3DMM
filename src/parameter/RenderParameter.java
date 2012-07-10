@@ -181,6 +181,7 @@ public class RenderParameter implements Parameter {
 	public void setObjectPosition(Vector3f objectPosition) {
 		matrix.setQuick(OBJECT_POSITION_X, objectPosition.x);
 		matrix.setQuick(OBJECT_POSITION_Y, objectPosition.y);
+		fireParamChanged();
 	}
 
 	public Quaternion getObjectRotation() {
