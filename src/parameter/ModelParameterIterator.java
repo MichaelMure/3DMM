@@ -65,7 +65,7 @@ public class ModelParameterIterator {
 		case Vertice:
 			return param.get(index);
 		case Color:
-			return param.get(index);
+			return param.get(index + modelCount);
 		default:
 			assert false;
 			return 0;
@@ -78,7 +78,7 @@ public class ModelParameterIterator {
 			param.set(index, value);
 			break;
 		case Color:
-			param.set(index, value);
+			param.set(index + modelCount, value);
 			break;
 		}
 	}
