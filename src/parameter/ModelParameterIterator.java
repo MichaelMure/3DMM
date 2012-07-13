@@ -86,4 +86,17 @@ public class ModelParameterIterator {
 	public double getStandartDeviation() {
 		return ModelParameter.getStandartDeviation(index);
 	}
+
+	@Override
+	public String toString() {
+		switch (state) {
+		case Vertice:
+			return "Vertice " + index;
+		case Color:
+			return "Color " + index;
+		default:
+			assert false;
+			return "";
+		}
+	}
 }
