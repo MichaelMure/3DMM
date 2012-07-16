@@ -95,4 +95,16 @@ public class CompleteParameterIterator {
 			break;
 		}
 	}
+
+	@Override
+	public String toString() {
+		switch (state) {
+		case Model:
+			return "Model[" + modelParamIt.toString() + "]";
+		case Render:
+			return "Render[" + renderParamIt.toString() + "]";
+		}
+		assert(false);
+		return "";
+	}
 }
