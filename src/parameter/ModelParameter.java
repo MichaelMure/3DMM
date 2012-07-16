@@ -37,6 +37,8 @@ public class ModelParameter implements Parameter {
 		DoubleMatrix1D vWeight = DoubleFactory1D.dense.random(modelCount);
 		DoubleMatrix1D cWeight = DoubleFactory1D.dense.random(modelCount);
 
+		vWeight.assign(Functions.square);
+
 		vWeight.assign(Functions.mult(3));
 		cWeight.assign(Functions.mult(3));
 
