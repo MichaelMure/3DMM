@@ -55,10 +55,8 @@ public class ModelParameter implements Parameter {
 	public ModelParameter(DoubleMatrix1D verticesWeight, DoubleMatrix1D colorWeight) {
 		if(verticesWeight.size() != modelCount || colorWeight.size() != modelCount)
 			throw new IllegalArgumentException("Incoherent model count. Use setModelCount() if not a bug.");
-		this.verticesWeight = new DenseDoubleMatrix1D(modelCount);
-		this.verticesWeight.assign(verticesWeight);
-		this.colorWeight = new DenseDoubleMatrix1D(modelCount);
-		this.colorWeight.assign(colorWeight);
+		this.verticesWeight = verticesWeight.copy();
+		this.colorWeight = colorWeight.copy();
 	}
 
 	/** Copy constructor */
