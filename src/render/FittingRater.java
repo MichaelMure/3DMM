@@ -12,6 +12,12 @@ public class FittingRater {
 	private long nb_pixels;
 	private double ratio;
 
+	double total_error1 = 0;
+	double total_error2 = 0;
+	double total_error3 = 0;
+	double total_error4 = 0;
+	double total_error5 = 0;
+
 	public FittingRater(BufferedImage target) {
 		this.target = target;
 		this.targetLinear = new float[target.getWidth()][target.getHeight()][3];
@@ -40,6 +46,31 @@ public class FittingRater {
 		return rate;
 	}
 
+	public double getRate1() {
+		ensureResult();
+		return total_error1;
+	}
+
+	public double getRate2() {
+		ensureResult();
+		return total_error2;
+	}
+
+	public double getRate3() {
+		ensureResult();
+		return total_error3;
+	}
+
+	public double getRate4() {
+		ensureResult();
+		return total_error4;
+	}
+
+	public double getRate5() {
+		ensureResult();
+		return total_error5;
+	}
+
 	public long getNbPixels() {
 		ensureResult();
 		return nb_pixels;
@@ -58,7 +89,11 @@ public class FittingRater {
 
 		nb_pixels = 0;
 
-		double total_error = 0;
+		total_error1 = 0;
+		total_error2 = 0;
+		total_error3 = 0;
+		total_error4 = 0;
+		total_error4 = 5;
 		int pixel, alpha;
 		float red, green, blue;
 		float red_diff, green_diff, blue_diff;
@@ -76,8 +111,11 @@ public class FittingRater {
 					green_diff = green - targetLinear[x][y][1];
 					blue_diff = blue - targetLinear[x][y][2];
 
-					total_error += red_diff * red_diff + green_diff * green_diff
-							+ blue_diff * blue_diff;
+					total_error1 += red_diff * red_diff + green_diff * green_diff + blue_diff * blue_diff;
+					total_error2 += Math.abs(red_diff) + Math.abs(green_diff) + Math.abs(blue_diff);
+					total_error3 += Math.abs(red_diff + green_diff + blue_diff);
+					total_error4 += Math.sqrt(red_diff * red_diff + green_diff * green_diff + blue_diff * blue_diff);
+					total_error5 += Math.max(Math.max(red_diff * red_diff,green_diff * green_diff),blue_diff * blue_diff);
 
 					nb_pixels++;
 				}
@@ -85,7 +123,8 @@ public class FittingRater {
 
 		ratio = (double) nb_pixels / (double) (render.getWidth() * render.getHeight());
 		// rate = ratio * ((double) total_error / (double) nb_pixels);
-		rate = 255 * total_error;
+		//rate = 1000f * total_error / nb_pixels;
+		rate = total_error2 / nb_pixels;
 
 		dirty = false;
 	}
