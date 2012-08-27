@@ -1,5 +1,7 @@
 package parameter;
 
+import java.util.Random;
+
 import javax.swing.event.EventListenerList;
 
 import model.Model;
@@ -12,6 +14,8 @@ import cern.colt.matrix.DoubleFactory1D;
 import cern.colt.matrix.DoubleMatrix1D;
 import cern.colt.matrix.impl.DenseDoubleMatrix1D;
 import cern.jet.math.Functions;
+import cern.jet.random.engine.MersenneTwister;
+import cern.jet.random.engine.RandomEngine;
 
 public class ModelParameter implements Parameter {
 
@@ -76,13 +80,17 @@ public class ModelParameter implements Parameter {
 
 	/** In place randomization of the parameters */
 	public void randomize() {
-		colorWeight.assign(Functions.random());
-		verticesWeight.assign(Functions.random());
+		MersenneTwister mt = new MersenneTwister((int) System.currentTimeMillis());
+		colorWeight.assign(mt);
+		verticesWeight.assign(mt);
 
-		colorWeight.assign(Functions.pow(3));
-		verticesWeight.assign(Functions.pow(3));
+		colorWeight.assign(Functions.pow(2));
+		verticesWeight.assign(Functions.pow(2));
 
-		normalize();
+		colorWeight.assign(Functions.mult(5));
+		verticesWeight.assign(Functions.mult(5));
+
+		//normalize();
 		fireParamChanged();
 	}
 
@@ -91,6 +99,10 @@ public class ModelParameter implements Parameter {
 	 */
 	public static int getModelCount() {
 		return modelCount;
+	}
+
+	public static void setModelCount(int value) {
+		modelCount = value;
 	}
 
 	@Override
