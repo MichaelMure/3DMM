@@ -51,4 +51,9 @@ public class RenderParameterIterator{
 		return RenderParameter.getStandartDeviation(index);
 	}
 
+	@Override
+	public String toString() {
+		return new RenderParameter().getDescription(index);
+	}
+
 }
