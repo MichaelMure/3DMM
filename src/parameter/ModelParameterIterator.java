@@ -60,6 +60,20 @@ public class ModelParameterIterator {
 		}
 	}
 
+	public void enableEigenLevel(int index, boolean value) {
+		if(index >= modelCount)
+			return;
+
+		if(value) {
+			enabledVertice.set(index);
+			enabledColor.set(index);
+		}
+		else {
+			enabledVertice.clear(index);
+			enabledColor.clear(index);
+		}
+	}
+
 	public double get(ModelParameter param) {
 		switch (state) {
 		case Vertice:
