@@ -10,23 +10,21 @@ import javax.imageio.ImageIO;
 import model.MorphableModel;
 import model.MorphableModelLoader;
 
-import render.FittingStrategy;
+import render.ErrorTracer;
 import util.Log;
 import util.Log.LogType;
 
-public class FittingApp {
+public class ErrorTracerApp {
 
 	public static void main(String[] args) {
 		Logger.getLogger("").setLevel(Level.WARNING);
 		Log.disableType(LogType.TIME);
-		//Log.disableLevel(LogLevel.INFO);
 
 		try {
-			//MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
 			MorphableModel mm = MorphableModelLoader.loadMAT(10);
-			BufferedImage target = ImageIO.read(new File("audrey.png"));
+			BufferedImage target = ImageIO.read(new File("target.png"));
 
-			FittingStrategy fs = new FittingStrategy(mm, target);
+			ErrorTracer fs = new ErrorTracer(mm, target);
 			fs.start();
 
 		} catch (Exception e) {
