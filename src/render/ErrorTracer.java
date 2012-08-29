@@ -23,8 +23,6 @@ public class ErrorTracer implements FittingRenderer.Callback {
 	private FittingRenderer renderer;
 	private Mesh mesh;
 
-	private final MorphableModel mm;
-
 	private CompleteParameter start;
 
 	PrintWriter out1, out2, out3, out4, out5, out6, out7, out8, out9, out10;
@@ -35,7 +33,6 @@ public class ErrorTracer implements FittingRenderer.Callback {
 
 	public ErrorTracer(MorphableModel mm, BufferedImage target) {
 		ModelParameter.setMorphableModel(mm);
-		this.mm = mm;
 		this.target = target;
 	}
 
@@ -118,7 +115,7 @@ public class ErrorTracer implements FittingRenderer.Callback {
 		}
 
 		if(mp.get(0) >= MAX) {
-			out1.println("HALTLABJZKLABDNZDA");
+			out1.println("STOP");
 		}
 
 		out1.flush();
