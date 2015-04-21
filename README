@@ -11,6 +11,11 @@ Author:
 
 This software is released under the term of the GPLv3 license.
 
+To use the code as is, you will need to ask for an access to the Basel
+Face Model database
+(http://faces.cs.unibas.ch/bfm/main.php?nav=1-1-0&id=details). As per
+the license of the database, I'm not allowed to redistribute it.
+
 My internship report that describe this project is available on demand.
 
 Feel free to contact me for questions or comments.
