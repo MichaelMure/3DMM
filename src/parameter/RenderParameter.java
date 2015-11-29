@@ -185,7 +185,10 @@ public class RenderParameter implements Parameter {
 	}
 
 	public Quaternion getObjectRotation() {
-		return new Quaternion().fromAngles(OBJECT_ROTATION_X, OBJECT_ROTATION_Y, OBJECT_ROTATION_Z);
+		float[] angles = new float[] { (float) matrix.getQuick(OBJECT_ROTATION_X),
+									(float) matrix.getQuick(OBJECT_ROTATION_Y),
+									(float) matrix.getQuick(OBJECT_ROTATION_Z) };
+		return new Quaternion().fromAngles(angles);
 	}
 
 	public void setObjectRotation(Quaternion objectRotation) {
