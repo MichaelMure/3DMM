@@ -15,7 +15,8 @@ public class EditorApp {
 
 	public static void main(String[] args) throws IOException {
 		Logger.getLogger("").setLevel(Level.WARNING);
-		MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
+		MorphableModel mm = MorphableModelLoader.loadMAT(10);
+		//MorphableModel mm = MorphableModelBuilder.LoadDirectory("data", FileType.PLY);
 
 		@SuppressWarnings("unused")
 		Editor editor = new Editor(mm);
